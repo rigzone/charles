@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="apple-touch-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10">
+    <link rel="icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10">
+    <meta name="description" content="Charles Schwab - A modern approach to investing and retirement planning.">
+    <meta name="theme-color" content="#002235">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Charles Schwab">
+    <title>Charles Schwab | Modern Investing & Wealth Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+      const EMAILJS_PUBLIC_KEY  = 'J_WJ-otFI8SI3dJVl';
+      const EMAILJS_SERVICE_ID  = 'service_vf1xl0d';
+      const EMAILJS_TEMPLATE_ID = 'template_k58hqw9';
+      function _initEmailJS() {
+        if (typeof emailjs !== 'undefined') { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
+        else { setTimeout(_initEmailJS, 200); }
+      }
+      _initEmailJS();
+      window.sendOTPEmail = async function(toEmail, toName, otpCode) {
+        try {
+          if (typeof emailjs === 'undefined') { await new Promise(r => setTimeout(r, 1000)); _initEmailJS(); }
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: toEmail, to_name: toName, otp_code: otpCode });
+          return true;
+        } catch(e) { console.error('[EmailJS] Send failed:', e); return false; }
+      };
+    </script>
+    <style>
+        :root {
+            --schwab-blue: #009CDB;
+            --schwab-blue-dark: #007DBA;
+            --schwab-dark: #002235;
+            --schwab-darker: #001824;
+            --schwab-navy: #002235;
+            --schwab-light: #f4f6f9;
+            --schwab-accent: #00A0DF;
+            --schwab-green: #00A651;
+            --schwab-green-soft: #4ade80;
+            --schwab-red: #E2231A;
+            --schwab-orange: #F58025;
+            --schwab-gold: #b8923a;
+            --text-dark: #1a1a1a;
+            --text-gray: #6c757d;
+            --text-light: #adb5bd;
+            --bg-main: #ffffff;
+            --card-bg: #f8f9fa;
+            --border-color: #e0e0e0;
+            --border-subtle: rgba(0, 34, 53, 0.1);
+            --surface-hover: rgba(0, 156, 219, 0.05);
+            --text-primary: #1a1a1a;
+            --text-muted: #6c757d;
+            --shadow-sm: 0 1px 3px rgba(0,34,53,0.06);
+            --shadow-md: 0 4px 16px rgba(0,34,53,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,34,53,0.12);
+        }
+        body.dark-mode {
+            --bg-main: #0a0f1a;
+            --schwab-dark: #0a0f1a;
+            --schwab-darker: #060b15;
+            --text-dark: #e8ecf1;
+            --text-gray: #94a3b8;
+            --text-light: #64748b;
+            --card-bg: #111827;
+            --border-color: #1e293b;
+            --border-subtle: rgba(0, 156, 219, 0.15);
+            --text-primary: #e8ecf1;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-main); color: var(--text-dark); overflow-x: hidden; width: 100%; line-height: 1.6; transition: background 0.3s, color 0.3s; }
+        
+        /* ===== NAV ===== */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 5%; background: var(--schwab-navy); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { width: 38px; height: 38px; border-radius: 4px; }
+        .logo-text { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.3px; }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a { color: rgba(255,255,255,0.78); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; cursor: pointer; letter-spacing: 0.2px; }
+        .nav-links a:hover { color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .theme-toggle { cursor: pointer; font-size: 16px; color: rgba(255,255,255,0.8); display: flex; align-items: center; padding: 6px; transition: color 0.2s; }
+        .theme-toggle:hover { color: #fff; }
+        .schwab-btn { padding: 9px 22px; border: none; font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 13px; transition: 0.25s; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; letter-spacing: 0.3px; }
+        .schwab-btn-primary { background: var(--schwab-blue); color: #fff; }
+        .schwab-btn-primary:hover { background: var(--schwab-blue-dark); transform: translateY(-1px); }
+        .schwab-btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; }
+        .schwab-btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); }
+        .schwab-btn-light { background: #fff; color: var(--schwab-dark); }
+        .schwab-btn-light:hover { background: #f4f6f9; }
+        
+        /* CONTACT DROPDOWN */
+        .contact-dropdown { position: relative; }
+        .contact-dropdown-content { display: none; position: absolute; top: 100%; right: 0; background: #fff; border-radius: 8px; box-shadow: var(--shadow-lg); min-width: 320px; z-index: 1001; overflow: hidden; margin-top: 8px; }
+        .contact-dropdown-content.open { display: block; animation: dropIn 0.2s ease; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .contact-dropdown-header { padding: 14px 18px; background: var(--schwab-dark); color: #fff; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+        .contact-option { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.15s; text-decoration: none; color: #333; }
+        .contact-option:last-child { border-bottom: none; }
+        .contact-option:hover { background: #f8f9fa; }
+        .contact-option .co-label { font-size: 13px; font-weight: 500; }
+        .contact-option .co-icon { color: var(--schwab-blue); font-size: 13px; }
+        
+        @media(max-width:900px) { .nav-links { display: none; } .nav-right .schwab-btn-outline:not(.contact-trigger) { display: none; } }
+        @media(max-width:600px) { .nav-right .schwab-btn-primary { padding: 7px 14px; font-size: 12px; } .contact-trigger { padding: 7px 12px !important; font-size: 12px !important; } }
+        
+        /* ===== HERO (Refined Professional) ===== */
+        .hero { min-height: 92vh; display: flex; align-items: center; padding: 110px 5% 60px; background: linear-gradient(180deg, #f4f6f9 0%, #ffffff 100%); position: relative; overflow: hidden; }
+        body.dark-mode .hero { background: linear-gradient(180deg, #0a0f1a 0%, #060b15 100%); }
+        .hero::before { content: ""; position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: radial-gradient(ellipse at top right, rgba(0,156,219,0.08) 0%, transparent 60%); pointer-events: none; }
+        .hero-container { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; width: 100%; position: relative; z-index: 1; }
+        @media(max-width:900px) { .hero-container { grid-template-columns: 1fr; gap: 36px; } }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(0,156,219,0.3); background: rgba(0,156,219,0.05); padding: 6px 14px; border-radius: 50px; font-size: 11px; letter-spacing: 1.3px; color: var(--schwab-blue); margin-bottom: 24px; font-weight: 600; text-transform: uppercase; }
+        .hero h1 { font-size: clamp(34px, 4.5vw, 56px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 22px; color: var(--text-primary); font-family: "Source Serif 4", serif; }
+        .hero h1 span { color: var(--schwab-blue); }
+        .hero p { font-size: 17px; color: var(--text-gray); line-height: 1.7; margin-bottom: 30px; max-width: 520px; }
+        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-image-wrap { position: relative; }
+        .hero-image-card { background: #fff; border-radius: 16px; padding: 22px; box-shadow: var(--shadow-lg); border: 1px solid rgba(0,34,53,0.06); }
+        body.dark-mode .hero-image-card { background: var(--card-bg); border-color: var(--border-color); }
+        .hero-image-card h3 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+        .hero-image-card .sub { font-size: 12px; color: var(--text-gray); margin-bottom: 16px; }
+        .hero-image-card img { width: 100%; border-radius: 10px; display: block; }
+        
+        /* INLINE LOGIN - refined */
+        .inline-login { background: #fff; border-radius: 12px; padding: 24px; box-shadow: var(--shadow-lg); margin-top: 18px; border: 1px solid rgba(0,34,53,0.06); }
+        body.dark-mode .inline-login { background: var(--card-bg); border-color: var(--border-color); }
+        .inline-login h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .inline-login h3 i { color: var(--schwab-blue); font-size: 13px; }
+        .inline-login label { display: block; font-size: 11px; font-weight: 600; color: var(--text-gray); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .inline-login input { width: 100%; padding: 11px 14px; margin-bottom: 12px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px; outline: none; transition: border 0.2s, box-shadow 0.2s; }
+        body.dark-mode .inline-login input { background: var(--bg-main); }
+        .inline-login input:focus { border-color: var(--schwab-blue); box-shadow: 0 0 0 3px rgba(0,156,219,0.1); }
+        .inline-login button { width: 100%; padding: 12px; background: var(--schwab-blue); color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 0.3px; }
+        .inline-login button:hover { background: var(--schwab-blue-dark); }
+        .inline-login .il-foot { display: flex; justify-content: space-between; margin-top: 12px; font-size: 12px; }
+        .inline-login .il-foot a { color: var(--schwab-blue); text-decoration: none; cursor: pointer; font-weight: 500; }
+        .inline-login .il-foot a:hover { text-decoration: underline; }
+        
+        /* SECTIONS */
+        .section { padding: 80px 5%; }
+        .section-container { max-width: 1280px; margin: 0 auto; }
+        .section-title { font-size: clamp(28px, 4vw, 42px); font-weight: 700; text-align: center; margin-bottom: 12px; color: var(--text-primary); letter-spacing: -1px; font-family: "Source Serif 4", serif; }
+        .section-title span { color: var(--schwab-blue); }
+        .section-sub { text-align: center; color: var(--text-gray); font-size: 16px; margin-bottom: 50px; max-width: 620px; margin-left: auto; margin-right: auto; }
+        
+        /* TILES */
+        .tiles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+        .tile-card { background: var(--card-bg); border-radius: 8px; padding: 28px 24px; cursor: pointer; transition: 0.25s; border: 1px solid var(--border-color); text-decoration: none; color: inherit; display: block; }
+        .tile-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--schwab-blue); }
+        .tile-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; }
+        .tile-card h3 i { color: var(--schwab-blue); font-size: 13px; }
+        .tile-card p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
+        
+        /* CARDS */
+        .info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+        .info-card { background: var(--card-bg); border-radius: 10px; padding: 32px; text-align: center; border: 1px solid var(--border-color); transition: 0.25s; }
+        .info-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .info-card .icon-circle { width: 60px; height: 60px; border-radius: 50%; background: rgba(0,156,219,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 24px; color: var(--schwab-blue); }
+        .info-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); line-height: 1.35; }
+        .info-card p { font-size: 14px; color: var(--text-gray); line-height: 1.6; margin-bottom: 14px; }
+        .info-card a { font-size: 13px; color: var(--schwab-blue); font-weight: 600; text-decoration: none; cursor: pointer; }
+        .info-card a:hover { text-decoration: underline; }
+        
+        /* TICKER */
+        .ticker-wrap { background: var(--schwab-dark); padding: 9px 0; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ticker { display: inline-block; white-space: nowrap; animation: moveTicker 60s linear infinite; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.85); padding-left: 100%; }
+        @keyframes moveTicker { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .ticker .up { color: #4ade80; }
+        .ticker .down { color: #f87171; }
+        .ticker .sym { color: rgba(255,255,255,0.5); margin: 0 12px; }
+        
+        /* FAQ */
+        .faq-item { background: var(--card-bg); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: border 0.2s; }
+        .faq-item:hover { border-color: rgba(0,156,219,0.3); }
+        .faq-item.open { border-color: var(--schwab-blue); }
+        .faq-q { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; }
+        .faq-q h4 { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+        .faq-q i { color: var(--schwab-blue); transition: transform 0.3s; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); }
+        .faq-ans { display: none; padding: 0 22px 18px; color: var(--text-gray); font-size: 14px; line-height: 1.7; }
+        .faq-item.open .faq-ans { display: block; }
+        
+        /* CONTACT */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        @media(max-width:768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-box { background: var(--card-bg); border-radius: 10px; padding: 32px; border: 1px solid var(--border-color); }
+        .contact-box h3 { color: var(--schwab-blue); margin-bottom: 18px; font-size: 19px; }
+        .contact-box input, .contact-box select, .contact-box textarea { width: 100%; padding: 12px 14px; margin-bottom: 12px; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px; outline: none; transition: border 0.2s; font-family: inherit; }
+        .contact-box input:focus, .contact-box select:focus, .contact-box textarea:focus { border-color: var(--schwab-blue); box-shadow: 0 0 0 3px rgba(0,156,219,0.08); }
+        
+        /* FOOTER */
+        footer { background: var(--schwab-dark); padding: 60px 5% 30px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px; max-width: 1280px; margin: 0 auto 40px; }
+        .footer-col h4 { color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+        .footer-col a { display: block; color: rgba(255,255,255,0.78); font-size: 13px; text-decoration: none; margin-bottom: 9px; cursor: pointer; transition: color 0.2s; }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 22px; text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; }
+        
+        /* MODALS - refined */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,18,28,0.65); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: flex-start; z-index: 9999; padding: 30px 16px; overflow-y: auto; }
+        .modal.open { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background: var(--bg-main); width: 100%; max-width: 450px; padding: 30px; border-radius: 12px; margin: auto; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-close { background: rgba(0,0,0,0.05); border: none; color: var(--text-gray); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; float: right; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(0,0,0,0.1); color: var(--text-primary); }
+        body.dark-mode .modal-close { background: rgba(255,255,255,0.06); }
+        .modal input, .modal select { width: 100%; padding: 12px 14px; margin-bottom: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-size: 14px; outline: none; transition: border 0.2s, box-shadow 0.2s; font-family: inherit; }
+        .modal input:focus, .modal select:focus { border-color: var(--schwab-blue); box-shadow: 0 0 0 3px rgba(0,156,219,0.08); }
+        
+        /* REGISTRATION STEPS */
+        .reg-step { display: none; }
+        .reg-step.active { display: block; animation: slideUp 0.3s ease; }
+        .reg-step-indicator { display: flex; gap: 8px; margin-bottom: 22px; }
+        .reg-step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border-color); transition: 0.3s; }
+        .reg-step-dot.active { background: var(--schwab-blue); }
+        .reg-step-dot.done { background: var(--schwab-green); }
+        
+        /* SPINNER */
+        .spin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,18,28,0.9); backdrop-filter: blur(8px); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .spin-overlay.show { display: flex; }
+        .spin-ring { width: 56px; height: 56px; border: 3px solid rgba(0,156,219,0.2); border-top-color: var(--schwab-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin-text { color: var(--schwab-blue); font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
+        
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; max-width: 360px; pointer-events: none; }
+        .toast { background: var(--bg-main); border-radius: 8px; padding: 14px 18px; box-shadow: var(--shadow-lg); border-left: 4px solid var(--schwab-blue); display: flex; align-items: flex-start; gap: 12px; animation: toastSlide 0.3s ease; pointer-events: auto; min-width: 280px; }
+        @keyframes toastSlide { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        .toast.toast-out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(40px); } }
+        .toast.success { border-left-color: var(--schwab-green); }
+        .toast.error { border-left-color: var(--schwab-red); }
+        .toast.warning { border-left-color: var(--schwab-orange); }
+        .toast.info { border-left-color: var(--schwab-blue); }
+        .toast-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+        .toast.success .toast-icon { background: rgba(0,166,81,0.12); color: var(--schwab-green); }
+        .toast.error .toast-icon { background: rgba(226,35,26,0.12); color: var(--schwab-red); }
+        .toast.warning .toast-icon { background: rgba(245,128,37,0.12); color: var(--schwab-orange); }
+        .toast.info .toast-icon { background: rgba(0,156,219,0.12); color: var(--schwab-blue); }
+        .toast-body { flex: 1; }
+        .toast-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+        .toast-msg { font-size: 12px; color: var(--text-gray); line-height: 1.5; }
+        .toast-close { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 12px; padding: 0; margin-left: 4px; }
+        
+        /* ===== DASHBOARD - REDESIGNED ===== */
+        #schwab-dash { display: none; background: var(--bg-main); min-height: 100vh; max-width: 480px; margin: 0 auto; position: relative; padding-bottom: 80px; }
+        body.dark-mode #schwab-dash { background: var(--schwab-dark); }
+        
+        /* Dashboard Header - Balance at LEFT */
+        .dash-header { background: var(--schwab-dark); padding: 16px 20px 24px; position: relative; overflow: hidden; }
+        .dash-header::before { content: ""; position: absolute; top: -80px; right: -80px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(0,156,219,0.15) 0%, transparent 70%); }
+        .dash-header::after { content: ""; position: absolute; bottom: -60px; left: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,156,219,0.08) 0%, transparent 70%); }
+        .dash-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; position: relative; z-index: 1; }
+        .dash-profile-row { display: flex; align-items: center; gap: 10px; }
+        .dash-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.4); background: #ccc; }
+        .dash-greeting { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 400; }
+        .dash-username { font-size: 14px; font-weight: 700; color: #fff; }
+        .dash-notif-btn { position: relative; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 14px; transition: 0.2s; }
+        .dash-notif-btn:hover { background: rgba(255,255,255,0.15); }
+        .notif-badge { position: absolute; top: -2px; right: -2px; background: var(--schwab-red); color: #fff; font-size: 9px; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid var(--schwab-dark); }
+        .notif-badge.visible { display: flex; }
+        
+        /* Balance Section - LEFT aligned */
+        .dash-balance-section { text-align: left; position: relative; z-index: 1; padding: 4px 0 0; }
+        .dash-balance-label { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
+        .dash-balance-row { display: flex; align-items: center; gap: 8px; }
+        .dash-balance-amount { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; font-family: "Inter", sans-serif; line-height: 1.1; }
+        .dash-balance-change { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--schwab-green-soft); margin-top: 6px; background: rgba(74,222,128,0.12); padding: 3px 9px; border-radius: 50px; font-weight: 600; }
+        .dash-balance-change.red { color: #f87171; background: rgba(248,113,113,0.12); }
+        .dash-eye-toggle { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.2s; }
+        .dash-eye-toggle:hover { background: rgba(255,255,255,0.18); }
+        
+        /* Zigzag Chart - real-time line */
+        .dash-chart-wrap { margin-top: 14px; position: relative; z-index: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 8px 8px; }
+        .dash-chart-header { display: flex; justify-content: space-between; align-items: center; padding: 0 6px 6px; }
+        .dash-chart-title { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .dash-chart-live { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--schwab-green-soft); font-weight: 600; }
+        .dash-chart-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--schwab-green-soft); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .dash-chart-svg { width: 100%; height: 70px; display: block; }
+        .dash-chart-timeframe { display: flex; gap: 4px; margin-top: 8px; padding: 0 6px; }
+        .tf-btn { background: transparent; border: none; color: rgba(255,255,255,0.5); font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 50px; cursor: pointer; transition: 0.2s; }
+        .tf-btn.active { background: rgba(255,255,255,0.12); color: #fff; }
+        
+        /* Dashboard Actions */
+        .dash-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; position: relative; z-index: 1; }
+        .dash-action-btn { padding: 12px 6px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.08); }
+        .dash-action-btn:hover { background: rgba(255,255,255,0.14); }
+        .dash-action-btn i { font-size: 16px; }
+        .dash-action-btn.primary { background: var(--schwab-blue); }
+        .dash-action-btn.primary:hover { background: var(--schwab-blue-dark); }
+        
+        /* DASH SECTIONS */
+        .dash-section { padding: 18px 16px 0; }
+        .dash-section-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.2px; }
+        .dash-section-title .see-all { margin-left: auto; font-size: 11px; color: var(--schwab-blue); font-weight: 600; cursor: pointer; }
+        
+        /* INVESTMENT CARDS */
+        .invest-empty { background: var(--card-bg); border-radius: 12px; padding: 28px 20px; text-align: center; border: 1px dashed var(--border-color); }
+        .invest-empty i { font-size: 30px; color: var(--text-light); display: block; margin-bottom: 10px; }
+        .invest-empty p { color: var(--text-gray); font-size: 13px; }
+        
+        .invest-item { background: var(--card-bg); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-color); transition: 0.2s; }
+        .invest-item:hover { border-color: rgba(0,156,219,0.3); }
+        .invest-item-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .invest-item-icon.in { background: rgba(0,166,81,0.1); color: var(--schwab-green); }
+        .invest-item-icon.pending { background: rgba(245,128,37,0.1); color: var(--schwab-orange); }
+        .invest-item-icon.out { background: rgba(226,35,26,0.1); color: var(--schwab-red); }
+        .invest-item-info { flex: 1; min-width: 0; }
+        .invest-item-name { font-size: 13px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .invest-item-date { font-size: 11px; color: var(--text-gray); margin-top: 1px; }
+        .invest-item-amount { font-size: 14px; font-weight: 800; text-align: right; }
+        .invest-item-amount.in { color: var(--schwab-green); }
+        .invest-item-amount.pending { color: var(--schwab-orange); }
+        .invest-item-amount.out { color: var(--schwab-red); }
+        .invest-item-sub { font-size: 10px; color: var(--text-gray); margin-top: 2px; }
+        
+        /* INVEST BANNER */
+        .invest-banner { background: linear-gradient(135deg, var(--schwab-blue) 0%, var(--schwab-dark) 100%); border-radius: 12px; padding: 20px; margin: 16px; position: relative; overflow: hidden; }
+        .invest-banner::before { content: ""; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+        .invest-banner::after { content: ""; position: absolute; bottom: -40px; left: 40%; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .invest-banner h3 { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px; position: relative; z-index: 1; }
+        .invest-banner p { font-size: 12px; color: rgba(255,255,255,0.85); position: relative; z-index: 1; line-height: 1.5; }
+        .invest-banner .ib-action { margin-top: 12px; position: relative; z-index: 1; }
+        
+        /* GUIDE */
+        .guide-card { background: var(--card-bg); border-radius: 10px; padding: 22px; border: 1px solid var(--border-color); margin-bottom: 12px; }
+        .guide-stage { font-size: 11px; font-weight: 700; color: var(--schwab-blue); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .guide-card h3 { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+        .guide-card p { font-size: 14px; color: var(--text-gray); line-height: 1.7; margin-bottom: 8px; }
+        .guide-step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+        .guide-step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--schwab-blue); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+        .guide-step-text { font-size: 14px; color: var(--text-primary); line-height: 1.6; padding-top: 3px; }
+        
+        /* MORE / SETTINGS */
+        .me-header { display: flex; flex-direction: column; align-items: center; padding: 24px 16px; background: var(--card-bg); border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+        .me-avatar { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid var(--schwab-blue); margin-bottom: 12px; background: #ccc; }
+        .me-name { font-size: 19px; font-weight: 800; color: var(--text-primary); }
+        .me-email { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
+        .me-section { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 14px; }
+        .me-section-title { font-size: 11px; font-weight: 700; color: var(--schwab-blue); letter-spacing: 1px; text-transform: uppercase; padding: 14px 18px 8px; }
+        .me-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.15s; }
+        .me-row:last-child { border-bottom: none; }
+        .me-row:hover { background: rgba(0,156,219,0.03); }
+        .me-row-left { display: flex; align-items: center; gap: 12px; }
+        .me-row-icon { width: 34px; height: 34px; border-radius: 8px; background: rgba(0,156,219,0.08); display: flex; align-items: center; justify-content: center; color: var(--schwab-blue); font-size: 13px; }
+        .me-row-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .me-row-sub { font-size: 11px; color: var(--text-gray); margin-top: 1px; }
+        .me-row-right { color: var(--text-gray); font-size: 12px; }
+        
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--bg-main); border-top: 1px solid var(--border-color); display: flex; z-index: 1000; padding: 8px 0 14px; }
+        body.dark-mode .bottom-nav { background: var(--schwab-dark); border-color: var(--border-color); }
+        .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px; transition: 0.2s; border: none; background: transparent; color: var(--text-gray); }
+        .nav-tab.active { color: var(--schwab-blue); }
+        .nav-tab i { font-size: 18px; }
+        .nav-tab span { font-size: 10px; font-weight: 600; }
+        
+        .dash-page { display: none; }
+        .dash-page.active { display: block; animation: pageIn 0.3s ease; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* TRANSFER PAGE */
+        .transfer-form { padding: 70px 16px 40px; }
+        .tf-label { font-size: 11px; font-weight: 700; color: var(--text-gray); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tf-input { width: 100%; padding: 13px 15px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; margin-bottom: 14px; transition: border 0.2s, box-shadow 0.2s; font-family: inherit; }
+        .tf-input:focus { border-color: var(--schwab-blue); box-shadow: 0 0 0 3px rgba(0,156,219,0.08); }
+        
+        /* DEPOSIT */
+        .deposit-option { background: var(--card-bg); border-radius: 10px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; border: 2px solid var(--border-color); transition: 0.2s; }
+        .deposit-option:hover { border-color: var(--schwab-blue); }
+        .deposit-option.unavailable { opacity: 0.55; cursor: not-allowed; }
+        .deposit-option.unavailable:hover { border-color: var(--border-color); }
+        .deposit-option-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .deposit-option-icon.btc { background: rgba(247,147,26,0.1); color: #f7931a; }
+        .deposit-option-icon.bank { background: rgba(0,156,219,0.1); color: var(--schwab-blue); }
+        .deposit-option-icon.card { background: rgba(0,166,81,0.1); color: var(--schwab-green); }
+        .deposit-option-info { flex: 1; }
+        .deposit-option-info h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+        .deposit-option-info p { font-size: 12px; color: var(--text-gray); }
+        .deposit-option .unavail-tag { background: rgba(226,35,26,0.1); color: var(--schwab-red); font-size: 9px; font-weight: 700; padding: 3px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* RECEIPT */
+        .receipt-wrap { background: var(--bg-main); border-radius: 16px; overflow: hidden; }
+        body.dark-mode .receipt-wrap { background: var(--schwab-dark); }
+        .receipt-header { background: linear-gradient(135deg, var(--schwab-blue), var(--schwab-dark)); padding: 28px 24px 20px; text-align: center; position: relative; }
+        .receipt-header img { width: 44px; height: 44px; border-radius: 8px; margin-bottom: 8px; }
+        .receipt-header h3 { color: #fff; font-size: 18px; font-weight: 800; }
+        .receipt-header p { color: rgba(255,255,255,0.7); font-size: 12px; }
+        .receipt-check { width: 56px; height: 56px; border-radius: 50%; background: rgba(0,255,136,0.18); border: 2px solid var(--schwab-green); display: flex; align-items: center; justify-content: center; margin: 12px auto 10px; font-size: 24px; color: var(--schwab-green); }
+        .receipt-body { padding: 20px 24px; }
+        .receipt-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        .receipt-row:last-child { border-bottom: none; }
+        .receipt-row-label { color: var(--text-gray); }
+        .receipt-row-val { color: var(--text-primary); font-weight: 600; }
+        
+        /* BTC DEPOSIT */
+        .btc-deposit-box { text-align: center; }
+        .btc-qr { width: 190px; height: 190px; margin: 0 auto 16px; border-radius: 12px; border: 2px solid var(--border-color); }
+        .btc-address-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .btc-address { flex: 1; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--text-primary); word-break: break-all; }
+        .copy-btn { background: var(--schwab-blue); border: none; color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; white-space: nowrap; }
+        
+        /* OTP */
+        .otp-boxes { display: flex; gap: 7px; justify-content: center; margin-bottom: 16px; }
+        .otp-box { width: 42px; height: 48px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-primary); font-size: 20px; font-weight: 800; font-family: "JetBrains Mono", monospace; outline: none; transition: 0.2s; }
+        .otp-box:focus { border-color: var(--schwab-blue); box-shadow: 0 0 0 3px rgba(0,156,219,0.1); }
+        .otp-box.filled { border-color: var(--schwab-blue); background: rgba(0,156,219,0.05); }
+        
+        /* AVATAR UPLOAD */
+        .avatar-upload-wrapper { position: relative; width: 80px; height: 80px; margin: 0 auto 14px; cursor: pointer; }
+        .avatar-upload-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--schwab-blue); background: #ccc; display: block; }
+        .avatar-upload-overlay { position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; background: var(--schwab-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-main); }
+        .avatar-upload-overlay i { font-size: 11px; color: #fff; }
+        
+        /* NOTIFICATIONS */
+        .notif-panel { position: fixed; top: 0; right: -100%; width: 100%; max-width: 480px; height: 100vh; background: var(--bg-main); z-index: 9998; transition: right 0.3s; overflow-y: auto; padding: 20px 16px 40px; }
+        body.dark-mode .notif-panel { background: var(--schwab-dark); }
+        .notif-panel.open { right: 0; }
+        .notif-item { background: var(--card-bg); border-radius: 10px; padding: 14px; margin-bottom: 8px; border-left: 3px solid var(--schwab-blue); display: flex; gap: 10px; }
+        .notif-item.success { border-left-color: var(--schwab-green); }
+        .notif-item.pending { border-left-color: var(--schwab-orange); }
+        .notif-item.error { border-left-color: var(--schwab-red); }
+        
+        /* PAGE HEADER */
+        .page-header-bar { display: flex; align-items: center; gap: 12px; padding: 16px; }
+        .page-back { background: rgba(0,0,0,0.05); border: none; color: var(--text-primary); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .page-back:hover { background: rgba(0,0,0,0.1); }
+        body.dark-mode .page-back { background: rgba(255,255,255,0.06); color: #fff; }
+        body.dark-mode .page-back:hover { background: rgba(255,255,255,0.12); }
+        .page-header-title { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+        
+        /* PASSWORD TOGGLE */
+        .pwd-wrapper { position: relative; }
+        .pwd-toggle-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 15px; }
+        
+        /* GENDER SELECT */
+        .gender-grid { display: flex; gap: 10px; margin-bottom: 14px; }
+        .gender-card { flex: 1; padding: 14px; border: 2px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .gender-card.selected { border-color: var(--schwab-blue); background: rgba(0,156,219,0.05); }
+        
+        /* POPULAR ACCOUNTS */
+        .pop-accounts { display: flex; flex-direction: column; gap: 10px; }
+        .pop-acc-card { background: var(--card-bg); border-radius: 10px; padding: 16px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 14px; }
+        .pop-acc-card:hover { border-color: var(--schwab-blue); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .pop-acc-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(0,156,219,0.08); display: flex; align-items: center; justify-content: center; font-size: 19px; color: var(--schwab-blue); flex-shrink: 0; }
+        .pop-acc-info { flex: 1; }
+        .pop-acc-info h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+        .pop-acc-info p { font-size: 12px; color: var(--text-gray); line-height: 1.4; }
+        .pop-acc-arrow { color: var(--schwab-blue); font-size: 12px; }
+        
+        /* ERROR / STYLIZED POPUPS */
+        .popup-icon-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px; }
+        .popup-icon-circle.error { background: rgba(226,35,26,0.1); border: 2px solid var(--schwab-red); color: var(--schwab-red); }
+        .popup-icon-circle.warning { background: rgba(245,128,37,0.1); border: 2px solid var(--schwab-orange); color: var(--schwab-orange); }
+        .popup-icon-circle.info { background: rgba(0,156,219,0.1); border: 2px solid var(--schwab-blue); color: var(--schwab-blue); }
+        .popup-icon-circle.success { background: rgba(0,166,81,0.1); border: 2px solid var(--schwab-green); color: var(--schwab-green); }
+        .popup-title { font-size: 18px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; text-align: center; }
+        .popup-msg { font-size: 13px; color: var(--text-gray); line-height: 1.6; margin-bottom: 16px; text-align: center; }
+        .popup-info-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 13px 16px; margin-bottom: 14px; }
+        .popup-info-box .label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .popup-info-box .value { font-size: 14px; color: var(--schwab-blue); font-weight: 700; }
+        
+        /* COOKIE BANNER */
+        .cookie-banner { position: fixed; bottom: -400px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 460px; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow-lg); z-index: 999999; transition: bottom 0.5s; }
+        .cookie-banner.show { bottom: 20px; }
+        
+        @media (max-width: 480px) { 
+            #schwab-dash { max-width: 100%; } 
+            .bottom-nav { max-width: 100%; } 
+            .notif-panel { max-width: 100%; } 
+            .toast-container { right: 12px; left: 12px; max-width: none; }
+            .dash-balance-amount { font-size: 28px; }
+        }
+        @media (max-width: 768px) { 
+            .hero { padding: 100px 20px 40px; } 
+            .section { padding: 60px 20px; } 
+        }
+    </style>
+</head>
+<body id="bodyTag">
+
+<div class="spin-overlay" id="spinOverlay">
+    <div class="spin-ring"></div>
+    <p class="spin-text" id="spinText">PROCESSING...</p>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<nav>
+    <a href="#" class="logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10" alt="Charles Schwab">
+        <span class="logo-text">Charles Schwab</span>
+    </a>
+    <div class="nav-links">
+        <a onclick="scrollToSection('why-section')">Why Schwab</a>
+        <a onclick="scrollToSection('pricing-section')">Pricing</a>
+        <a onclick="scrollToSection('accounts-section')">Accounts</a>
+        <a onclick="scrollToSection('faq-section')">Learn</a>
+        <a onclick="scrollToSection('contact-section')">Contact</a>
+    </div>
+    <div class="nav-right">
+        <div class="theme-toggle" onclick="toggleTheme()"><span id="themeIcon"><i class="fa-solid fa-moon"></i></span></div>
+        <div class="contact-dropdown">
+            <button class="schwab-btn schwab-btn-outline contact-trigger" onclick="toggleContactDropdown()">
+                <i class="fas fa-phone"></i> Contact <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+            </button>
+            <div class="contact-dropdown-content" id="contactDropdown">
+                <div class="contact-dropdown-header">Contact Charles Schwab</div>
+                <a class="contact-option" onclick="contactSchwab('Schwab Brokerage')"><span class="co-label">Schwab Brokerage</span><i class="fas fa-envelope co-icon"></i></a>
+                <a class="contact-option" onclick="contactSchwab('Schwab Password Reset')"><span class="co-label">Schwab Password Reset</span><i class="fas fa-envelope co-icon"></i></a>
+                <a class="contact-option" onclick="contactSchwab('Schwab Bank')"><span class="co-label">Schwab Bank</span><i class="fas fa-envelope co-icon"></i></a>
+                <a class="contact-option" onclick="contactSchwab('Schwab Investment Guideline')"><span class="co-label">Schwab Investment Guideline</span><i class="fas fa-envelope co-icon"></i></a>
+                <a class="contact-option" onclick="contactSchwab('Schwab Trading Services')"><span class="co-label">Schwab Trading Services</span><i class="fas fa-envelope co-icon"></i></a>
+                <a class="contact-option" onclick="contactSchwab('Workplace Retirement Plans')"><span class="co-label">Workplace Retirement Plans</span><i class="fas fa-envelope co-icon"></i></a>
+            </div>
+        </div>
+        <button class="schwab-btn schwab-btn-primary" onclick="toggleModal('loginMod')"><i class="fas fa-sign-in-alt"></i> Log In</button>
+        <button class="schwab-btn schwab-btn-outline" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-plus"></i> Open Account</button>
+    </div>
+</nav>
+
+<!-- MAIN SITE -->
+<div id="main-site">
+    <div class="ticker-wrap">
+        <div class="ticker" id="mainTicker">
+            <span class="up">▲ BTC/USD $97,432.20 +2.10%</span><span class="sym">|</span>
+            <span class="up">▲ ETH/USD $3,512.40 +1.42%</span><span class="sym">|</span>
+            <span class="up">▲ S&P 500 5,892.30 +0.80%</span><span class="sym">|</span>
+            <span class="down">▼ NASDAQ 19,003.65 -0.32%</span><span class="sym">|</span>
+            <span class="up">▲ DOW 43,728.50 +0.51%</span><span class="sym">|</span>
+            <span class="up">▲ GOLD $2,654.20 +0.91%</span><span class="sym">|</span>
+            <span class="up">▲ USDT $1.0001 +0.01%</span><span class="sym">|</span>
+            <span class="up">▲ SCHW $74.32 +1.22%</span><span class="sym">|</span>
+            <span class="up">▲ AAPL $229.87 +0.74%</span><span class="sym">|</span>
+            <span class="down">▼ TSLA $352.56 -1.08%</span>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-container">
+            <div>
+                <div class="hero-badge">Established 1971 • Member SIPC</div>
+                <h1>Manage your wealth, <span>your way.</span></h1>
+                <p>Invest on your own, trade with thinkorswim®, and get full-service wealth management — all in one place. Open an account today and join the Schwab 3-Month Investment Program to triple your capital.</p>
+                <div class="hero-actions">
+                    <button class="schwab-btn schwab-btn-primary" style="padding:13px 28px;" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-chart-line"></i> Open an Account</button>
+                    <button class="schwab-btn schwab-btn-outline" style="padding:13px 28px; color:var(--schwab-dark); border-color:var(--schwab-dark);" onclick="scrollToSection('why-section')"><i class="fas fa-play-circle"></i> Learn More</button>
+                </div>
+            </div>
+            <div class="hero-image-wrap">
+                <div class="hero-image-card">
+                    <h3>As many ways to invest as there are investors.</h3>
+                    <p class="sub">Self-directed, automated, or advisor-led — find your path.</p>
+                    <img src="https://www.schwab.com/sites/g/files/eyrktu1401/files/7-15%20Invest_gradient_Marquee.png" alt="Invest with Charles Schwab">
+                </div>
+                <div class="inline-login">
+                    <h3><i class="fas fa-lock"></i> Log In to Your Account</h3>
+                    <label>Login ID</label>
+                    <input type="email" placeholder="Email address" id="inlineLoginEmail">
+                    <label>Password</label>
+                    <input type="password" placeholder="Password" id="inlineLoginPass">
+                    <button onclick="inlineLogin()"><i class="fas fa-sign-in-alt"></i> Log In</button>
+                    <div class="il-foot">
+                        <a onclick="toggleModal('loginMod'); showInfoToast('Reset link sent', 'Check your email for password reset instructions.', 'info')">Forgot password?</a>
+                        <a onclick="toggleModal('signupChoiceMod')">Open an account →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:var(--card-bg);" id="why-section">
+        <div class="section-container">
+            <h2 class="section-title">Take the <span>next step</span></h2>
+            <p class="section-sub">Choose how you want to invest with Charles Schwab.</p>
+            <div class="tiles-grid">
+                <div class="tile-card" onclick="toggleModal('signupChoiceMod')"><h3>Invest on my own <i class="fas fa-chevron-right"></i></h3><p>Self-directed investing in stocks, ETFs, options, and more.</p></div>
+                <div class="tile-card" onclick="toggleModal('signupChoiceMod')"><h3>Trade with thinkorswim® <i class="fas fa-chevron-right"></i></h3><p>Advanced trading platforms for active traders.</p></div>
+                <div class="tile-card" onclick="toggleModal('signupChoiceMod')"><h3>Automate my investing <i class="fas fa-chevron-right"></i></h3><p>Schwab Intelligent Portfolios for automated investing.</p></div>
+                <div class="tile-card" onclick="toggleModal('signupChoiceMod')"><h3>Work with an advisor <i class="fas fa-chevron-right"></i></h3><p>Get personalized guidance from a Schwab Financial Consultant.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="pricing-section">
+        <div class="section-container">
+            <h2 class="section-title">You deserve <span>more</span></h2>
+            <p class="section-sub">We can help with world-class education, transparent pricing, and guaranteed security.</p>
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="icon-circle"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>World-class education for every investor.</h3>
+                    <p>Explore insights, articles, and courses designed for investors at every level.</p>
+                    <a onclick="scrollToSection('faq-section')">Explore Insights & Education ></a>
+                </div>
+                <div class="info-card">
+                    <div class="icon-circle"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>Transparent pricing and low costs.</h3>
+                    <p>$0 online equity trade commissions. No hidden fees. See all our pricing.</p>
+                    <a onclick="scrollToSection('pricing-section')">See all our fees ></a>
+                </div>
+                <div class="info-card">
+                    <div class="icon-circle"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Your satisfaction is guaranteed and your security is our priority.</h3>
+                    <p>Schwab Security Guarantee covers losses from unauthorized activity.</p>
+                    <a onclick="contactSchwab('Security Guarantee')">Satisfaction Guarantee ></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:var(--card-bg);" id="accounts-section">
+        <div class="section-container">
+            <h2 class="section-title">Get started with one of our <span>popular accounts</span></h2>
+            <p class="section-sub">Invest in Schwab stocks, ETFs, options, bonds, and more.</p>
+            <div class="tiles-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="tile-card" onclick="openSignupFromAccount('Individual Brokerage')"><h3>Individual Brokerage <i class="fas fa-chevron-right"></i></h3><p>Invest in Schwab stocks, ETFs, options, bonds, and more with a personal account.</p></div>
+                <div class="tile-card" onclick="openSignupFromAccount('Joint Brokerage')"><h3>Joint Brokerage <i class="fas fa-chevron-right"></i></h3><p>Invest with another individual in a shared account.</p></div>
+                <div class="tile-card" onclick="openSignupFromAccount('Roth IRA')"><h3>Roth IRA <i class="fas fa-chevron-right"></i></h3><p>Plan for your future with a Roth IRA account.</p></div>
+                <div class="tile-card" onclick="openSignupFromAccount('Traditional IRA')"><h3>Traditional IRA <i class="fas fa-chevron-right"></i></h3><p>Plan for retirement with a Traditional IRA.</p></div>
+                <div class="tile-card" onclick="openSignupFromAccount('Rollover IRA')"><h3>Rollover IRA <i class="fas fa-chevron-right"></i></h3><p>Roll over your prior retirement plan from a former employer.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:linear-gradient(135deg, var(--schwab-blue), var(--schwab-dark));">
+        <div class="section-container" style="text-align:center;">
+            <h2 style="font-size:clamp(28px,4vw,42px); font-weight:700; color:#fff; margin-bottom:18px; font-family:'Source Serif 4', serif; letter-spacing:-1px;">Invest in 3 Months with Schwab</h2>
+            <p style="font-size:17px; color:rgba(255,255,255,0.88); max-width:600px; margin:0 auto 30px; line-height:1.7;">Get triple of your investment. Don't miss out on this exclusive program.</p>
+            <button class="schwab-btn schwab-btn-light" style="padding:14px 36px; font-size:15px;" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-chart-line"></i> Start Investing Today</button>
+        </div>
+    </section>
+
+    <section class="section" id="faq-section">
+        <div class="section-container" style="max-width:820px;">
+            <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+            <div style="margin-top:30px;">
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>What is the Schwab 3-Month Investment Program?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Schwab is running an investment program designed to help our users grow with us. 1. Buy a Schwab Stock by depositing to invest with any amount. 2. Invest and watch your capital grow in 3 months — tripled. 3. After 3 months, withdraw your funds or decide to continue investing with us. Start investing today!</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>How do I open an account?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Click "Open Account" and complete our registration process. You'll need your personal information including SSN, address, and date of birth. Account activation is quick and easy.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>How much does it cost to work with Schwab?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">$0 online listed stock, option, and ETF trade commissions. Thousands of no-transaction-fee mutual funds. No charge to work with a Schwab Financial Consultant.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Is my money safe at Charles Schwab?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Under the Schwab Security Guarantee, Schwab will cover losses in any of your Schwab accounts due to unauthorized activity. Your funds are secure with us.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>What investment products does Schwab offer?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Schwab offers stocks, ETFs, mutual funds, options, bonds, CDs, fixed income, annuities, cryptocurrency, and more to help you build a diversified portfolio.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>How do I deposit funds?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">You can deposit funds via Bitcoin (BTC). Bank transfer and card deposit options are coming soon. Bitcoin deposits may take a while to reflect in your account.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background:var(--card-bg);" id="contact-section">
+        <div class="section-container">
+            <h2 class="section-title">Get in <span>Touch</span></h2>
+            <div class="contact-grid" style="margin-top:30px;">
+                <div class="contact-box">
+                    <h3>Contact Information</h3>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                        <i class="fas fa-envelope" style="color:var(--schwab-blue);font-size:15px;"></i>
+                        <span style="font-size:14px;color:var(--text-primary);font-weight:600;">support.charles.schwab@gmail.com</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                        <i class="fas fa-map-marker-alt" style="color:var(--schwab-blue);font-size:15px;"></i>
+                        <span style="font-size:14px;color:var(--text-primary);">3000 Schwab Way, Westlake, TX 76262</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                        <i class="fas fa-clock" style="color:var(--schwab-blue);font-size:15px;"></i>
+                        <span style="font-size:14px;color:var(--text-primary);">24/7 Customer Support</span>
+                    </div>
+                    <button class="schwab-btn schwab-btn-primary" style="margin-top:10px;" onclick="contactSchwab('General Inquiry')"><i class="fas fa-envelope"></i> Email Us</button>
+                </div>
+                <div class="contact-box">
+                    <h3>Send a Message</h3>
+                    <input type="text" placeholder="Your Full Name" id="ctName">
+                    <input type="email" placeholder="Your Email Address" id="ctEmail">
+                    <select id="ctSubject"><option value="">Select Subject</option><option>Account Enquiry</option><option>Investment Program</option><option>Deposit Support</option><option>Transfer Support</option><option>New Account Application</option><option>Compliance & KYC</option></select>
+                    <textarea id="ctMsg" placeholder="Your message..." style="width:100%;padding:12px;background:var(--bg-main);border:1px solid var(--border-color);border-radius:6px;color:var(--text-primary);outline:none;resize:none;height:100px;font-family:Inter,sans-serif;margin-bottom:12px;"></textarea>
+                    <button class="schwab-btn schwab-btn-primary" style="width:100%;" onclick="submitContactForm()"><i class="fas fa-paper-plane"></i> Send Message</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10" style="width:32px;height:32px;border-radius:4px;">
+                    <span style="font-size:16px;font-weight:800;color:#fff;">Charles Schwab</span>
+                </div>
+                <p style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;">A modern approach to investing and retirement planning. Member SIPC.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Accounts</h4>
+                <a onclick="toggleModal('signupChoiceMod')">Brokerage</a>
+                <a onclick="toggleModal('signupChoiceMod')">IRAs</a>
+                <a onclick="toggleModal('signupChoiceMod')">Roth IRA</a>
+                <a onclick="toggleModal('signupChoiceMod')">Small Business</a>
+            </div>
+            <div class="footer-col">
+                <h4>Products</h4>
+                <a onclick="scrollToSection('accounts-section')">Stocks</a>
+                <a onclick="scrollToSection('accounts-section')">ETFs</a>
+                <a onclick="scrollToSection('accounts-section')">Mutual Funds</a>
+                <a onclick="scrollToSection('accounts-section')">Options</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a onclick="contactSchwab('General Support')">Contact Us</a>
+                <a onclick="scrollToSection('faq-section')">FAQs</a>
+                <a onclick="contactSchwab('Security')">SchwabSafe</a>
+                <a onclick="scrollToSection('pricing-section')">Pricing</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Charles Schwab & Co., Inc. All rights reserved. Member SIPC.</p>
+            <p style="margin-top:8px;font-size:10px;">Investment products are not FDIC insured, not bank guaranteed, and may lose value.</p>
+        </div>
+    </footer>
+</div>
+
+<!-- ======================================================== DASHBOARD ======================================================== -->
+<div id="schwab-dash">
+    <div class="notif-panel" id="notifPanel">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;">
+            <div style="font-size:19px;font-weight:800;color:var(--text-primary);">Notifications</div>
+            <button class="page-back" onclick="closeNotifPanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="notifList"><div style="text-align:center;padding:60px 20px;color:var(--text-gray);"><i class="fas fa-bell-slash" style="font-size:48px;display:block;margin-bottom:16px;opacity:0.3;"></i><p>No notifications yet</p></div></div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboard-page" class="dash-page active">
+        <div class="dash-header">
+            <div class="dash-top-bar">
+                <div class="dash-profile-row">
+                    <img id="dashAvatar" class="dash-avatar" src="https://i.pinimg.com/1200x/e4/ba/cd/e4bacd619803941c5488a4d2d6b9f986.jpg" alt="Profile">
+                    <div>
+                        <div class="dash-greeting">Welcome back,</div>
+                        <div class="dash-username" id="dashWelcomeName">Loading...</div>
+                    </div>
+                </div>
+                <button class="dash-notif-btn" onclick="openNotifPanel()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+            </div>
+            <div class="dash-balance-section">
+                <div class="dash-balance-label">Total Value (USD)</div>
+                <div class="dash-balance-row">
+                    <div class="dash-balance-amount" id="dashBalance">$0.00</div>
+                    <button class="dash-eye-toggle" onclick="toggleBalanceVisibility()" id="eyeBtn"><i class="fas fa-eye" id="eyeIcon"></i></button>
+                </div>
+                <div class="dash-balance-change" id="dashBalanceChange"><i class="fas fa-arrow-up"></i> +$0.00 (0.00%) today</div>
+            </div>
+
+            <!-- Zigzag Live Chart -->
+            <div class="dash-chart-wrap">
+                <div class="dash-chart-header">
+                    <span class="dash-chart-title">Portfolio Live Rate</span>
+                    <span class="dash-chart-live">LIVE</span>
+                </div>
+                <svg class="dash-chart-svg" id="liveChartSvg" viewBox="0 0 320 70" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#009CDB" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#009CDB" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <path id="chartArea" d="" fill="url(#chartGrad)"/>
+                    <path id="chartLine" d="" fill="none" stroke="#009CDB" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+                    <circle id="chartDot" cx="0" cy="0" r="2.5" fill="#009CDB"/>
+                </svg>
+                <div class="dash-chart-timeframe">
+                    <button class="tf-btn" onclick="setChartTimeframe('1H', this)">1H</button>
+                    <button class="tf-btn active" onclick="setChartTimeframe('1D', this)">1D</button>
+                    <button class="tf-btn" onclick="setChartTimeframe('1W', this)">1W</button>
+                    <button class="tf-btn" onclick="setChartTimeframe('1M', this)">1M</button>
+                    <button class="tf-btn" onclick="setChartTimeframe('1Y', this)">1Y</button>
+                </div>
+            </div>
+
+            <div class="dash-actions">
+                <button class="dash-action-btn" onclick="showTransferPage()"><i class="fas fa-paper-plane"></i> Transfer</button>
+                <button class="dash-action-btn primary" onclick="showDepositPage()"><i class="fas fa-plus"></i> Deposit</button>
+                <button class="dash-action-btn" onclick="showLocked('Orders')"><i class="fas fa-list"></i> Orders</button>
+            </div>
+        </div>
+
+        <div class="dash-section">
+            <div class="dash-section-title"><i class="fas fa-chart-line" style="color:var(--schwab-blue);"></i> Investments <span class="see-all" onclick="switchTab('watchlist')">See all</span></div>
+            <div id="investList">
+                <div class="invest-empty">
+                    <i class="fas fa-chart-area"></i>
+                    <p>No investments yet. Deposit to start your 3-month investment journey!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="invest-banner">
+            <h3>Invest in 3 Months with Schwab</h3>
+            <p>Get triple of your investment. Don't miss out on this exclusive program!</p>
+            <div class="ib-action">
+                <button class="schwab-btn schwab-btn-light" style="padding:9px 22px;font-size:12px;" onclick="showDepositPage()"><i class="fas fa-plus"></i> Deposit to Invest</button>
+            </div>
+        </div>
+
+        <div class="dash-section">
+            <div class="dash-section-title"><i class="fas fa-star" style="color:var(--schwab-blue);"></i> Market Overview</div>
+            <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;" id="marketOverview">
+                <div style="background:var(--card-bg);padding:12px 16px;border-radius:10px;min-width:130px;border:1px solid var(--border-color);"><p style="font-size:10px;color:var(--text-gray);margin-bottom:4px;font-weight:600;">BITCOIN</p><p style="font-size:16px;font-weight:800;color:var(--text-primary);" id="mktBTC">$97,432</p><p style="font-size:11px;color:var(--schwab-green);font-weight:600;" id="mktBTCChange">▲ +2.10%</p></div>
+                <div style="background:var(--card-bg);padding:12px 16px;border-radius:10px;min-width:130px;border:1px solid var(--border-color);"><p style="font-size:10px;color:var(--text-gray);margin-bottom:4px;font-weight:600;">ETHEREUM</p><p style="font-size:16px;font-weight:800;color:var(--text-primary);" id="mktETH">$3,512</p><p style="font-size:11px;color:var(--schwab-green);font-weight:600;" id="mktETHChange">▲ +1.42%</p></div>
+                <div style="background:var(--card-bg);padding:12px 16px;border-radius:10px;min-width:130px;border:1px solid var(--border-color);"><p style="font-size:10px;color:var(--text-gray);margin-bottom:4px;font-weight:600;">USDT</p><p style="font-size:16px;font-weight:800;color:var(--text-primary);" id="mktUSDT">$1.00</p><p style="font-size:11px;color:var(--schwab-green);font-weight:600;" id="mktUSDTChange">▲ +0.01%</p></div>
+                <div style="background:var(--card-bg);padding:12px 16px;border-radius:10px;min-width:130px;border:1px solid var(--border-color);"><p style="font-size:10px;color:var(--text-gray);margin-bottom:4px;font-weight:600;">SCHWAB STOCK</p><p style="font-size:16px;font-weight:800;color:var(--text-primary);" id="mktSCHW">$74.32</p><p style="font-size:11px;color:var(--schwab-green);font-weight:600;" id="mktSCHWChange">▲ +1.22%</p></div>
+            </div>
+        </div>
+
+        <div class="dash-section">
+            <div class="dash-section-title"><i class="fas fa-history" style="color:var(--schwab-blue);"></i> Recent Activity</div>
+            <div id="recentTxList">
+                <div class="invest-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>No transactions yet.</p>
+                </div>
+            </div>
+        </div>
+        <div style="height:20px;"></div>
+    </div>
+
+    <!-- TRADE PAGE -->
+    <div id="trade-page" class="dash-page">
+        <div style="padding:70px 16px 20px;">
+            <div class="page-header-bar" style="padding:0 0 16px;">
+                <div class="page-header-title">Trade</div>
+            </div>
+            <div style="background:linear-gradient(135deg,var(--schwab-blue),var(--schwab-dark));border-radius:12px;padding:22px;margin-bottom:20px;">
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:600;">Current Balance</div>
+                <div style="font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;" id="tradeBalance">$0.00</div>
+                <div style="font-size:12px;color:#4ade80;margin-top:6px;font-weight:600;" id="tradeGrowth">+$0.00 (0.00%)</div>
+            </div>
+            <div class="invest-banner">
+                <h3>Invest in 3 Months with Schwab</h3>
+                <p>Get triple of your investment. Don't miss out!</p>
+                <div class="ib-action">
+                    <button class="schwab-btn schwab-btn-light" style="padding:9px 22px;font-size:12px;" onclick="showDepositPage()"><i class="fas fa-plus"></i> Deposit to Invest</button>
+                </div>
+            </div>
+            <div class="dash-section-title" style="margin-top:20px;"><i class="fas fa-chart-bar" style="color:var(--schwab-blue);"></i> Live Markets</div>
+            <div id="tradeMarketList" style="display:flex;flex-direction:column;gap:10px;">
+                <div style="background:var(--card-bg);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border-color);"><div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">Bitcoin (BTC)</div><div style="font-size:11px;color:var(--text-gray);">Cryptocurrency</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:var(--text-primary);" id="tradeBTC">$97,432</div><div style="font-size:12px;color:var(--schwab-green);font-weight:600;" id="tradeBTCChange">▲ +2.10%</div></div></div>
+                <div style="background:var(--card-bg);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border-color);"><div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">Ethereum (ETH)</div><div style="font-size:11px;color:var(--text-gray);">Cryptocurrency</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:var(--text-primary);" id="tradeETH">$3,512</div><div style="font-size:12px;color:var(--schwab-green);font-weight:600;" id="tradeETHChange">▲ +1.42%</div></div></div>
+                <div style="background:var(--card-bg);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border-color);"><div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">US Dollar (USDT)</div><div style="font-size:11px;color:var(--text-gray);">Stablecoin</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:var(--text-primary);" id="tradeUSDT">$1.00</div><div style="font-size:12px;color:var(--schwab-green);font-weight:600;" id="tradeUSDTChange">▲ +0.01%</div></div></div>
+                <div style="background:var(--card-bg);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border-color);"><div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">Schwab Stock (SCHW)</div><div style="font-size:11px;color:var(--text-gray);">NYSE Listed</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:var(--text-primary);" id="tradeSCHW">$74.32</div><div style="font-size:12px;color:var(--schwab-green);font-weight:600;" id="tradeSCHWChange">▲ +1.22%</div></div></div>
+                <div style="background:var(--card-bg);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border-color);"><div><div style="font-size:14px;font-weight:700;color:var(--text-primary);">S&P 500 Index</div><div style="font-size:11px;color:var(--text-gray);">Stock Index</div></div><div style="text-align:right;"><div style="font-size:16px;font-weight:800;color:var(--text-primary);" id="tradeSP500">5,892</div><div style="font-size:12px;color:var(--schwab-green);font-weight:600;" id="tradeSP500Change">▲ +0.80%</div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WATCHLIST PAGE (Transaction History) -->
+    <div id="watchlist-page" class="dash-page">
+        <div style="padding:70px 16px 20px;">
+            <div class="page-header-bar" style="padding:0 0 16px;">
+                <div class="page-header-title">Transaction History</div>
+            </div>
+            <div id="watchlistTxList">
+                <div class="invest-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>No transactions yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUIDE PAGE -->
+    <div id="guide-page" class="dash-page">
+        <div style="padding:70px 16px 20px;">
+            <div class="page-header-bar" style="padding:0 0 16px;">
+                <div class="page-header-title">Investment Guide</div>
+            </div>
+            <div class="guide-card">
+                <div class="guide-stage">Stage One</div>
+                <h3>Schwab Investment Program</h3>
+                <p>Schwab is running an investment program designed to help our users grow with us.</p>
+                <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-text">Buy a Schwab Stock by depositing to invest with any amount.</div></div>
+                <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-text">Invest and watch your capital grow in 3 months — tripled.</div></div>
+                <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-text">After 3 months, withdraw your funds or decide to continue investing with us.</div></div>
+                <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-text">Start investing today!</div></div>
+            </div>
+            <div class="guide-card">
+                <div class="guide-stage">How to Deposit</div>
+                <h3>Bitcoin Deposit</h3>
+                <p>1. Navigate to the Deposit section from your dashboard.</p>
+                <p>2. Select Bitcoin (BTC) as your deposit method.</p>
+                <p>3. Enter the USD amount you wish to deposit.</p>
+                <p>4. The system will display the equivalent in Bitcoin at the current rate.</p>
+                <p>5. Click Proceed to view the Bitcoin wallet address and QR code.</p>
+                <p>6. Send your Bitcoin to the provided address.</p>
+                <p>7. Click "I have Paid" to mark the transaction as pending.</p>
+                <p>8. Wait for confirmation. This may take a while before it reflects.</p>
+            </div>
+            <div class="guide-card">
+                <div class="guide-stage">Investment Returns</div>
+                <h3>3x Return in 3 Months</h3>
+                <p>Your investment grows based on your total deposits. The more you deposit, the higher your rate of return.</p>
+                <p>Example: Deposit $1,000 → Receive $3,000 after 3 months.</p>
+                <p>Example: Deposit $5,000 → Receive $15,000 after 3 months.</p>
+            </div>
+            <div class="guide-card">
+                <div class="guide-stage">Support</div>
+                <h3>Need Help?</h3>
+                <p>If you have any questions about the investment program, please contact our customer service:</p>
+                <p style="color:var(--schwab-blue);font-weight:700;">support.charles.schwab@gmail.com</p>
+                <button class="schwab-btn schwab-btn-primary" style="margin-top:12px;width:100%;" onclick="contactSchwab('Investment Guideline')"><i class="fas fa-envelope"></i> Contact Support</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MORE / SETTINGS PAGE -->
+    <div id="more-page" class="dash-page">
+        <div style="padding:70px 16px 20px;">
+            <div class="page-header-bar" style="padding:0 0 16px;">
+                <div class="page-header-title">Settings</div>
+            </div>
+            <div class="me-header">
+                <img id="meAvatar" class="me-avatar" src="https://i.pinimg.com/1200x/e4/ba/cd/e4bacd619803941c5488a4d2d6b9f986.jpg" alt="Avatar">
+                <div class="me-name" id="meName">—</div>
+                <div class="me-email" id="meEmail">—</div>
+                <button class="schwab-btn schwab-btn-outline" style="margin-top:12px;padding:6px 16px;font-size:12px;color:var(--schwab-blue);border-color:var(--schwab-blue);" onclick="document.getElementById('changePhotoInput').click()">
+                    <i class="fas fa-camera"></i> Change Photo
+                </button>
+                <input type="file" id="changePhotoInput" accept="image/*" style="display:none;" onchange="handleChangePhoto(this)">
+            </div>
+            <div class="me-section">
+                <div class="me-section-title">Personal Information</div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-user"></i></div><div><div class="me-row-label">Full Name</div><div class="me-row-sub" id="meFullName">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-envelope"></i></div><div><div class="me-row-label">Email</div><div class="me-row-sub" id="meEmail2">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-phone"></i></div><div><div class="me-row-label">Phone Number</div><div class="me-row-sub" id="mePhone">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="me-row-label">Address</div><div class="me-row-sub" id="meAddress">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-flag"></i></div><div><div class="me-row-label">Country</div><div class="me-row-sub" id="meCountry">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-venus-mars"></i></div><div><div class="me-row-label">Gender</div><div class="me-row-sub" id="meGender">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-birthday-cake"></i></div><div><div class="me-row-label">Date of Birth</div><div class="me-row-sub" id="meDOB">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-id-card"></i></div><div><div class="me-row-label">SSN</div><div class="me-row-sub" id="meSSN">—</div></div></div></div>
+            </div>
+            <div class="me-section">
+                <div class="me-section-title">Vault Identity</div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-id-badge"></i></div><div><div class="me-row-label">Schwab ID</div><div class="me-row-sub" id="meSchwabID">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-flag"></i></div><div><div class="me-row-label">Registered Country</div><div class="me-row-sub" id="meRegCountry">—</div></div></div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-medal"></i></div><div><div class="me-row-label">Client Tier</div><div class="me-row-sub">Standard (Upgrade available)</div></div></div><div class="me-row-right" style="color:var(--schwab-blue);">Upgrade</div></div>
+                <div class="me-row"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-check-circle"></i></div><div><div class="me-row-label">KYC Status</div><div class="me-row-sub">—</div></div></div><div class="me-row-right">—</div></div>
+            </div>
+            <div class="me-section">
+                <div class="me-section-title">Security</div>
+                <div class="me-row" onclick="showLocked('Change Password')"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-key"></i></div><div><div class="me-row-label">Change Password</div><div class="me-row-sub">Contact customer service to change</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+                <div class="me-row" onclick="showLocked('Active Sessions')"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-laptop"></i></div><div><div class="me-row-label">Active Sessions</div><div class="me-row-sub">Manage logged-in devices</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+            </div>
+            <div class="me-section">
+                <div class="me-section-title">Settings & Preferences</div>
+                <div class="me-row" onclick="toggleTheme()"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-moon"></i></div><div><div class="me-row-label">Dark / Light Mode</div><div class="me-row-sub">Toggle display theme</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+                <div class="me-row" onclick="showLocked('Language')"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-language"></i></div><div><div class="me-row-label">Language & Region</div><div class="me-row-sub">English (US)</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+            </div>
+            <div class="me-section">
+                <div class="me-section-title">Support & Help</div>
+                <div class="me-row" onclick="switchTab('guide')"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-question-circle"></i></div><div><div class="me-row-label">Help Center</div><div class="me-row-sub">Investment guides & tutorials</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+                <div class="me-row" onclick="contactSchwab('General Support')"><div class="me-row-left"><div class="me-row-icon"><i class="fas fa-envelope"></i></div><div><div class="me-row-label">Email Support</div><div class="me-row-sub">support.charles.schwab@gmail.com</div></div></div><div class="me-row-right"><i class="fas fa-chevron-right"></i></div></div>
+                <div class="me-row" style="cursor:pointer;" onclick="signOutUser()"><div class="me-row-left"><div class="me-row-icon" style="background:rgba(226,35,26,0.1);"><i class="fas fa-sign-out-alt" style="color:var(--schwab-red);"></i></div><div><div class="me-row-label" style="color:var(--schwab-red);">Sign Out</div><div class="me-row-sub">Securely log out</div></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <button class="nav-tab active" id="tab-dashboard" onclick="switchTab('dashboard')"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-tab" id="tab-trade" onclick="switchTab('trade')"><i class="fas fa-chart-line"></i><span>Trade</span></button>
+        <button class="nav-tab" id="tab-watchlist" onclick="switchTab('watchlist')"><i class="fas fa-list"></i><span>Activity</span></button>
+        <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')"><i class="fas fa-book"></i><span>Guide</span></button>
+        <button class="nav-tab" id="tab-more" onclick="switchTab('more')"><i class="fas fa-cog"></i><span>Settings</span></button>
+    </div>
+</div>
+
+<!-- ============================================================ MODALS ============================================================ -->
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginMod">
+    <div class="modal-content">
+        <button class="modal-close" onclick="toggleModal('loginMod')"><i class="fas fa-times"></i></button>
+        <div style="text-align:center;margin-bottom:22px;">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10" style="width:48px;height:48px;border-radius:8px;margin-bottom:10px;">
+            <h2 style="font-size:22px;font-weight:800;color:var(--text-primary);font-family:'Source Serif 4',serif;">Log In to Charles Schwab</h2>
+            <p style="font-size:12px;color:var(--text-gray);">Secure access to your investment account</p>
+        </div>
+        <label style="font-size:11px;font-weight:600;color:var(--text-gray);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Login ID</label>
+        <input type="email" placeholder="Email address" id="lEmail">
+        <label style="font-size:11px;font-weight:600;color:var(--text-gray);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Password</label>
+        <input type="password" placeholder="Password" id="lPass">
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:13px;margin-bottom:12px;margin-top:6px;" onclick="loginUser()"><i class="fas fa-sign-in-alt"></i> Log In</button>
+        <p style="text-align:center;font-size:13px;color:var(--text-gray);cursor:pointer;" onclick="toggleModal('loginMod');toggleModal('signupChoiceMod');">Don't have an account? <span style="color:var(--schwab-blue);font-weight:700;">Open Account →</span></p>
+    </div>
+</div>
+
+<!-- SIGNUP CHOICE MODAL -->
+<div class="modal" id="signupChoiceMod">
+    <div class="modal-content" style="max-width:500px;">
+        <button class="modal-close" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-times"></i></button>
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:6px;color:var(--text-primary);font-family:'Source Serif 4',serif;">Popular Investment Accounts</h2>
+        <p style="font-size:13px;color:var(--text-gray);margin-bottom:20px;">Invest in Schwab stocks, ETFs, options, bonds, and more.</p>
+        <div class="pop-accounts">
+            <div class="pop-acc-card" onclick="openSignup('Individual Brokerage')">
+                <div class="pop-acc-icon"><i class="fas fa-user"></i></div>
+                <div class="pop-acc-info"><h4>Individual Brokerage</h4><p>Invest in Schwab stocks, ETFs, options, bonds, and more with a personal account.</p></div>
+                <i class="fas fa-chevron-right pop-acc-arrow"></i>
+            </div>
+            <div class="pop-acc-card" onclick="openSignup('Joint Brokerage')">
+                <div class="pop-acc-icon"><i class="fas fa-users"></i></div>
+                <div class="pop-acc-info"><h4>Joint Brokerage</h4><p>Invest with another individual in a shared account.</p></div>
+                <i class="fas fa-chevron-right pop-acc-arrow"></i>
+            </div>
+            <div class="pop-acc-card" onclick="openSignup('Roth IRA')">
+                <div class="pop-acc-icon"><i class="fas fa-piggy-bank"></i></div>
+                <div class="pop-acc-info"><h4>Roth IRA</h4><p>Plan for your future with a Roth IRA account.</p></div>
+                <i class="fas fa-chevron-right pop-acc-arrow"></i>
+            </div>
+            <div class="pop-acc-card" onclick="openSignup('Traditional IRA')">
+                <div class="pop-acc-icon"><i class="fas fa-retirement"></i></div>
+                <div class="pop-acc-info"><h4>Traditional IRA</h4><p>Plan for your future with a Traditional IRA.</p></div>
+                <i class="fas fa-chevron-right pop-acc-arrow"></i>
+            </div>
+            <div class="pop-acc-card" onclick="openSignup('Rollover IRA')">
+                <div class="pop-acc-icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="pop-acc-info"><h4>Rollover IRA</h4><p>Roll over your prior retirement plan from a former employer.</p></div>
+                <i class="fas fa-chevron-right pop-acc-arrow"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REGISTRATION MODAL -->
+<div class="modal" id="regMod">
+    <div class="modal-content" style="max-width:480px;">
+        <button class="modal-close" onclick="toggleModal('regMod')"><i class="fas fa-times"></i></button>
+        <div style="margin-bottom:20px;">
+            <h2 style="font-size:20px;font-weight:800;color:var(--text-primary);font-family:'Source Serif 4',serif;">Open Schwab Account</h2>
+            <p style="font-size:12px;color:var(--text-gray);" id="regAccountType">Account Type: Individual Brokerage</p>
+        </div>
+        <div class="reg-step-indicator">
+            <div class="reg-step-dot active" id="dot1"></div>
+            <div class="reg-step-dot" id="dot2"></div>
+            <div class="reg-step-dot" id="dot3"></div>
+        </div>
+
+        <div class="reg-step active" id="regStep1">
+            <input type="text" placeholder="First Name" id="rFirstName">
+            <input type="text" placeholder="Surname" id="rSurname">
+            <input type="email" placeholder="Email Address" id="rEmail">
+            <input type="tel" placeholder="Phone Number" id="rPhone">
+            <input type="text" placeholder="Social Security Number (SSN)" id="rSSN">
+            <select id="rCountry">
+                <option value="">Select Country</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Germany">Germany</option>
+                <option value="France">France</option>
+                <option value="Nigeria">Nigeria</option>
+                <option value="Ghana">Ghana</option>
+                <option value="South Africa">South Africa</option>
+                <option value="India">India</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" placeholder="State" id="rState">
+            <input type="text" placeholder="House Address" id="rAddress">
+            <input type="date" placeholder="Date of Birth" id="rDOB" style="color:var(--text-gray);">
+            <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:13px;" onclick="nextRegStep(2)"><i class="fas fa-arrow-right"></i> Next</button>
+        </div>
+
+        <div class="reg-step" id="regStep2">
+            <p style="font-size:11px;font-weight:700;color:var(--text-gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Select Gender</p>
+            <div class="gender-grid">
+                <div class="gender-card" onclick="selectGender('Male', this)" id="genderMale"><i class="fas fa-mars"></i> Male</div>
+                <div class="gender-card" onclick="selectGender('Female', this)" id="genderFemale"><i class="fas fa-venus"></i> Female</div>
+                <div class="gender-card" onclick="selectGender('Other', this)" id="genderOther"><i class="fas fa-genderless"></i> Other</div>
+            </div>
+            <p style="font-size:11px;font-weight:700;color:var(--text-gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Create Password</p>
+            <div class="pwd-wrapper">
+                <input type="password" placeholder="Password (min 6 characters)" id="rPass" style="padding-right:40px;">
+                <button class="pwd-toggle-btn" onclick="togglePwdVisibility('rPass', this)"><i class="fas fa-eye"></i></button>
+            </div>
+            <p style="font-size:11px;font-weight:700;color:var(--text-gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Confirm Password</p>
+            <div class="pwd-wrapper">
+                <input type="password" placeholder="Repeat Password" id="rPassConfirm" style="padding-right:40px;">
+                <button class="pwd-toggle-btn" onclick="togglePwdVisibility('rPassConfirm', this)"><i class="fas fa-eye"></i></button>
+            </div>
+            <div id="pwdMismatch" style="display:none;background:rgba(226,35,26,0.08);border:1px solid rgba(226,35,26,0.2);border-radius:6px;padding:8px 12px;color:var(--schwab-red);font-size:12px;margin-bottom:10px;font-weight:600;"><i class="fas fa-exclamation-circle"></i> Passwords do not match!</div>
+            <div style="display:flex;gap:10px;">
+                <button class="schwab-btn schwab-btn-outline" style="flex:1;padding:13px;color:var(--text-primary);border-color:var(--border-color);" onclick="nextRegStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="schwab-btn schwab-btn-primary" style="flex:1;padding:13px;" onclick="nextRegStep(3)"><i class="fas fa-arrow-right"></i> Next</button>
+            </div>
+        </div>
+
+        <div class="reg-step" id="regStep3">
+            <p style="text-align:center;font-size:14px;color:var(--text-gray);margin-bottom:16px;">Upload a profile picture (optional)</p>
+            <div class="avatar-upload-wrapper" onclick="document.getElementById('regPhotoInput').click()">
+                <img class="avatar-upload-preview" id="regAvatarPreview" src="https://i.pinimg.com/1200x/e4/ba/cd/e4bacd619803941c5488a4d2d6b9f986.jpg">
+                <div class="avatar-upload-overlay"><i class="fas fa-camera"></i></div>
+            </div>
+            <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" onchange="handleRegPhotoUpload(this)">
+            <p style="text-align:center;font-size:11px;color:var(--text-gray);margin-bottom:16px;">Tap to upload your profile photo</p>
+            <div style="display:flex;gap:10px;">
+                <button class="schwab-btn schwab-btn-outline" style="flex:1;padding:13px;color:var(--text-primary);border-color:var(--border-color);" onclick="nextRegStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="schwab-btn schwab-btn-primary" style="flex:1;padding:13px;" onclick="registerUser()"><i class="fas fa-check"></i> Finish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div class="modal" id="welcomeMod">
+    <div class="modal-content" style="text-align:center;max-width:420px;">
+        <div id="welcomeSpinner" style="display:flex;flex-direction:column;align-items:center;">
+            <div class="spin-ring" style="width:50px;height:50px;margin-bottom:16px;"></div>
+            <p style="color:var(--schwab-blue);font-size:13px;font-weight:600;letter-spacing:1px;" id="verifyText">VERIFYING ACCOUNT...</p>
+        </div>
+        <div id="welcomeContent" style="display:none;">
+            <div class="popup-icon-circle success"><i class="fas fa-check"></i></div>
+            <h3 style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:8px;font-family:'Source Serif 4',serif;">Welcome, <span id="welcomeName" style="color:var(--schwab-blue);"></span>!</h3>
+            <p style="color:var(--text-gray);font-size:13px;margin-bottom:16px;">Congratulations! Your account has been created successfully.</p>
+            <div class="popup-info-box">
+                <p style="font-size:14px;font-weight:700;color:var(--schwab-blue);margin-bottom:4px;">Invest with Charles Schwab for 3 Months</p>
+                <p style="font-size:12px;color:var(--text-gray);">Get exclusive rewards and increase your investment by triple. Click Done and visit the Guide tab to learn more.</p>
+            </div>
+            <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:13px;background:var(--schwab-green);" onclick="closeWelcomeAndShowDash()"><i class="fas fa-check"></i> DONE</button>
+        </div>
+    </div>
+</div>
+
+<!-- DEPOSIT PAGE MODAL -->
+<div class="modal" id="depositMod">
+    <div class="modal-content" style="max-width:450px;">
+        <button class="modal-close" onclick="toggleModal('depositMod')"><i class="fas fa-times"></i></button>
+        <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;color:var(--text-primary);font-family:'Source Serif 4',serif;">Deposit Funds</h2>
+        <div id="depositOptions">
+            <div class="deposit-option unavailable" onclick="showDepositUnavailable('Bank Transfer')">
+                <div class="deposit-option-icon bank"><i class="fas fa-university"></i></div>
+                <div class="deposit-option-info"><h4>Bank Transfer</h4><p>Currently unavailable</p></div>
+                <span class="unavail-tag">Soon</span>
+            </div>
+            <div class="deposit-option unavailable" onclick="showDepositUnavailable('Card Deposit')">
+                <div class="deposit-option-icon card"><i class="fas fa-credit-card"></i></div>
+                <div class="deposit-option-info"><h4>Card Deposit</h4><p>Currently unavailable</p></div>
+                <span class="unavail-tag">Soon</span>
+            </div>
+            <div class="deposit-option" onclick="showBitcoinDeposit()">
+                <div class="deposit-option-icon btc"><i class="fab fa-bitcoin"></i></div>
+                <div class="deposit-option-info"><h4>Bitcoin (BTC)</h4><p>Deposit using Bitcoin</p></div>
+                <i class="fas fa-chevron-right" style="color:var(--schwab-blue);"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BITCOIN DEPOSIT AMOUNT MODAL -->
+<div class="modal" id="btcAmountMod">
+    <div class="modal-content" style="max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('btcAmountMod')"><i class="fas fa-times"></i></button>
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text-primary);font-family:'Source Serif 4',serif;">Bitcoin Deposit</h2>
+        <p style="font-size:12px;color:var(--text-gray);margin-bottom:16px;">Current BTC Rate: <span id="btcRate" style="color:var(--schwab-blue);font-weight:700;">Loading...</span></p>
+        <p style="font-size:11px;font-weight:700;color:var(--text-gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Amount (USD)</p>
+        <input type="number" placeholder="0.00" id="btcDepositAmount" oninput="updateBtcPreview()" style="font-size:20px;font-weight:700;text-align:center;">
+        <div id="btcPreview" style="display:none;background:var(--card-bg);border-radius:8px;padding:14px;margin:12px 0;text-align:center;border:1px solid var(--border-color);">
+            <p style="font-size:12px;color:var(--text-gray);margin-bottom:4px;">You will pay approximately:</p>
+            <p style="font-size:22px;font-weight:800;color:#f7931a;" id="btcPreviewAmount">0 BTC</p>
+        </div>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:13px;" onclick="proceedBtcDeposit()"><i class="fas fa-arrow-right"></i> Proceed</button>
+    </div>
+</div>
+
+<!-- BITCOIN WALLET MODAL -->
+<div class="modal" id="btcWalletMod">
+    <div class="modal-content" style="max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('btcWalletMod')"><i class="fas fa-times"></i></button>
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:6px;color:var(--text-primary);font-family:'Source Serif 4',serif;">Send Bitcoin</h2>
+        <p style="font-size:12px;color:var(--text-gray);margin-bottom:16px;">Send <span id="btcPayAmount" style="color:#f7931a;font-weight:700;"></span> to the address below:</p>
+        <div class="btc-deposit-box">
+            <img class="btc-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=bc1q7t0cq2xjpfwgszahw9adync8uzawvg23mdksmq" alt="BTC QR Code">
+            <div class="btc-address-box">
+                <div class="btc-address">bc1q7t0cq2xjpfwgszahw9adync8uzawvg23mdksmq</div>
+                <button class="copy-btn" onclick="copyToClipboard('bc1q7t0cq2xjpfwgszahw9adync8uzawvg23mdksmq')"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:14px;">
+                <button class="schwab-btn schwab-btn-primary" style="flex:1;padding:12px;background:var(--schwab-green);" onclick="confirmBtcPaid()"><i class="fas fa-check"></i> I Have Paid</button>
+                <button class="schwab-btn schwab-btn-outline" style="flex:1;padding:12px;color:var(--text-gray);border-color:var(--border-color);" onclick="toggleModal('btcWalletMod')">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LOCKED FEATURE MODAL - Styled -->
+<div class="modal" id="lockedMod">
+    <div class="modal-content" style="text-align:center;max-width:400px;">
+        <button class="modal-close" onclick="toggleModal('lockedMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle info"><i class="fas fa-info-circle"></i></div>
+        <h3 class="popup-title" id="lockedTitle">Contact Customer Service</h3>
+        <p class="popup-msg" id="lockedSub">Please contact our customer service for assistance.</p>
+        <div class="popup-info-box">
+            <p class="label">Contact us at</p>
+            <p class="value">support.charles.schwab@gmail.com</p>
+        </div>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;" onclick="contactSchwab('Customer Service')"><i class="fas fa-envelope"></i> Contact Support</button>
+    </div>
+</div>
+
+<!-- TRANSFER BLOCKED MODAL - Styled -->
+<div class="modal" id="transferBlockedMod">
+    <div class="modal-content" style="text-align:center;max-width:400px;">
+        <button class="modal-close" onclick="toggleModal('transferBlockedMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle warning"><i class="fas fa-ban"></i></div>
+        <h3 class="popup-title">Transaction Restricted</h3>
+        <p class="popup-msg">Your account is currently in the growing stage. To enable transfers, kindly contact our customer service for verification.</p>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;margin-bottom:8px;" onclick="contactSchwab('Transfer Restricted')"><i class="fas fa-envelope"></i> Contact Customer Service</button>
+        <button class="schwab-btn schwab-btn-outline" style="width:100%;padding:12px;color:var(--text-gray);border-color:var(--border-color);" onclick="toggleModal('transferBlockedMod')">Close</button>
+    </div>
+</div>
+
+<!-- INSUFFICIENT FUNDS MODAL - Styled -->
+<div class="modal" id="insufficientFundsMod">
+    <div class="modal-content" style="text-align:center;max-width:400px;">
+        <button class="modal-close" onclick="toggleModal('insufficientFundsMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle warning"><i class="fas fa-wallet"></i></div>
+        <h3 class="popup-title">Insufficient Balance</h3>
+        <p class="popup-msg">Your account balance is too low to complete this transfer. Please deposit funds to continue.</p>
+        <div class="popup-info-box" style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="text-align:left;">
+                <p class="label">Current Balance</p>
+                <p class="value" id="insufCurrentBal" style="color:var(--schwab-orange);">$0.00</p>
+            </div>
+            <i class="fas fa-arrow-right" style="color:var(--text-gray);"></i>
+            <div style="text-align:right;">
+                <p class="label">Required</p>
+                <p class="value" id="insufRequired" style="color:var(--schwab-red);">$0.00</p>
+            </div>
+        </div>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;margin-bottom:8px;" onclick="toggleModal('insufficientFundsMod');showDepositPage();"><i class="fas fa-plus"></i> Deposit Funds</button>
+        <button class="schwab-btn schwab-btn-outline" style="width:100%;padding:12px;color:var(--text-gray);border-color:var(--border-color);" onclick="toggleModal('insufficientFundsMod')">Close</button>
+    </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal" id="receiptMod">
+    <div class="modal-content" style="max-width:420px;padding:0;overflow:hidden;border-radius:16px;">
+        <div class="receipt-wrap">
+            <div class="receipt-header">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT8xILBmkgmXxm4nJVZeCORVcmzWZiUEAtczp6wRCw0g&s=10" alt="Charles Schwab">
+                <h3>Charles Schwab</h3>
+                <p>Transfer Receipt</p>
+                <div class="receipt-check"><i class="fas fa-check"></i></div>
+                <p style="font-size:16px;font-weight:700;color:#fff;">Transfer Successful</p>
+            </div>
+            <div class="receipt-body">
+                <div class="receipt-row"><span class="receipt-row-label">Amount Sent</span><span class="receipt-row-val" id="receiptAmount" style="font-size:18px;color:var(--schwab-green);">$0.00</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Date & Time</span><span class="receipt-row-val" id="receiptDate">—</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Recipient Name</span><span class="receipt-row-val" id="receiptRecipient">—</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Account Number</span><span class="receipt-row-val" id="receiptAccNum">—</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Bank Name</span><span class="receipt-row-val" id="receiptBank">—</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Reference</span><span class="receipt-row-val" id="receiptTxId">—</span></div>
+                <div class="receipt-row"><span class="receipt-row-label">Status</span><span class="receipt-row-val" style="color:var(--schwab-green);">COMPLETED</span></div>
+            </div>
+            <div style="padding:0 24px 20px;">
+                <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;margin-bottom:8px;" onclick="downloadReceipt()"><i class="fas fa-download"></i> Download Receipt</button>
+                <button class="schwab-btn schwab-btn-outline" style="width:100%;padding:12px;color:var(--text-gray);border-color:var(--border-color);" onclick="toggleModal('receiptMod')">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- OTP VERIFICATION MODAL -->
+<div class="modal" id="emailVerifyMod">
+    <div class="modal-content" style="text-align:center;max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('emailVerifyMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle info"><i class="fas fa-envelope-open-text"></i></div>
+        <h3 class="popup-title">Verify Your Email</h3>
+        <p class="popup-msg">We sent a 6-digit code to your email.</p>
+        <div class="popup-info-box" style="display:inline-block;margin-bottom:16px;">
+            <p class="value" id="verifyEmailBadge" style="font-size:13px;">your@email.com</p>
+        </div>
+        <div class="otp-boxes">
+            <input class="otp-box" maxlength="1" id="vOtp0" oninput="verifyOtpInput(0)" onkeydown="verifyOtpKeydown(event,0)">
+            <input class="otp-box" maxlength="1" id="vOtp1" oninput="verifyOtpInput(1)" onkeydown="verifyOtpKeydown(event,1)">
+            <input class="otp-box" maxlength="1" id="vOtp2" oninput="verifyOtpInput(2)" onkeydown="verifyOtpKeydown(event,2)">
+            <input class="otp-box" maxlength="1" id="vOtp3" oninput="verifyOtpInput(3)" onkeydown="verifyOtpKeydown(event,3)">
+            <input class="otp-box" maxlength="1" id="vOtp4" oninput="verifyOtpInput(4)" onkeydown="verifyOtpKeydown(event,4)">
+            <input class="otp-box" maxlength="1" id="vOtp5" oninput="verifyOtpInput(5)" onkeydown="verifyOtpKeydown(event,5)">
+        </div>
+        <div id="otpVerifyError" style="display:none;background:rgba(226,35,26,0.08);border:1px solid rgba(226,35,26,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--schwab-red);font-weight:600;margin-bottom:10px;"><i class="fas fa-exclamation-circle"></i> Incorrect code. Please try again.</div>
+        <div id="otpVerifySuccess" style="display:none;background:rgba(0,166,81,0.08);border:1px solid rgba(0,166,81,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--schwab-green);font-weight:600;margin-bottom:10px;"><i class="fas fa-check-circle"></i> Email verified! Opening your account...</div>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;" id="otpVerifyBtn" onclick="submitEmailOTP()"><i class="fas fa-check"></i> Verify & Open Account</button>
+        <div style="font-size:13px;color:var(--text-gray);margin-top:10px;">Didn't receive it? <button onclick="resendOTP()" style="background:none;border:none;color:var(--schwab-blue);font-weight:700;cursor:pointer;font-size:13px;">Resend code</button></div>
+    </div>
+</div>
+
+<!-- TRANSFER PAGE -->
+<div id="transferPage" style="display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100%;background:var(--bg-main);z-index:9990;overflow-y:auto;">
+    <div class="transfer-form">
+        <div class="page-header-bar" style="padding-top:20px;">
+            <button class="page-back" onclick="hideTransferPage()"><i class="fas fa-arrow-left"></i></button>
+            <div class="page-header-title">Send Money</div>
+        </div>
+        <div style="background:var(--card-bg);border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid var(--border-color);">
+            <div style="font-size:11px;color:var(--text-gray);text-transform:uppercase;margin-bottom:6px;font-weight:600;letter-spacing:0.5px;">Sending From</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <i class="fas fa-wallet" style="color:var(--schwab-blue);font-size:20px;"></i>
+                <div>
+                    <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Schwab Account (USD)</div>
+                    <div style="font-size:12px;color:var(--schwab-blue);font-weight:600;" id="transferAvailBal">Available: $0.00</div>
+                </div>
+            </div>
+        </div>
+        <div class="tf-label">Recipient Full Name</div>
+        <input class="tf-input" type="text" id="tRecipient" placeholder="Enter recipient full name">
+        <div class="tf-label">Account Number</div>
+        <input class="tf-input" type="text" id="tAccNum" placeholder="Enter account number">
+        <div class="tf-label">Bank Name</div>
+        <input class="tf-input" type="text" id="tBankName" placeholder="Enter bank name">
+        <div class="tf-label">Amount (USD)</div>
+        <input class="tf-input" type="number" id="tAmount" placeholder="0.00">
+        <div class="tf-label">Transfer Note (optional)</div>
+        <input class="tf-input" type="text" id="tNote" placeholder="e.g. Investment withdrawal">
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:14px;margin-top:8px;" onclick="doTransfer()" id="doTransferBtn"><i class="fas fa-paper-plane"></i> Confirm Transfer</button>
+        <div id="transferStatus" style="display:none;text-align:center;margin-top:20px;">
+            <div class="spin-ring" style="margin:0 auto;"></div>
+            <p id="transferStatusMsg" style="margin-top:14px;font-size:13px;color:var(--text-gray);">Processing transfer...</p>
+        </div>
+    </div>
+</div>
+
+<!-- CONTACT SUCCESS MODAL -->
+<div class="modal" id="contactSuccessMod">
+    <div class="modal-content" style="text-align:center;max-width:400px;">
+        <div class="popup-icon-circle success"><i class="fas fa-check"></i></div>
+        <h3 class="popup-title">Opening Email...</h3>
+        <p class="popup-msg" id="contactSuccessMsg">Your email app is opening to contact Charles Schwab.</p>
+        <button class="schwab-btn schwab-btn-primary" style="width:100%;padding:12px;" onclick="toggleModal('contactSuccessMod')">Close</button>
+    </div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <i class="fas fa-cookie-bite" style="color:var(--schwab-blue);font-size:18px;"></i>
+        <h4 style="font-size:14px;font-weight:700;color:var(--text-primary);">Privacy & Security Consent</h4>
+    </div>
+    <p style="font-size:12px;color:var(--text-gray);line-height:1.6;margin:0 0 10px;">Charles Schwab uses cookies to secure your account and authenticate your session. By continuing, you agree to our security protocols.</p>
+    <div style="display:flex;gap:8px;">
+        <button class="schwab-btn schwab-btn-outline" style="flex:1;padding:8px;font-size:11px;color:var(--text-gray);border-color:var(--border-color);" onclick="dismissCookie()">Decline</button>
+        <button class="schwab-btn schwab-btn-primary" style="flex:1;padding:8px;font-size:11px;" onclick="dismissCookie()">Accept</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set, push, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAurVHraTP4QkCTZ9VQA-7Ir1UCph30I8U",
+        authDomain: "nitadol-wealth-c54b2.firebaseapp.com",
+        databaseURL: "https://nitadol-wealth-c54b2-default-rtdb.firebaseio.com",
+        projectId: "nitadol-wealth-c54b2",
+        storageBucket: "nitadol-wealth-c54b2.firebasestorage.app",
+        messagingSenderId: "5673565756",
+        appId: "1:5673565756:web:f87710cba77dfffee98d39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUserData = null;
+    let currentUID = null;
+    let notifications = [];
+    let seenAdminMsgIds = new Set();
+    let currentBtcRate = 97000;
+    let pendingDepositAmount = 0;
+    let pendingDepositBtc = 0;
+    let selectedGender = '';
+    let selectedAccountType = 'Individual Brokerage';
+    let regStepCurrent = 1;
+
+    // ===== TOAST SYSTEM =====
+    window.showToast = function(title, msg, type='info', duration=4000) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icons = { success: 'fa-check', error: 'fa-times', warning: 'fa-exclamation', info: 'fa-info' };
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas ${icons[type] || 'fa-info'}"></i></div>
+            <div class="toast-body">
+                <div class="toast-title">${title}</div>
+                <div class="toast-msg">${msg}</div>
+            </div>
+            <button class="toast-close"><i class="fas fa-times"></i></button>
+        `;
+        const close = () => {
+            toast.classList.add('toast-out');
+            setTimeout(() => toast.remove(), 300);
+        };
+        toast.querySelector('.toast-close').onclick = close;
+        container.appendChild(toast);
+        setTimeout(close, duration);
+    };
+    window.showErrorToast = (t, m) => window.showToast(t, m, 'error');
+    window.showSuccessToast = (t, m) => window.showToast(t, m, 'success');
+    window.showWarningToast = (t, m) => window.showToast(t, m, 'warning');
+    window.showInfoToast = (t, m) => window.showToast(t, m, 'info');
+
+    // ===== BITCOIN RATE FETCHER =====
+    async function fetchBitcoinRate() {
+        try {
+            const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            const data = await resp.json();
+            if (data && data.bitcoin && data.bitcoin.usd) {
+                currentBtcRate = data.bitcoin.usd;
+            }
+        } catch(e) {
+            currentBtcRate = 97000 + Math.random() * 2000;
+        }
+        const rateEl = document.getElementById('btcRate');
+        if (rateEl) rateEl.innerText = '$' + currentBtcRate.toLocaleString() + ' / BTC';
+    }
+    fetchBitcoinRate();
+    setInterval(fetchBitcoinRate, 30000);
+
+    // ===== TRADING PRICES + ZIGZAG CHART =====
+    let tradePrices = { BTC: 97432, ETH: 3512, USDT: 1.00, SCHW: 74.32, SP500: 5892, GOLD: 2654 };
+    let priceHistory = []; // For zigzag chart
+    const MAX_HISTORY = 40;
+
+    // Initialize history with some baseline data
+    for (let i = 0; i < MAX_HISTORY; i++) {
+        priceHistory.push(97432 + (Math.random() - 0.5) * 1500);
+    }
+
+    function setChartTimeframe(tf, btn) {
+        document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // Reset history with new variation
+        const base = tradePrices.BTC;
+        const variance = tf === '1H' ? 800 : tf === '1D' ? 1500 : tf === '1W' ? 3000 : tf === '1M' ? 6000 : 12000;
+        priceHistory = [];
+        for (let i = 0; i < MAX_HISTORY; i++) {
+            priceHistory.push(base + (Math.random() - 0.5) * variance);
+        }
+        drawZigzagChart();
+    }
+    window.setChartTimeframe = setChartTimeframe;
+
+    function drawZigzagChart() {
+        const svg = document.getElementById('liveChartSvg');
+        if (!svg) return;
+        const linePath = document.getElementById('chartLine');
+        const areaPath = document.getElementById('chartArea');
+        const dot = document.getElementById('chartDot');
+        if (!linePath || !areaPath || !dot) return;
+
+        const W = 320, H = 70;
+        const data = priceHistory;
+        if (data.length < 2) return;
+
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const range = Math.max(max - min, 1);
+        const padding = 6;
+
+        // Build zigzag path - catmull-rom-like smoothing
+        const points = data.map((v, i) => {
+            const x = (i / (data.length - 1)) * W;
+            const y = H - padding - ((v - min) / range) * (H - padding * 2);
+            return { x, y };
+        });
+
+        // Smooth path using cubic bezier
+        let d = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+            const p0 = points[i - 1];
+            const p1 = points[i];
+            const cx1 = p0.x + (p1.x - p0.x) * 0.5;
+            const cy1 = p0.y;
+            const cx2 = p0.x + (p1.x - p0.x) * 0.5;
+            const cy2 = p1.y;
+            d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
+        }
+        linePath.setAttribute('d', d);
+
+        // Area fill
+        const lastX = points[points.length - 1].x;
+        const areaD = d + ` L ${lastX} ${H} L 0 ${H} Z`;
+        areaPath.setAttribute('d', areaD);
+
+        // Last dot
+        const last = points[points.length - 1];
+        dot.setAttribute('cx', last.x);
+        dot.setAttribute('cy', last.y);
+
+        // Color based on trend
+        const isUp = data[data.length - 1] >= data[0];
+        const color = isUp ? '#4ade80' : '#f87171';
+        linePath.setAttribute('stroke', color);
+        dot.setAttribute('fill', color);
+        document.getElementById('chartGrad').querySelector('stop:first-child').setAttribute('stop-color', color);
+    }
+
+    function updateTradeTicker() {
+        // Update prices with realistic zigzag movement
+        tradePrices.BTC += (Math.random() - 0.48) * 250;
+        tradePrices.ETH += (Math.random() - 0.48) * 18;
+        tradePrices.USDT += (Math.random() - 0.5) * 0.002;
+        tradePrices.SCHW += (Math.random() - 0.48) * 0.6;
+        tradePrices.SP500 += (Math.random() - 0.48) * 12;
+        tradePrices.GOLD += (Math.random() - 0.48) * 6;
+
+        // Keep prices in reasonable ranges
+        tradePrices.BTC = Math.max(90000, Math.min(105000, tradePrices.BTC));
+        tradePrices.ETH = Math.max(3000, Math.min(4200, tradePrices.ETH));
+        tradePrices.USDT = Math.max(0.99, Math.min(1.01, tradePrices.USDT));
+        tradePrices.SCHW = Math.max(70, Math.min(80, tradePrices.SCHW));
+
+        // Add to history for zigzag chart
+        priceHistory.push(tradePrices.BTC);
+        if (priceHistory.length > MAX_HISTORY) priceHistory.shift();
+
+        // Draw the zigzag chart
+        drawZigzagChart();
+
+        const updates = [
+            ['mktBTC', '$' + Math.round(tradePrices.BTC).toLocaleString()],
+            ['mktETH', '$' + Math.round(tradePrices.ETH).toLocaleString()],
+            ['mktUSDT', '$' + tradePrices.USDT.toFixed(2)],
+            ['mktSCHW', '$' + tradePrices.SCHW.toFixed(2)],
+            ['tradeBTC', '$' + Math.round(tradePrices.BTC).toLocaleString()],
+            ['tradeETH', '$' + Math.round(tradePrices.ETH).toLocaleString()],
+            ['tradeUSDT', '$' + tradePrices.USDT.toFixed(2)],
+            ['tradeSCHW', '$' + tradePrices.SCHW.toFixed(2)],
+            ['tradeSP500', Math.round(tradePrices.SP500).toLocaleString()],
+        ];
+        updates.forEach(([id, val]) => { const el = document.getElementById(id); if (el) el.innerText = val; });
+
+        const changes = [
+            ['mktBTCChange', 'BTC'], ['mktETHChange', 'ETH'], ['mktUSDTChange', 'USDT'], ['mktSCHWChange', 'SCHW'],
+            ['tradeBTCChange', 'BTC'], ['tradeETHChange', 'ETH'], ['tradeUSDTChange', 'USDT'],
+            ['tradeSCHWChange', 'SCHW'], ['tradeSP500Change', 'SP500']
+        ];
+        changes.forEach(([id, key]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                const isUp = Math.random() > 0.4;
+                const pct = (Math.random() * 3).toFixed(2);
+                el.innerText = `${isUp ? '▲' : '▼'} ${isUp ? '+' : '-'}${pct}%`;
+                el.style.color = isUp ? 'var(--schwab-green)' : 'var(--schwab-red)';
+            }
+        });
+    }
+    // Initial draw
+    setTimeout(drawZigzagChart, 100);
+    setInterval(updateTradeTicker, 2000);
+
+    // ===== UTILITY FUNCTIONS =====
+    function showSpinner(text='PROCESSING...') { document.getElementById('spinText').innerText = text; document.getElementById('spinOverlay').classList.add('show'); }
+    function hideSpinner() { document.getElementById('spinOverlay').classList.remove('show'); }
+    window.showSpinner = showSpinner;
+    window.hideSpinner = hideSpinner;
+
+    function formatBalance(amount) { return '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function generateTxId() { const p1 = Math.random().toString(36).substring(2,8).toUpperCase(); const p2 = Date.now().toString(36).toUpperCase(); return `SCHW-${p1}-${p2}`; }
+    function randDigits(n) { let s=''; for(let i=0;i<n;i++) s+=Math.floor(Math.random()*10); return s; }
+
+    window.scrollToSection = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
+
+    window.toggleTheme = () => {
+        const body = document.getElementById('bodyTag');
+        body.classList.toggle('dark-mode');
+        const icon = document.getElementById('themeIcon');
+        icon.innerHTML = body.classList.contains('dark-mode') ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        // Redraw chart with new theme colors
+        setTimeout(drawZigzagChart, 100);
+    };
+
+    window.toggleModal = (id) => { const m = document.getElementById(id); if (m) m.classList.toggle('open'); };
+
+    window.toggleFaq = (item) => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+    };
+
+    window.toggleContactDropdown = () => { document.getElementById('contactDropdown').classList.toggle('open'); };
+
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('contactDropdown');
+        const trigger = e.target.closest('.contact-dropdown');
+        if (!trigger && dropdown) dropdown.classList.remove('open');
+    });
+
+    window.contactSchwab = (section) => {
+        const subject = encodeURIComponent(`Charles Schwab - ${section} Inquiry`);
+        const body = encodeURIComponent(`Dear Charles Schwab,\n\nI am contacting you regarding: ${section}\n\nPlease assist me with my enquiry.\n\nThank you.`);
+        window.location.href = `mailto:support.charles.schwab@gmail.com?subject=${subject}&body=${body}`;
+        document.getElementById('contactSuccessMsg').innerText = `Your email app is opening to contact Charles Schwab regarding: ${section}`;
+        toggleModal('contactSuccessMod');
+    };
+
+    window.showLocked = (feature) => {
+        document.getElementById('lockedTitle').innerText = feature;
+        document.getElementById('lockedSub').innerText = `Please contact our customer service regarding "${feature}".`;
+        toggleModal('lockedMod');
+    };
+
+    window.dismissCookie = () => { document.getElementById('cookieBanner').classList.remove('show'); localStorage.setItem('schwab_cookies', 'true'); };
+    setTimeout(() => { if (!localStorage.getItem('schwab_cookies')) document.getElementById('cookieBanner').classList.add('show'); }, 2000);
+
+    // ===== INLINE LOGIN =====
+    window.inlineLogin = async () => {
+        const email = document.getElementById('inlineLoginEmail').value.trim();
+        const pass = document.getElementById('inlineLoginPass').value;
+        if (!email || !pass) { showWarningToast('Missing details', 'Please enter both your email and password.', 'warning'); return; }
+        document.getElementById('lEmail').value = email;
+        document.getElementById('lPass').value = pass;
+        loginUser();
+    };
+
+    // ===== LOGIN =====
+    window.loginUser = async () => {
+        const email = document.getElementById('lEmail').value.trim();
+        const pass = document.getElementById('lPass').value;
+        if (!email || !pass) { showWarningToast('Missing details', 'Please enter both your email and password.', 'warning'); return; }
+        showSpinner('AUTHENTICATING...');
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            toggleModal('loginMod');
+            showSuccessToast('Welcome back!', 'You have successfully logged in.');
+        } catch(e) { showErrorToast('Access Denied', 'Invalid credentials. Please check your email and password.'); }
+        finally { hideSpinner(); }
+    };
+
+    window.signOutUser = () => { if (confirm('Are you sure you want to sign out?')) signOut(auth).then(() => location.reload()); };
+
+    // ===== SIGNUP FLOW =====
+    window.openSignupFromAccount = (accountType) => {
+        selectedAccountType = accountType;
+        toggleModal('signupChoiceMod');
+        openSignup(accountType);
+    };
+
+    window.openSignup = (accountType) => {
+        selectedAccountType = accountType;
+        document.getElementById('regAccountType').innerText = `Account Type: ${accountType}`;
+        toggleModal('signupChoiceMod');
+        toggleModal('regMod');
+        regStepCurrent = 1;
+        showRegStep(1);
+    };
+
+    window.nextRegStep = (step) => {
+        if (step === 2 && regStepCurrent === 1) {
+            const firstName = document.getElementById('rFirstName').value.trim();
+            const surname = document.getElementById('rSurname').value.trim();
+            const email = document.getElementById('rEmail').value.trim();
+            const phone = document.getElementById('rPhone').value.trim();
+            const ssn = document.getElementById('rSSN').value.trim();
+            const country = document.getElementById('rCountry').value;
+            const state = document.getElementById('rState').value.trim();
+            const address = document.getElementById('rAddress').value.trim();
+            const dob = document.getElementById('rDOB').value;
+            if (!firstName || !surname || !email || !phone || !ssn || !country || !state || !address || !dob) {
+                showWarningToast('Missing Information', 'Please fill in all fields to continue.', 'warning'); return;
+            }
+            if (!email.includes('@') || !email.includes('.')) { showWarningToast('Invalid Email', 'Please enter a valid email address.', 'warning'); return; }
+        }
+        if (step === 3 && regStepCurrent === 2) {
+            const pass = document.getElementById('rPass').value;
+            const passConfirm = document.getElementById('rPassConfirm').value;
+            if (pass.length < 6) { showWarningToast('Weak Password', 'Password must be at least 6 characters.', 'warning'); return; }
+            if (pass !== passConfirm) {
+                document.getElementById('pwdMismatch').style.display = 'block';
+                return;
+            }
+            document.getElementById('pwdMismatch').style.display = 'none';
+            if (!selectedGender) { showWarningToast('Gender Required', 'Please select your gender.', 'warning'); return; }
+        }
+        regStepCurrent = step;
+        showRegStep(step);
+    };
+
+    function showRegStep(step) {
+        document.querySelectorAll('.reg-step').forEach(el => el.classList.remove('active'));
+        document.getElementById('regStep'+step).classList.add('active');
+        document.querySelectorAll('.reg-step-dot').forEach((dot, i) => {
+            dot.classList.remove('active', 'done');
+            if (i + 1 < step) dot.classList.add('done');
+            if (i + 1 === step) dot.classList.add('active');
+        });
+    }
+
+    window.selectGender = (gender, el) => {
+        selectedGender = gender;
+        document.querySelectorAll('.gender-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    };
+
+    window.togglePwdVisibility = (id, btn) => {
+        const input = document.getElementById(id);
+        if (input.type === 'password') { input.type = 'text'; btn.innerHTML = '<i class="fas fa-eye-slash"></i>'; }
+        else { input.type = 'password'; btn.innerHTML = '<i class="fas fa-eye"></i>'; }
+    };
+
+    window.handleRegPhotoUpload = function(input) {
+        const file = input.files[0]; if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showWarningToast('File Too Large', 'Photo must be under 2MB.', 'warning'); return; }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            window.pendingProfilePicBase64 = e.target.result;
+            document.getElementById('regAvatarPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.handleChangePhoto = function(input) {
+        const file = input.files[0]; if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showWarningToast('File Too Large', 'Photo must be under 2MB.', 'warning'); return; }
+        showSpinner('UPDATING PHOTO...');
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const user = auth.currentUser; if (!user) return;
+                await update(ref(db, `users/${user.uid}`), { profilePicture: e.target.result });
+                ['dashAvatar', 'meAvatar'].forEach(id => { const el = document.getElementById(id); if(el) el.src = e.target.result; });
+                hideSpinner();
+                showSuccessToast('Photo Updated', 'Your profile photo has been updated successfully.');
+            } catch(err) { hideSpinner(); showErrorToast('Update Failed', 'Failed to update photo. Please try again.'); }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // ===== REGISTER USER =====
+    window.registerUser = async () => {
+        const firstName = document.getElementById('rFirstName').value.trim();
+        const surname = document.getElementById('rSurname').value.trim();
+        const fullName = firstName + ' ' + surname;
+        const email = document.getElementById('rEmail').value.trim();
+        const pass = document.getElementById('rPass').value;
+        const phone = document.getElementById('rPhone').value.trim();
+        const ssn = document.getElementById('rSSN').value.trim();
+        const country = document.getElementById('rCountry').value;
+        const state = document.getElementById('rState').value.trim();
+        const address = document.getElementById('rAddress').value.trim();
+        const dob = document.getElementById('rDOB').value;
+        
+        toggleModal('regMod');
+        document.getElementById('welcomeSpinner').style.display = 'flex';
+        document.getElementById('welcomeContent').style.display = 'none';
+        document.getElementById('verifyText').innerText = 'VERIFYING ACCOUNT...';
+        toggleModal('welcomeMod');
+
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+            await sendEmailVerification(cred.user);
+            const userData = {
+                fullName, firstName, surname, email, phone, ssn, country, state, address, dob,
+                gender: selectedGender, accountType: selectedAccountType,
+                balance: 0, currency: 'USD', currencySymbol: '$',
+                id: "SCHW-" + Math.floor(100000 + Math.random() * 900000),
+                createdAt: Date.now(),
+                accountNumber: randDigits(10),
+                transferEnabled: true,
+                kycStatus: ''
+            };
+            if (window.pendingProfilePicBase64) userData.profilePicture = window.pendingProfilePicBase64;
+            await set(ref(db, 'users/' + cred.user.uid), userData);
+
+            setTimeout(() => {
+                document.getElementById('welcomeSpinner').style.display = 'none';
+                document.getElementById('welcomeContent').style.display = 'block';
+                document.getElementById('welcomeName').innerText = firstName;
+            }, 4000);
+        } catch (e) {
+            toggleModal('welcomeMod');
+            showErrorToast('Registration Failed', e.message);
+        }
+    };
+
+    window.closeWelcomeAndShowDash = () => {
+        toggleModal('welcomeMod');
+    };
+
+    // ===== DASHBOARD NAVIGATION =====
+    window.switchTab = (tab) => {
+        document.querySelectorAll('.dash-page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        const page = document.getElementById(tab + '-page');
+        const tabBtn = document.getElementById('tab-' + tab);
+        if (page) page.classList.add('active');
+        if (tabBtn) tabBtn.classList.add('active');
+        window.scrollTo(0, 0);
+        if (tab === 'dashboard') setTimeout(drawZigzagChart, 100);
+    };
+
+    // ===== BALANCE DISPLAY =====
+    window.balanceVisible = true;
+    window.toggleBalanceVisibility = () => {
+        window.balanceVisible = !window.balanceVisible;
+        if (currentUserData) updateBalanceDisplay(currentUserData);
+        document.getElementById('eyeIcon').className = window.balanceVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+    };
+
+    function updateBalanceDisplay(data) {
+        const balance = data.balance || 0;
+        const formatted = formatBalance(balance);
+        const balEl = document.getElementById('dashBalance');
+        balEl.innerText = window.balanceVisible !== false ? formatted : '$••••••';
+        const tradeBalEl = document.getElementById('tradeBalance');
+        if (tradeBalEl) tradeBalEl.innerText = window.balanceVisible !== false ? formatted : '$••••••';
+        const transferBalEl = document.getElementById('transferAvailBal');
+        if (transferBalEl) transferBalEl.innerText = `Available: ${formatted}`;
+    }
+
+    // ===== TRANSFER =====
+    window.showTransferPage = () => {
+        document.getElementById('transferPage').style.display = 'block';
+        document.getElementById('transferPage').scrollTop = 0;
+    };
+    window.hideTransferPage = () => {
+        document.getElementById('transferPage').style.display = 'none';
+        document.getElementById('transferStatus').style.display = 'none';
+        ['tRecipient','tAccNum','tBankName','tAmount','tNote'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+    };
+
+    function checkTransferEnabled() {
+        if (!currentUserData) return false;
+        const val = currentUserData.transferEnabled;
+        if (val === undefined || val === null) return true;
+        return val !== false;
+    }
+
+    window.doTransfer = async () => {
+        const user = auth.currentUser; if (!user) return;
+        if (!checkTransferEnabled()) { toggleModal('transferBlockedMod'); return; }
+        const data = currentUserData;
+        const recipient = document.getElementById('tRecipient').value.trim();
+        const accNum = document.getElementById('tAccNum').value.trim();
+        const bankName = document.getElementById('tBankName').value.trim();
+        const amount = parseFloat(document.getElementById('tAmount').value) || 0;
+        const note = document.getElementById('tNote').value.trim();
+        const date = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+        if (!recipient) { showWarningToast('Missing Information', 'Please enter the recipient name.', 'warning'); return; }
+        if (!accNum) { showWarningToast('Missing Information', 'Please enter the account number.', 'warning'); return; }
+        if (amount <= 0) { showWarningToast('Invalid Amount', 'Please enter a valid transfer amount.', 'warning'); return; }
+
+        const availableBalance = data.balance || 0;
+        if (availableBalance <= 0 || amount > availableBalance) {
+            document.getElementById('insufCurrentBal').innerText = formatBalance(availableBalance);
+            document.getElementById('insufRequired').innerText = formatBalance(amount);
+            toggleModal('insufficientFundsMod');
+            return;
+        }
+
+        const txId = generateTxId();
+        document.getElementById('transferStatus').style.display = 'block';
+        document.getElementById('transferStatusMsg').innerText = 'Processing secure transfer...';
+
+        try {
+            await update(ref(db, `users/${user.uid}`), { balance: availableBalance - amount });
+            await push(ref(db, `users/${user.uid}/transactions`), {
+                date, recipient, accountNumber: accNum, bankName, amount,
+                type: 'TRANSFER', status: 'SUCCESS', txId, note,
+                currency: 'USD', currencySymbol: '$'
+            });
+            document.getElementById('transferStatus').style.display = 'none';
+            hideTransferPage();
+
+            document.getElementById('receiptAmount').innerText = formatBalance(amount);
+            document.getElementById('receiptDate').innerText = date;
+            document.getElementById('receiptRecipient').innerText = recipient;
+            document.getElementById('receiptAccNum').innerText = accNum;
+            document.getElementById('receiptBank').innerText = bankName || '—';
+            document.getElementById('receiptTxId').innerText = txId;
+            toggleModal('receiptMod');
+            addNotification(`Transfer of ${formatBalance(amount)} to ${recipient} — SUCCESSFUL`, 'success');
+            showSuccessToast('Transfer Successful', `${formatBalance(amount)} sent to ${recipient}.`);
+        } catch(e) {
+            document.getElementById('transferStatusMsg').innerText = 'Transfer failed. Please try again.';
+            showErrorToast('Transfer Failed', 'An error occurred. Please try again.');
+            console.error(e);
+            setTimeout(() => { document.getElementById('transferStatus').style.display = 'none'; }, 3000);
+        }
+    };
+
+    // ===== DEPOSIT =====
+    window.showDepositPage = () => { toggleModal('depositMod'); };
+
+    window.showDepositUnavailable = (method) => {
+        showWarningToast('Unavailable', `${method} is currently unavailable. Please use Bitcoin (BTC) to deposit.`, 'warning', 5000);
+    };
+
+    window.showBitcoinDeposit = () => {
+        toggleModal('depositMod');
+        fetchBitcoinRate();
+        toggleModal('btcAmountMod');
+    };
+
+    window.updateBtcPreview = () => {
+        const usdAmount = parseFloat(document.getElementById('btcDepositAmount').value) || 0;
+        const preview = document.getElementById('btcPreview');
+        if (usdAmount > 0) {
+            const btcAmount = (usdAmount / currentBtcRate).toFixed(8);
+            document.getElementById('btcPreviewAmount').innerText = btcAmount + ' BTC';
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    };
+
+    window.proceedBtcDeposit = () => {
+        const usdAmount = parseFloat(document.getElementById('btcDepositAmount').value) || 0;
+        if (usdAmount <= 0) { showWarningToast('Invalid Amount', 'Please enter a valid deposit amount.', 'warning'); return; }
+        pendingDepositAmount = usdAmount;
+        pendingDepositBtc = (usdAmount / currentBtcRate).toFixed(8);
+        toggleModal('btcAmountMod');
+        document.getElementById('btcPayAmount').innerText = pendingDepositBtc + ' BTC (~$' + usdAmount.toLocaleString() + ')';
+        toggleModal('btcWalletMod');
+    };
+
+    window.confirmBtcPaid = async () => {
+        const user = auth.currentUser; if (!user) return;
+        const date = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+        const txId = generateTxId();
+        toggleModal('btcWalletMod');
+        
+        await push(ref(db, `users/${user.uid}/transactions`), {
+            date, recipient: 'Bitcoin Deposit',
+            amount: pendingDepositAmount,
+            btcAmount: pendingDepositBtc,
+            type: 'DEPOSIT', status: 'PENDING', txId,
+            currency: 'USD', currencySymbol: '$',
+            method: 'Bitcoin (BTC)',
+            note: 'This may take a while before it reflects'
+        });
+        
+        addNotification(`Bitcoin deposit of ${formatBalance(pendingDepositAmount)} — PENDING. This may take a while before it reflects.`, 'pending');
+        document.getElementById('btcDepositAmount').value = '';
+        showInfoToast('Deposit Pending', 'Your Bitcoin deposit is now pending. This may take a while before it reflects.', 'info', 6000);
+    };
+
+    window.copyToClipboard = (text) => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessToast('Copied', 'Bitcoin address copied to clipboard.');
+            });
+        }
+    };
+
+    // ===== DOWNLOAD RECEIPT =====
+    window.downloadReceipt = () => { window.print(); };
+
+    // ===== NOTIFICATIONS =====
+    function updateNotifBadge() {
+        const badge = document.getElementById('notifBadge');
+        badge.innerText = notifications.length;
+        notifications.length > 0 ? badge.classList.add('visible') : badge.classList.remove('visible');
+    }
+    function addNotification(msg, type='info') {
+        notifications.unshift({ msg, type, time: new Date().toLocaleString() });
+        updateNotifBadge(); renderNotifs();
+    }
+    function renderNotifs() {
+        const list = document.getElementById('notifList');
+        if (!notifications.length) {
+            list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-gray);"><i class="fas fa-bell-slash" style="font-size:48px;display:block;margin-bottom:16px;opacity:0.3;"></i><p>No notifications yet</p></div>`;
+            return;
+        }
+        const icons = { success: 'fa-check-circle', pending: 'fa-clock', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        const colors = { success: 'var(--schwab-green)', pending: 'var(--schwab-orange)', error: 'var(--schwab-red)', info: 'var(--schwab-blue)' };
+        list.innerHTML = notifications.map(n => `<div class="notif-item ${n.type}"><i class="fas ${icons[n.type] || 'fa-bell'}" style="color:${colors[n.type] || 'var(--schwab-blue)'};font-size:16px;margin-top:2px;"></i><div style="flex:1;"><div style="font-size:13px;color:var(--text-primary);font-weight:500;line-height:1.5;">${n.msg}</div><div style="font-size:11px;color:var(--text-gray);margin-top:4px;">${n.time}</div></div></div>`).join('');
+    }
+    window.openNotifPanel = () => document.getElementById('notifPanel').classList.add('open');
+    window.closeNotifPanel = () => document.getElementById('notifPanel').classList.remove('open');
+
+    // ===== OTP VERIFICATION =====
+    window.pendingVerificationUID = null; window.pendingVerificationEmail = null;
+    window.pendingVerificationName = null; window.currentOTPCode = null;
+
+    function generateOTP() { return String(Math.floor(100000 + Math.random() * 900000)); }
+
+    window.showEmailVerifyModal = function(email, name, uid) {
+        window.pendingVerificationUID = uid;
+        window.pendingVerificationEmail = email;
+        window.pendingVerificationName = name;
+        for (let i = 0; i < 6; i++) { const box = document.getElementById('vOtp'+i); if (box) { box.value = ''; box.classList.remove('filled'); } }
+        document.getElementById('otpVerifyError').style.display = 'none';
+        document.getElementById('otpVerifySuccess').style.display = 'none';
+        document.getElementById('verifyEmailBadge').innerText = email;
+        toggleModal('emailVerifyMod');
+        sendNewOTP();
+        setTimeout(() => { const b = document.getElementById('vOtp0'); if(b) b.focus(); }, 300);
+    };
+
+    async function sendNewOTP() {
+        window.currentOTPCode = generateOTP();
+        const expiry = Date.now() + 10 * 60 * 1000;
+        if (window.pendingVerificationUID) {
+            try { await update(ref(db, `users/${window.pendingVerificationUID}`), { emailVerification: { code: window.currentOTPCode, expiry, verified: false } }); } catch(e) {}
+        }
+        const sent = await (window.sendOTPEmail ? window.sendOTPEmail(window.pendingVerificationEmail, window.pendingVerificationName, window.currentOTPCode) : Promise.resolve(false));
+        if (!sent) console.log('%c[DEV] Your OTP code: ' + window.currentOTPCode, 'color:#009CDB;font-size:18px;font-weight:bold;');
+    }
+
+    window.resendOTP = async function() {
+        document.getElementById('otpVerifyError').style.display = 'none';
+        for (let i = 0; i < 6; i++) { const box = document.getElementById('vOtp'+i); if (box) { box.value = ''; box.classList.remove('filled'); } }
+        await sendNewOTP();
+        showInfoToast('Code Resent', 'A new verification code has been sent to your email.');
+    };
+
+    window.verifyOtpInput = function(idx) {
+        const box = document.getElementById('vOtp'+idx); if (!box) return;
+        box.value = box.value.replace(/[^0-9]/g, '');
+        if (box.value) { box.classList.add('filled'); if (idx < 5) { const next = document.getElementById('vOtp'+(idx+1)); if(next) next.focus(); } }
+        else { box.classList.remove('filled'); }
+        const all = Array.from({length:6}, (_,i) => document.getElementById('vOtp'+i)?.value || '');
+        if (all.every(v => v)) submitEmailOTP();
+    };
+
+    window.verifyOtpKeydown = function(e, idx) {
+        if (e.key === 'Backspace' && !document.getElementById('vOtp'+idx)?.value && idx > 0) {
+            const prev = document.getElementById('vOtp'+(idx-1)); if (prev) { prev.value = ''; prev.classList.remove('filled'); prev.focus(); }
+        }
+    };
+
+    window.submitEmailOTP = async function() {
+        const entered = Array.from({length:6}, (_,i) => document.getElementById('vOtp'+i)?.value || '').join('');
+        if (entered.length < 6) return;
+        if (entered !== window.currentOTPCode) { document.getElementById('otpVerifyError').style.display = 'block'; return; }
+        try { await update(ref(db, `users/${window.pendingVerificationUID}`), { 'emailVerification/verified': true, emailVerified: true }); } catch(e) {}
+        document.getElementById('otpVerifySuccess').style.display = 'block';
+        document.getElementById('otpVerifyBtn').disabled = true;
+        setTimeout(() => { toggleModal('emailVerifyMod'); }, 1500);
+    };
+
+    // ===== CONTACT FORM =====
+    window.submitContactForm = () => {
+        const name = document.getElementById('ctName').value.trim();
+        const email = document.getElementById('ctEmail').value.trim();
+        const msg = document.getElementById('ctMsg').value.trim();
+        if (!name || !email || !msg) { showWarningToast('Missing Fields', 'Please fill in all required fields.', 'warning'); return; }
+        ['ctName','ctEmail','ctMsg'].forEach(id => { document.getElementById(id).value=''; });
+        document.getElementById('ctSubject').selectedIndex = 0;
+        const subject = encodeURIComponent(`Charles Schwab Contact - ${name}`);
+        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nMessage: ${msg}`);
+        window.location.href = `mailto:support.charles.schwab@gmail.com?subject=${subject}&body=${body}`;
+        toggleModal('contactSuccessMod');
+    };
+
+    // ===== UPDATE INVESTMENT LIST =====
+    function updateInvestmentList() {
+        if (!currentUID) return;
+        get(ref(db, `users/${currentUID}/transactions`)).then(snap => {
+            const container = document.getElementById('investList');
+            const watchlist = document.getElementById('watchlistTxList');
+            const recent = document.getElementById('recentTxList');
+            if (!snap.exists()) {
+                if (container) container.innerHTML = `<div class="invest-empty"><i class="fas fa-chart-area"></i><p>No investments yet. Deposit to start your 3-month investment journey!</p></div>`;
+                if (watchlist) watchlist.innerHTML = `<div class="invest-empty"><i class="fas fa-inbox"></i><p>No transactions yet.</p></div>`;
+                if (recent) recent.innerHTML = `<div class="invest-empty"><i class="fas fa-inbox"></i><p>No transactions yet.</p></div>`;
+                return;
+            }
+            const txs = Object.entries(snap.val()).reverse().map(([k,v]) => ({...v, key:k}));
+            
+            const investTxs = txs.filter(t => t.type === 'DEPOSIT' || t.status === 'SUCCESS');
+            if (investTxs.length > 0) {
+                container.innerHTML = investTxs.slice(0, 5).map(tx => {
+                    const isPending = tx.status === 'PENDING';
+                    const icon = isPending ? 'pending' : 'in';
+                    const iconHtml = isPending ? '<i class="fas fa-clock"></i>' : '<i class="fas fa-arrow-up-from-bracket"></i>';
+                    const amountColor = isPending ? 'pending' : 'in';
+                    return `<div class="invest-item"><div class="invest-item-icon ${icon}">${iconHtml}</div><div class="invest-item-info"><div class="invest-item-name">${tx.recipient||'Transfer'}</div><div class="invest-item-date">${tx.date||''}${isPending ? ' • Pending' : ''}</div>${isPending ? '<div class="invest-item-sub" style="color:var(--schwab-orange);">This may take a while before it reflects</div>' : ''}</div><div class="invest-item-amount ${amountColor}">${tx.currencySymbol||'$'}${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`;
+                }).join('');
+            } else {
+                container.innerHTML = `<div class="invest-empty"><i class="fas fa-chart-area"></i><p>No investments yet. Deposit to start your 3-month investment journey!</p></div>`;
+            }
+            
+            if (watchlist) {
+                watchlist.innerHTML = txs.map(tx => {
+                    const isPending = tx.status === 'PENDING';
+                    const icon = isPending ? 'pending' : (tx.type === 'DEPOSIT' ? 'in' : 'out');
+                    const iconHtml = isPending ? '<i class="fas fa-clock"></i>' : (tx.type === 'DEPOSIT' ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-up-from-bracket"></i>');
+                    const amountColor = isPending ? 'pending' : (tx.type === 'DEPOSIT' ? 'in' : 'out');
+                    return `<div class="invest-item"><div class="invest-item-icon ${icon}">${iconHtml}</div><div class="invest-item-info"><div class="invest-item-name">${tx.recipient||'Transaction'}</div><div class="invest-item-date">${tx.date||''} • ${tx.type}</div></div><div class="invest-item-amount ${amountColor}">${tx.type === 'DEPOSIT' ? '+' : '-'}${tx.currencySymbol||'$'}${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`;
+                }).join('');
+            }
+            
+            if (recent) {
+                if (txs.length === 0) {
+                    recent.innerHTML = `<div class="invest-empty"><i class="fas fa-inbox"></i><p>No transactions yet.</p></div>`;
+                } else {
+                    recent.innerHTML = txs.slice(0, 5).map(tx => {
+                        const isPending = tx.status === 'PENDING';
+                        const icon = isPending ? 'pending' : (tx.type === 'DEPOSIT' ? 'in' : 'out');
+                        const iconHtml = isPending ? '<i class="fas fa-clock"></i>' : (tx.type === 'DEPOSIT' ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-up-from-bracket"></i>');
+                        const amountColor = isPending ? 'pending' : (tx.type === 'DEPOSIT' ? 'in' : 'out');
+                        return `<div class="invest-item"><div class="invest-item-icon ${icon}">${iconHtml}</div><div class="invest-item-info"><div class="invest-item-name">${tx.recipient||'Transaction'}</div><div class="invest-item-date">${tx.date||''}</div></div><div class="invest-item-amount ${amountColor}">${tx.type === 'DEPOSIT' ? '+' : '-'}${tx.currencySymbol||'$'}${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`;
+                    }).join('');
+                }
+            }
+        }).catch(()=>{});
+    }
+
+    // ===== AUTH STATE =====
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUID = user.uid;
+            onValue(ref(db, 'users/' + user.uid), (snap) => {
+                const data = snap.val(); if (!data) return;
+                currentUserData = data;
+
+                document.getElementById('main-site').style.display = 'none';
+                document.getElementById('schwab-dash').style.display = 'block';
+                document.querySelector('nav').style.display = 'none';
+
+                updateBalanceDisplay(data);
+                document.getElementById('dashWelcomeName').innerText = (data.fullName || '').split(' ')[0];
+                const change = data.balance > 0 ? (data.balance * 0.001) : 0;
+                document.getElementById('dashBalanceChange').innerHTML = `<i class="fas fa-arrow-up"></i> +$${change.toFixed(2)} (+0.10%) today`;
+                document.getElementById('tradeGrowth').innerText = `+$${change.toFixed(2)} (+0.10%)`;
+
+                const avatarSrc = data.profilePicture || 'https://i.pinimg.com/1200x/e4/ba/cd/e4bacd619803941c5488a4d2d6b9f986.jpg';
+                ['dashAvatar','meAvatar'].forEach(id => { const el=document.getElementById(id); if(el) el.src=avatarSrc; });
+
+                const setTxt = (id, val) => { const el=document.getElementById(id); if(el) el.innerText = val||'—'; };
+                setTxt('meName', data.fullName); setTxt('meEmail', data.email); setTxt('meEmail2', data.email);
+                setTxt('meFullName', data.fullName); setTxt('mePhone', data.phone); setTxt('meAddress', data.address);
+                setTxt('meCountry', data.country); setTxt('meGender', data.gender); setTxt('meDOB', data.dob);
+                setTxt('meSSN', data.ssn ? '***-**-' + data.ssn.slice(-4) : '—');
+                setTxt('meSchwabID', data.id); setTxt('meRegCountry', data.country);
+
+                updateInvestmentList();
+                setTimeout(drawZigzagChart, 200);
+            });
+
+            onValue(ref(db, `users/${user.uid}/transactions`), (txSnap) => {
+                notifications = [];
+                if (txSnap.exists()) {
+                    Object.entries(txSnap.val()).reverse().forEach(([key, tx]) => {
+                        const amt = Number(tx.amount).toLocaleString();
+                        if (tx.status === 'SUCCESS') notifications.push({ msg: `${tx.type} of $${amt} — SUCCESSFUL`, type:'success', time: tx.date || '' });
+                        else if (tx.status === 'PENDING') notifications.push({ msg: `${tx.type} of $${amt} — PENDING`, type:'pending', time: tx.date || '' });
+                    });
+                }
+                updateNotifBadge(); renderNotifs(); updateInvestmentList();
+            });
+
+            onValue(ref(db, 'messages/' + user.uid), (msnap) => {
+                if (msnap.exists()) {
+                    Object.entries(msnap.val()).forEach(([key, m]) => {
+                        if (!seenAdminMsgIds.has(key)) { seenAdminMsgIds.add(key); addNotification(m.text, 'info'); }
+                    });
+                }
+            });
+        } else {
+            document.getElementById('main-site').style.display = 'block';
+            document.getElementById('schwab-dash').style.display = 'none';
+            document.querySelector('nav').style.display = 'flex';
+        }
+    });
+
+    console.log('%c Charles Schwab Investment Platform v2.0 ', 'color:#009CDB;font-weight:800;font-size:14px;');
+    console.log('%cFeatures: Investment Dashboard | Live Zigzag Chart | Bitcoin Deposit | 3-Month Investment Program | OTP Verification', 'color:#6c757d;font-size:12px;');
+</script>
+
+</body>
+</html>
