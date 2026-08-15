@@ -1610,7 +1610,7 @@
     let previousBalance = null;
     let balanceDebounceTimer = null;
     let guideStepCurrent = 1;
-    const ADMIN_REFERRAL_CODE = 'admin12345';
+    const ADMIN_REFERRAL_CODE = 'ADMIN1234';
     const WHATSAPP_NUMBER = '40774534930';
 
     let heroImgIndex = 0;
@@ -2124,11 +2124,24 @@
             return;
         }
         
-        let referrerUID = null;
+                let referrerUID = null;
         if (referralCodeInput === ADMIN_REFERRAL_CODE) {
             referrerUID = 'ADMIN';
         } else {
             referrerUID = await lookupReferralCode(referralCodeInput);
+            
+            // NEW: Strict validation - check if code exists in Firebase
+            if (!referrerUID) {
+                _registrationInProgress = false;
+                const registerBtn = document.querySelector('#regStep3 .tron-btn-primary');
+                if (registerBtn) { 
+                    registerBtn.disabled = false; 
+                    registerBtn.style.opacity = '1'; 
+                    registerBtn.innerHTML = '<i class="fas fa-check"></i> Finalizează'; 
+                }
+                showWarningToast('Cod Referral Invalid', 'Codul de referral introdus nu există în sistem. Te rugăm să verifici codul și să încerci din nou.');
+                return; // Stop the registration process immediately
+            }
         }
         
         toggleModal('regMod');
