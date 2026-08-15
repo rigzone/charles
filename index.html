@@ -1772,19 +1772,6 @@
         return namePart + numPart;
     }
 
-    // ===== HELPER: ADD NOTIFICATION TO ANY USER (REFERRER) =====
-    async function addNotificationToUser(targetUID, msg, type='success') {
-        if (!targetUID) return;
-        try {
-            await push(ref(db, `users/${targetUID}/notifications`), {
-                msg, type, time: new Date().toLocaleString('ro-RO', { timeZone: 'Europe/Bucharest' }),
-                read: false, createdAt: Date.now()
-            });
-        } catch(e) {
-            console.error("Failed to push notification:", e);
-        }
-    }
-
     // ===== BTC RATE =====
     async function fetchBitcoinRate() {
         try {
@@ -2215,9 +2202,7 @@
                 accountNumber: randDigits(10),
                 referralCode: userReferralCode,
                 referredBy: referralCodeInput,
-                referredByID: referrerUID || null, // NEW FIELD: Save referrer's UID directly
                 referralCount: 0,
-                fundedReferrals: 0,
                 emailVerified: false
             };
             if (window.pendingProfilePicBase64) userData.profilePicture = window.pendingProfilePicBase64;
@@ -2229,29 +2214,12 @@
                 console.warn('[REFERRAL] Could not store referralCodes mapping:', e);
             }
             
+            if (!referrerUID && referralCodeInput !== ADMIN_REFERRAL_CODE) {
+                referrerUID = await lookupReferralCode(referralCodeInput);
+            }
+            
             if (referrerUID && referrerUID !== 'ADMIN') {
                 const success = await incrementReferralCount(referrerUID);
-                
-                // NEW: Award +625 LEI and send notification for referral (up to 5)
-                try {
-                    const referrerSnap = await get(ref(db, `users/${referrerUID}`));
-                    if (referrerSnap.exists()) {
-                        const referrerData = referrerSnap.val();
-                        const currentRefCount = referrerData.referralCount || 0;
-                        
-                        if (currentRefCount <= 5) {
-                            const currentBal = Number(referrerData.balance) || 0;
-                            const newBal = currentBal + 625;
-                            
-                            await update(ref(db, `users/${referrerUID}`), { balance: newBal });
-                            
-                            const notifMsg = `${fullName} joined Cripto.Rom using your referral code. +625 added to your current balance.`;
-                            await addNotificationToUser(referrerUID, notifMsg, 'success');
-                        }
-                    }
-                } catch(e) {
-                    console.error("[REFERRAL BONUS] Error adding referral bonus:", e);
-                }
             }
             
             hideSpinner();
@@ -2345,7 +2313,8 @@
     }
     window.nextGuideStep = (step) => { guideStepCurrent = step; showGuideStep(step); };
 
-    // ===== WITHDRAWAL ELIGIBILITY CHECK =====
+    // ===== ===== WITHDRAWAL ELIGIBILITY CHECK ===== =====
+    // This function checks if the user has referred 5 people and 3 of them have deposited 5000 LEI
     async function checkWithdrawalEligibility() {
         if (!currentUserData || !currentUserData.referralCode) {
             return { eligible: false, reason: 'no_code', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
@@ -2353,11 +2322,13 @@
         
         const userReferralCode = currentUserData.referralCode.toUpperCase();
         
+        // Get all users from Firebase
         const usersSnap = await get(ref(db, 'users'));
         if (!usersSnap.exists()) {
             return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
         }
         
+        // Find all users referred by this user's referral code
         let referredUsers = [];
         usersSnap.forEach(childSnap => {
             const u = childSnap.val();
@@ -2372,14 +2343,17 @@
             return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
         }
         
+        // Check how many of the referred users have deposited 5000 LEI
         let fundedReferrals = 0;
         for (const referredUser of referredUsers) {
             let hasFunded = false;
             
+            // Check if balance >= 5000
             if (referredUser.balance && Number(referredUser.balance) >= 5000) {
                 hasFunded = true;
             }
             
+            // If balance check failed, check transactions for deposits
             if (!hasFunded && referredUser.uid) {
                 try {
                     const txSnap = await get(ref(db, `users/${referredUser.uid}/transactions`));
@@ -2399,6 +2373,7 @@
             if (hasFunded) fundedReferrals++;
         }
         
+        // Check both conditions: need 5 referrals AND 3 funded
         if (totalReferrals < 5) {
             return { 
                 eligible: false, 
@@ -2446,6 +2421,7 @@
             msgEl.innerText = `Ai invitat ${eligibility.totalReferrals} persoane, dar doar ${eligibility.fundedReferrals} din ele au investit 5.000 LEI. Ai nevoie de cel puțin 3 invitați care să fi investit pentru a putea retrage. ${eligibility.remainingFunded} dintre invitații tăi nu au încă finanțat contul.`;
         }
         
+        // Show progress stats
         const referralProgress = Math.min(100, (eligibility.totalReferrals / 5) * 100);
         const fundedProgress = Math.min(100, (eligibility.fundedReferrals / 3) * 100);
         const referralMet = eligibility.totalReferrals >= 5;
@@ -2593,38 +2569,6 @@
             note: 'Depozit Bitcoin în așteptare - trimite chitanța pe WhatsApp pentru confirmare'
         });
         addNotification(`Depozit Bitcoin de ${formatLei(pendingDepositAmount)} — ÎN AȘTEPTARE. Trimite chitanța pe WhatsApp pentru confirmare.`, 'pending');
-        
-        // ===== REFERRAL DEPOSIT BONUS LOGIC (+625 for up to 3 funded referrals) =====
-        let referrerUID = currentUserData?.referredByID;
-        if (!referrerUID && currentUserData?.referredBy && currentUserData.referredBy !== ADMIN_REFERRAL_CODE) {
-            referrerUID = await lookupReferralCode(currentUserData.referredBy);
-        }
-        
-        if (referrerUID && referrerUID !== 'ADMIN') {
-            try {
-                const referrerSnap = await get(ref(db, `users/${referrerUID}`));
-                if (referrerSnap.exists()) {
-                    const referrerData = referrerSnap.val();
-                    const currentFundedCount = referrerData.fundedReferrals || 0;
-                    
-                    if (currentFundedCount < 3) {
-                        const newFundedCount = currentFundedCount + 1;
-                        const currentBal = Number(referrerData.balance) || 0;
-                        const newBal = currentBal + 625;
-                        
-                        await update(ref(db, `users/${referrerUID}`), { 
-                            fundedReferrals: newFundedCount,
-                            balance: newBal 
-                        });
-                        
-                        const notifMsg = `Someone who used your referral code credited their account. +625 added to your current balance.`;
-                        await addNotificationToUser(referrerUID, notifMsg, 'success');
-                    }
-                }
-            } catch(e) {
-                console.error("[DEPOSIT REFERRAL BONUS] Error:", e);
-            }
-        }
         
         const fullName = currentUserData?.fullName || '—';
         const accountId = currentUserData?.id || '—';
@@ -2811,15 +2755,6 @@
     }
 
     // ===== AUTH STATE =====
-    let txNotifications = [];
-    let fbNotifications = [];
-    
-    function mergeAndRenderNotifs() {
-        notifications = [...fbNotifications, ...txNotifications];
-        updateNotifBadge(); 
-        renderNotifs();
-    }
-
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUID = user.uid;
@@ -2846,42 +2781,19 @@
                 balanceDebounceTimer = setTimeout(() => { previousBalance = newBalance; }, 1500);
             });
             onValue(ref(db, `users/${user.uid}/transactions`), (txSnap) => {
-                txNotifications = [];
+                notifications = [];
                 const txData = txSnap.val();
                 if (txSnap.exists()) {
                     Object.entries(txData).reverse().forEach(([key, tx]) => {
                         const amt = Number(tx.amount).toLocaleString('en-US');
                         const sym = tx.currencySymbol || 'lei';
-                        if (tx.status === 'SUCCESS') txNotifications.push({ msg: `${tx.type} de ${sym}${amt} — SUCCES`, type:'success', time: tx.date || '' });
-                        else if (tx.status === 'PENDING') txNotifications.push({ msg: `${tx.type} de ${sym}${amt} — ÎN AȘTEPTARE`, type:'pending', time: tx.date || '' });
+                        if (tx.status === 'SUCCESS') notifications.push({ msg: `${tx.type} de ${sym}${amt} — SUCCES`, type:'success', time: tx.date || '' });
+                        else if (tx.status === 'PENDING') notifications.push({ msg: `${tx.type} de ${sym}${amt} — ÎN AȘTEPTARE`, type:'pending', time: tx.date || '' });
                     });
                 }
-                mergeAndRenderNotifs();
+                updateNotifBadge(); renderNotifs();
                 updateInvestmentList();
                 updatePendingStatus(txData);
-            });
-            
-            // NEW: Listen for Firebase notifications (referral bonuses, etc.)
-            onValue(ref(db, `users/${user.uid}/notifications`), (notifSnap) => {
-                fbNotifications = [];
-                if (notifSnap.exists()) {
-                    const notifData = notifSnap.val();
-                    // Sort by createdAt descending
-                    const sortedNotifs = Object.entries(notifData).map(([k,v]) => ({...v, key:k})).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-                    
-                    sortedNotifs.forEach(n => {
-                        fbNotifications.push({ msg: n.msg, type: n.type || 'info', time: n.time || '' });
-                    });
-                    
-                    // Show popup toast for new notifications
-                    if (sortedNotifs.length > 0) {
-                        const latest = sortedNotifs[0];
-                        if (latest.createdAt && Date.now() - latest.createdAt < 5000) {
-                            window.showToast('Notificare Nouă', latest.msg, latest.type || 'success', 6000);
-                        }
-                    }
-                }
-                mergeAndRenderNotifs();
             });
         } else {
             document.getElementById('main-site').style.display = 'block';
