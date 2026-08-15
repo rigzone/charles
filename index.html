@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -524,6 +525,8 @@
         .referral-stat { flex: 1; text-align: center; background: var(--bg-main); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
         .referral-stat-value { font-size: 20px; font-weight: 800; color: var(--text-primary); }
         .referral-stat-label { font-size: 10px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .referral-bonus-pulse { animation: referralBonusPulse 2s ease-in-out infinite; }
+        @keyframes referralBonusPulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
 
         /* GUIDE MODAL */
         .guide-step { display: none; }
@@ -1111,6 +1114,10 @@
                     <div class="referral-stat-value" id="referralCount">0</div>
                     <div class="referral-stat-label">Persoane Invitate</div>
                 </div>
+                <div class="referral-stat">
+                    <div class="referral-stat-value" id="referralBonusEarned" style="color:var(--green);">0 lei</div>
+                    <div class="referral-stat-label">Bonus Câștigat</div>
+                </div>
             </div>
         </div>
 
@@ -1595,6 +1602,20 @@
             <p style="font-size:11px;color:var(--text-gray);line-height:1.6;">• Minim 3 dintre ele să fi investit 5.000 LEI</p>
         </div>
         <button class="tron-btn tron-btn-primary" style="width:100%;padding:12px;" onclick="toggleModal('withdrawalEligibilityMod')">Am Înțeles</button>
+    </div>
+</div>
+
+<!-- REFERRAL BONUS NOTIFICATION MODAL -->
+<div class="modal" id="referralBonusMod">
+    <div class="modal-content" style="text-align:center;max-width:420px;">
+        <button class="modal-close" onclick="toggleModal('referralBonusMod')"><i class="fas fa-times"></i></button>
+        <div class="popup-icon-circle success" id="referralBonusIconCircle"><i class="fas fa-gift"></i></div>
+        <h3 class="popup-title" id="referralBonusTitle">Bonus Referral!</h3>
+        <p class="popup-msg" id="referralBonusMsg">Ai primit un bonus de referral.</p>
+        <div class="popup-info-box" style="display:inline-block;margin-bottom:16px;">
+            <p class="value" id="referralBonusBadge" style="font-size:16px;color:var(--green);font-weight:800;">+625 lei</p>
+        </div>
+        <button class="tron-btn tron-btn-primary" style="width:100%;padding:12px;background:var(--green);" onclick="toggleModal('referralBonusMod')"><i class="fas fa-check"></i> Mulțumesc</button>
     </div>
 </div>
 
@@ -2161,60 +2182,152 @@
         return false;
     }
 
-    // ===== NEW: GRANT REFERRAL BONUS =====
-    async function grantReferralBonus(referrerUID, type, name) {
-        if (!referrerUID || referrerUID === 'ADMIN') return;
-        
-        const referrerRef = ref(db, `users/${referrerUID}`);
-        const referrerSnap = await get(referrerRef);
-        if (!referrerSnap.exists()) return;
-        
-        const referrerData = referrerSnap.val();
-        const bonuses = referrerData.referralBonuses || {};
-        const date = new Date().toLocaleString('ro-RO', { timeZone: 'Europe/Bucharest' });
-        
-        if (type === 'JOIN') {
-            if ((bonuses.joinCount || 0) >= 5) return; // Stop after 5 people
-            
-            await runTransaction(ref(db, `users/${referrerUID}/balance`), (curr) => (curr || 0) + 625);
-            await runTransaction(ref(db, `users/${referrerUID}/referralBonuses/joinCount`), (curr) => (curr || 0) + 1);
-            
-            const notifMsg = `${name} joined CRIPTO.ROM using your referral code. You earned +625 LEI!`;
-            const txNote = `${name} joined using your referral code.`;
-            
-            await push(ref(db, `users/${referrerUID}/transactions`), {
-                date, recipient: 'Bonus Referral',
-                amount: 625, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
-                currency: 'LEI', currencySymbol: 'lei',
-                method: 'Referral Bonus',
-                note: txNote
+    // ===== HELPER: ADD REFERRAL SIGNUP BONUS (+625 LEI to referrer) =====
+    async function addReferralSignupBonus(referrerUID, newUserName) {
+        try {
+            // Check 5-referral signup bonus cap (max 5 × 625 = 3125 LEI)
+            const referrerSnap = await get(ref(db, `users/${referrerUID}`));
+            if (!referrerSnap.exists()) return false;
+            const referrerData = referrerSnap.val();
+            const currentReferralCount = referrerData.referralCount || 0;
+            if (currentReferralCount > 5) {
+                console.log(`[REFERRAL BONUS] Signup bonus cap reached (5 referrals) for ${referrerUID}`);
+                return false;
+            }
+
+            // Add +625 to referrer's balance using runTransaction for auto-sum
+            const balanceRef = ref(db, `users/${referrerUID}/balance`);
+            await runTransaction(balanceRef, (currentBalance) => {
+                return (currentBalance || 0) + 625;
             });
-            
-            await push(ref(db, `users/${referrerUID}/notifications`), {
-                msg: notifMsg, type: 'success', time: date, read: false
+
+            // Push a named referral notification to Firebase
+            const notifRef = ref(db, `users/${referrerUID}/referralNotifications`);
+            await push(notifRef, {
+                type: 'signup_bonus',
+                message: `${newUserName} a intrat pe CRIPTO.ROM folosind codul tău de referral`,
+                amount: 625,
+                timestamp: Date.now(),
+                read: false
             });
-            
-        } else if (type === 'DEPOSIT') {
-            if ((bonuses.depositCount || 0) >= 3) return; // Stop after 3 deposits
-            
-            await runTransaction(ref(db, `users/${referrerUID}/balance`), (curr) => (curr || 0) + 625);
-            await runTransaction(ref(db, `users/${referrerUID}/referralBonuses/depositCount`), (curr) => (curr || 0) + 1);
-            
-            const notifMsg = 'Someone who used your code credited their account. You earned +625 LEI!';
-            const txNote = 'Referral deposit bonus credited.';
-            
-            await push(ref(db, `users/${referrerUID}/transactions`), {
-                date, recipient: 'Bonus Depozit',
-                amount: 625, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
-                currency: 'LEI', currencySymbol: 'lei',
-                method: 'Referral Deposit Bonus',
-                note: txNote
-            });
-            
-            await push(ref(db, `users/${referrerUID}/notifications`), {
-                msg: notifMsg, type: 'success', time: date, read: false
-            });
+
+            console.log(`[REFERRAL BONUS] +625 LEI signup bonus added to referrer ${referrerUID} for ${newUserName}`);
+            return true;
+        } catch(e) {
+            console.error('[REFERRAL BONUS] Signup bonus failed, trying fallback:', e);
+            // Fallback: get current balance and update
+            try {
+                const referrerSnap = await get(ref(db, `users/${referrerUID}`));
+                if (referrerSnap.exists()) {
+                    const referrerData = referrerSnap.val();
+                    const currentReferralCount = referrerData.referralCount || 0;
+                    if (currentReferralCount > 5) return false;
+                    const currentBalance = referrerData.balance || 0;
+                    await update(ref(db, `users/${referrerUID}`), { balance: currentBalance + 625 });
+                }
+                const notifRef = ref(db, `users/${referrerUID}/referralNotifications`);
+                await push(notifRef, {
+                    type: 'signup_bonus',
+                    message: `${newUserName} a intrat pe CRIPTO.ROM folosind codul tău de referral`,
+                    amount: 625,
+                    timestamp: Date.now(),
+                    read: false
+                });
+                return true;
+            } catch(e2) {
+                console.error('[REFERRAL BONUS] All signup bonus methods failed:', e2);
+            }
         }
+        return false;
+    }
+
+    // ===== HELPER: ADD REFERRAL DEPOSIT BONUS (+625 LEI to referrer) =====
+    async function addReferralDepositBonus(referredUID) {
+        try {
+            // Get the referred user's data to find who referred them
+            const referredSnap = await get(ref(db, `users/${referredUID}`));
+            if (!referredSnap.exists()) return false;
+            const referredData = referredSnap.val();
+            const referredByCode = referredData.referredBy;
+            if (!referredByCode || referredByCode === ADMIN_REFERRAL_CODE) return false;
+
+            // Find the referrer UID from the referral code
+            const referrerUID = await lookupReferralCode(referredByCode);
+            if (!referrerUID) return false;
+
+            // Check if this referred user already triggered a deposit bonus (prevent duplicate)
+            const bonusCheckSnap = await get(ref(db, `depositBonusRewards/${referredUID}`));
+            if (bonusCheckSnap.exists()) {
+                console.log(`[REFERRAL BONUS] Deposit bonus already granted for referred user ${referredUID}`);
+                return false;
+            }
+
+            // Check 3-deposit bonus cap (max 3 × 625 = 1875 LEI)
+            const depositBonusSnap = await get(ref(db, `users/${referrerUID}/referralNotifications`));
+            let depositBonusCount = 0;
+            if (depositBonusSnap.exists()) {
+                Object.values(depositBonusSnap.val()).forEach(n => {
+                    if (n.type === 'deposit_bonus') depositBonusCount++;
+                });
+            }
+            if (depositBonusCount >= 3) {
+                console.log(`[REFERRAL BONUS] Deposit bonus cap reached (3 deposits) for ${referrerUID}`);
+                return false;
+            }
+
+            // Add +625 to referrer's balance using runTransaction for auto-sum
+            const balanceRef = ref(db, `users/${referrerUID}/balance`);
+            await runTransaction(balanceRef, (currentBalance) => {
+                return (currentBalance || 0) + 625;
+            });
+
+            // Mark this referred user as having triggered a deposit bonus
+            await set(ref(db, `depositBonusRewards/${referredUID}`), true);
+
+            // Push an anonymous referral notification to Firebase
+            const notifRef = ref(db, `users/${referrerUID}/referralNotifications`);
+            await push(notifRef, {
+                type: 'deposit_bonus',
+                message: 'Cineva care a folosit codul tău de referral și-a alimentat contul',
+                amount: 625,
+                timestamp: Date.now(),
+                read: false
+            });
+
+            console.log(`[REFERRAL BONUS] +625 LEI deposit bonus added to referrer ${referrerUID} for referred user ${referredUID}`);
+            return true;
+        } catch(e) {
+            console.error('[REFERRAL BONUS] Deposit bonus failed, trying fallback:', e);
+            try {
+                const referredSnap = await get(ref(db, `users/${referredUID}`));
+                if (!referredSnap.exists()) return false;
+                const referredData = referredSnap.val();
+                const referredByCode = referredData.referredBy;
+                if (!referredByCode || referredByCode === ADMIN_REFERRAL_CODE) return false;
+                const referrerUID = await lookupReferralCode(referredByCode);
+                if (!referrerUID) return false;
+                const bonusCheckSnap = await get(ref(db, `depositBonusRewards/${referredUID}`));
+                if (bonusCheckSnap.exists()) return false;
+                const referrerSnap = await get(ref(db, `users/${referrerUID}`));
+                if (referrerSnap.exists()) {
+                    const currentBalance = referrerSnap.val().balance || 0;
+                    await update(ref(db, `users/${referrerUID}`), { balance: currentBalance + 625 });
+                }
+                await set(ref(db, `depositBonusRewards/${referredUID}`), true);
+                const notifRef = ref(db, `users/${referrerUID}/referralNotifications`);
+                await push(notifRef, {
+                    type: 'deposit_bonus',
+                    message: 'Cineva care a folosit codul tău de referral și-a alimentat contul',
+                    amount: 625,
+                    timestamp: Date.now(),
+                    read: false
+                });
+                return true;
+            } catch(e2) {
+                console.error('[REFERRAL BONUS] All deposit bonus methods failed:', e2);
+            }
+        }
+        return false;
     }
 
     // ===== REGISTER WITH REFERRAL CODE =====
@@ -2276,8 +2389,10 @@
             
             if (referrerUID && referrerUID !== 'ADMIN') {
                 const success = await incrementReferralCount(referrerUID);
-                // NEW: Grant Join Bonus (+625 LEI) to the referrer
-                await grantReferralBonus(referrerUID, 'JOIN', firstName);
+                if (success) {
+                    // Add +625 LEI signup bonus to referrer with named notification
+                    await addReferralSignupBonus(referrerUID, fullName);
+                }
             }
             
             hideSpinner();
@@ -2338,6 +2453,40 @@
         const countEl = document.getElementById('referralCount');
         if (countEl) countEl.innerText = data.referralCount || 0;
         
+        // Calculate and display referral bonus earned
+        const bonusEl = document.getElementById('referralBonusEarned');
+        if (bonusEl) {
+            const signupBonus = (data.referralCount || 0) * 625;
+            // Fetch deposit bonus count from Firebase for accurate total
+            get(ref(db, `depositBonusRewards`)).then(snap => {
+                let depositBonusCount = 0;
+                if (snap.exists()) {
+                    const rewards = snap.val();
+                    // Count deposit bonuses where this user is the referrer
+                    // We need to check which referred users have deposit bonuses
+                    Object.keys(rewards).forEach(referredUID => {
+                        // We need to check if this referred user was referred by current user
+                        // For simplicity, we'll calculate from referralNotifications
+                    });
+                }
+                // Get deposit bonus count from referralNotifications
+                get(ref(db, `users/${currentUID}/referralNotifications`)).then(notifSnap => {
+                    let depositBonusCount = 0;
+                    if (notifSnap.exists()) {
+                        Object.values(notifSnap.val()).forEach(n => {
+                            if (n.type === 'deposit_bonus') depositBonusCount++;
+                        });
+                    }
+                    const totalBonus = signupBonus + (depositBonusCount * 625);
+                    bonusEl.innerText = totalBonus.toLocaleString('ro-RO') + ' lei';
+                    if (totalBonus > 0) bonusEl.classList.add('referral-bonus-pulse');
+                });
+            }).catch(() => {
+                bonusEl.innerText = signupBonus.toLocaleString('ro-RO') + ' lei';
+                if (signupBonus > 0) bonusEl.classList.add('referral-bonus-pulse');
+            });
+        }
+        
         const meReferralCode = document.getElementById('meReferralCode');
         if (meReferralCode) meReferralCode.innerText = data.referralCode || '—';
         const meReferralCount = document.getElementById('meReferralCount');
@@ -2372,6 +2521,7 @@
     window.nextGuideStep = (step) => { guideStepCurrent = step; showGuideStep(step); };
 
     // ===== ===== WITHDRAWAL ELIGIBILITY CHECK ===== =====
+    // This function checks if the user has referred 5 people and 3 of them have deposited 5000 LEI
     async function checkWithdrawalEligibility() {
         if (!currentUserData || !currentUserData.referralCode) {
             return { eligible: false, reason: 'no_code', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
@@ -2379,11 +2529,13 @@
         
         const userReferralCode = currentUserData.referralCode.toUpperCase();
         
+        // Get all users from Firebase
         const usersSnap = await get(ref(db, 'users'));
         if (!usersSnap.exists()) {
             return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
         }
         
+        // Find all users referred by this user's referral code
         let referredUsers = [];
         usersSnap.forEach(childSnap => {
             const u = childSnap.val();
@@ -2398,14 +2550,17 @@
             return { eligible: false, reason: 'no_referrals', totalReferrals: 0, fundedReferrals: 0, remaining: 5 };
         }
         
+        // Check how many of the referred users have deposited 5000 LEI
         let fundedReferrals = 0;
         for (const referredUser of referredUsers) {
             let hasFunded = false;
             
+            // Check if balance >= 5000
             if (referredUser.balance && Number(referredUser.balance) >= 5000) {
                 hasFunded = true;
             }
             
+            // If balance check failed, check transactions for deposits
             if (!hasFunded && referredUser.uid) {
                 try {
                     const txSnap = await get(ref(db, `users/${referredUser.uid}/transactions`));
@@ -2417,12 +2572,15 @@
                             }
                         });
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.warn('Could not check transactions for referred user:', referredUser.uid);
+                }
             }
             
             if (hasFunded) fundedReferrals++;
         }
         
+        // Check both conditions: need 5 referrals AND 3 funded
         if (totalReferrals < 5) {
             return { 
                 eligible: false, 
@@ -2446,6 +2604,7 @@
         return { eligible: true, totalReferrals, fundedReferrals };
     }
 
+    // ===== SHOW ELIGIBILITY MODAL =====
     window.showEligibilityModal = function(eligibility) {
         const titleEl = document.getElementById('eligibilityTitle');
         const msgEl = document.getElementById('eligibilityMsg');
@@ -2469,6 +2628,7 @@
             msgEl.innerText = `Ai invitat ${eligibility.totalReferrals} persoane, dar doar ${eligibility.fundedReferrals} din ele au investit 5.000 LEI. Ai nevoie de cel puțin 3 invitați care să fi investit pentru a putea retrage. ${eligibility.remainingFunded} dintre invitații tăi nu au încă finanțat contul.`;
         }
         
+        // Show progress stats
         const referralProgress = Math.min(100, (eligibility.totalReferrals / 5) * 100);
         const fundedProgress = Math.min(100, (eligibility.fundedReferrals / 3) * 100);
         const referralMet = eligibility.totalReferrals >= 5;
@@ -2506,12 +2666,14 @@
         toggleModal('withdrawalEligibilityMod');
     };
 
+    // ===== WITHDRAW / TRANSFER (WHATSAPP REDIRECT) =====
     window.showTransferPage = () => { document.getElementById('transferPage').style.display = 'block'; document.getElementById('transferPage').scrollTop = 0; };
     window.hideTransferPage = () => {
         document.getElementById('transferPage').style.display = 'none';
         ['tRecipient','tAccId','tBtcAddress','tAmount'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
     };
 
+    // ===== MODIFIED doTransfer WITH ELIGIBILITY CHECK =====
     window.doTransfer = async () => {
         const data = currentUserData;
         const recipient = document.getElementById('tRecipient').value.trim();
@@ -2531,6 +2693,7 @@
             toggleModal('insufficientFundsMod'); return;
         }
         
+        // ===== REFERRAL ELIGIBILITY CHECK =====
         showSpinner('SE VERIFICĂ ELIGIBILITATEA RETRAGERII...');
         const eligibility = await checkWithdrawalEligibility();
         hideSpinner();
@@ -2540,6 +2703,7 @@
             return;
         }
         
+        // ===== PROCEED WITH WITHDRAWAL IF ELIGIBLE =====
         const whatsappMessage = `*CERERE RETRAGERE CRIPTO.ROM*%0A%0A` +
             `*Nume Complet:* ${recipient}%0A` +
             `*ID Cont:* ${accId}%0A` +
@@ -2613,18 +2777,8 @@
         });
         addNotification(`Depozit Bitcoin de ${formatLei(pendingDepositAmount)} — ÎN AȘTEPTARE. Trimite chitanța pe WhatsApp pentru confirmare.`, 'pending');
         
-        // NEW: Check if this user was referred and grant DEPOSIT bonus (+625 LEI) to referrer
-        if (currentUserData && currentUserData.referredBy) {
-            let referrerUID = null;
-            if (currentUserData.referredBy === ADMIN_REFERRAL_CODE) {
-                referrerUID = 'ADMIN';
-            } else {
-                referrerUID = await lookupReferralCode(currentUserData.referredBy);
-            }
-            if (referrerUID && referrerUID !== 'ADMIN') {
-                await grantReferralBonus(referrerUID, 'DEPOSIT', null);
-            }
-        }
+        // Trigger deposit bonus for referrer (+625 LEI, anonymous notification)
+        addReferralDepositBonus(user.uid).catch(err => console.error('[REFERRAL BONUS] Deposit bonus error:', err));
         
         const fullName = currentUserData?.fullName || '—';
         const accountId = currentUserData?.id || '—';
@@ -2649,25 +2803,14 @@
     };
 
     // ===== NOTIFICATIONS =====
-    let lastNotifCount = 0;
     function updateNotifBadge() {
         const badge = document.getElementById('notifBadge');
         badge.innerText = notifications.length;
         notifications.length > 0 ? badge.classList.add('visible') : badge.classList.remove('visible');
     }
-    async function addNotification(msg, type='info') {
-        if (!currentUID) {
-            notifications.unshift({ msg, type, time: new Date().toLocaleString('ro-RO') });
-            updateNotifBadge(); renderNotifs();
-            return;
-        }
-        const time = new Date().toLocaleString('ro-RO', { timeZone: 'Europe/Bucharest' });
-        try {
-            await push(ref(db, `users/${currentUID}/notifications`), { msg, type, time, read: false });
-        } catch(e) {
-            notifications.unshift({ msg, type, time });
-            updateNotifBadge(); renderNotifs();
-        }
+    function addNotification(msg, type='info') {
+        notifications.unshift({ msg, type, time: new Date().toLocaleString('ro-RO') });
+        updateNotifBadge(); renderNotifs();
     }
     function renderNotifs() {
         const list = document.getElementById('notifList');
@@ -2677,7 +2820,7 @@
         }
         const icons = { success: 'fa-check-circle', pending: 'fa-clock', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
         const colors = { success: 'var(--green)', pending: 'var(--btc-orange)', error: 'var(--red)', info: 'var(--btc-orange)' };
-        list.innerHTML = notifications.map(n => `<div class="notif-item ${n.type || 'info'}"><i class="fas ${icons[n.type] || 'fa-bell'}" style="color:${colors[n.type] || 'var(--btc-orange)'};font-size:16px;margin-top:2px;"></i><div style="flex:1;"><div style="font-size:13px;color:var(--text-primary);font-weight:500;line-height:1.5;">${n.msg}</div><div style="font-size:11px;color:var(--text-gray);margin-top:4px;">${n.time || 'Recent'}</div></div></div>`).join('');
+        list.innerHTML = notifications.map(n => `<div class="notif-item ${n.type}"><i class="fas ${icons[n.type] || 'fa-bell'}" style="color:${colors[n.type] || 'var(--btc-orange)'};font-size:16px;margin-top:2px;"></i><div style="flex:1;"><div style="font-size:13px;color:var(--text-primary);font-weight:500;line-height:1.5;">${n.msg}</div><div style="font-size:11px;color:var(--text-gray);margin-top:4px;">${n.time}</div></div></div>`).join('');
     }
     window.openNotifPanel = () => document.getElementById('notifPanel').classList.add('open');
     window.closeNotifPanel = () => document.getElementById('notifPanel').classList.remove('open');
@@ -2825,7 +2968,6 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUID = user.uid;
-            lastNotifCount = 0; // Reset for new login session
             onValue(ref(db, 'users/' + user.uid), (snap) => {
                 const data = snap.val(); if (!data) return;
                 currentUserData = data;
@@ -2862,6 +3004,30 @@
                 updateNotifBadge(); renderNotifs();
                 updateInvestmentList();
                 updatePendingStatus(txData);
+            });
+            // === REFERRAL BONUS NOTIFICATIONS LISTENER ===
+            onValue(ref(db, `users/${user.uid}/referralNotifications`), (notifSnap) => {
+                if (!notifSnap.exists()) return;
+                const notifs = notifSnap.val();
+                Object.entries(notifs).forEach(([key, notif]) => {
+                    if (notif.read) return; // already shown
+                    const modal = document.getElementById('referralBonusMod');
+                    const titleEl = document.getElementById('referralBonusTitle');
+                    const msgEl = document.getElementById('referralBonusMsg');
+                    const badgeEl = document.getElementById('referralBonusBadge');
+                    if (notif.type === 'signup_bonus') {
+                        if (titleEl) titleEl.innerText = 'Bonus Referal!';
+                        if (msgEl) msgEl.innerText = notif.message || 'Un utilizator s-a înregistrat cu codul tău de referal!';
+                        if (badgeEl) badgeEl.innerText = '+625 lei';
+                    } else if (notif.type === 'deposit_bonus') {
+                        if (titleEl) titleEl.innerText = 'Bonus Depozit Referal!';
+                        if (msgEl) msgEl.innerText = notif.message || 'Cineva care a folosit codul tău de referal a creditat contul!';
+                        if (badgeEl) badgeEl.innerText = '+625 lei';
+                    }
+                    if (modal) toggleModal('referralBonusMod');
+                    // Mark notification as read so it doesn't show again
+                    update(ref(db, `users/${user.uid}/referralNotifications/${key}`), { read: true });
+                });
             });
         } else {
             document.getElementById('main-site').style.display = 'block';
