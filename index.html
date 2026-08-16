@@ -1993,22 +1993,29 @@
         reader.readAsDataURL(file);
     };
 
-    async function lookupReferralCode(code) {
+        async function lookupReferralCode(code) {
+        if (!code) return null;
         try {
             const refCodeSnap = await get(ref(db, `referralCodes/${code}`));
             if (refCodeSnap.exists()) return refCodeSnap.val();
-        } catch(e) {}
+        } catch(e) { 
+            console.warn('referralCodes lookup failed:', e); 
+        }
         try {
             const usersSnap = await get(ref(db, 'users'));
             if (usersSnap.exists()) {
                 let foundUID = null;
                 usersSnap.forEach(childSnap => {
                     const u = childSnap.val();
-                    if (u.referralCode === code) foundUID = childSnap.key;
+                    if (u.referralCode && u.referralCode.toUpperCase() === code.toUpperCase()) {
+                        foundUID = childSnap.key;
+                    }
                 });
                 return foundUID;
             }
-        } catch(e) {}
+        } catch(e) { 
+            console.warn('users scan lookup failed:', e); 
+        }
         return null;
     }
 
