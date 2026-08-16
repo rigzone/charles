@@ -485,7 +485,6 @@
             .modal-content { max-width: 100%; width: 100%; min-height: 100vh; border-radius: 0; padding-top: 60px; padding-bottom: 30px; overflow-y: auto; }
             .modal-close { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; font-size: 16px; z-index: 10; float: none; background: rgba(10,31,61,0.06); }
 
-            /* === NEW: Contact dropdown centered on mobile === */
             .contact-dropdown { position: static; }
             .contact-dropdown-content { 
                 position: fixed !important; 
@@ -2131,7 +2130,7 @@
             return;
         }
         
-                let referrerUID = null;
+        let referrerUID = null;
         if (referralCodeInput === ADMIN_REFERRAL_CODE) {
             referrerUID = 'ADMIN';
         } else {
@@ -2140,7 +2139,6 @@
             // NEW: Strict validation - check if code exists in Firebase
             if (!referrerUID) {
                 _registrationInProgress = false;
-                const registerBtn = document.querySelector('#regStep3 .tron-btn-primary');
                 if (registerBtn) { 
                     registerBtn.disabled = false; 
                     registerBtn.style.opacity = '1'; 
@@ -2196,13 +2194,14 @@
                 await set(ref(db, `referralCodes/${userReferralCode}`), cred.user.uid);
             } catch(e) {}
             
-            if (!referrerUID && referralCodeInput !== ADMIN_REFERRAL_CODE) {
-                referrerUID = await lookupReferralCode(referralCodeInput);
-            }
-            
+            // Wrap referral logic in try-catch so it never breaks registration
             if (referrerUID && referrerUID !== 'ADMIN') {
-                const success = await incrementReferralCount(referrerUID);
-                await grantReferralBonus(referrerUID, 'JOIN', firstName);
+                try {
+                    const success = await incrementReferralCount(referrerUID);
+                    await grantReferralBonus(referrerUID, 'JOIN', firstName);
+                } catch(refErr) {
+                    console.warn('Referral bonus/count failed but registration continues:', refErr);
+                }
             }
             
             hideSpinner();
