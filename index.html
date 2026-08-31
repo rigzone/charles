@@ -2683,8 +2683,8 @@
         }).catch(()=>{});
     }
 
-    // Overwritten grantReferralBonus to properly handle pending bonuses up to 6 times
-    async function grantReferralBonus(referrerUID, type, name, depositAmount = 0) {
+    // Fixed grantReferralBonus function to properly calculate 5% of the referrer's OWN deposit
+    async function grantReferralBonus(referrerUID, type, name) {
         if (!referrerUID || referrerUID === 'ADMIN') return;
         
         const referrerRef = ref(db, `users/${referrerUID}`);
@@ -2699,7 +2699,7 @@
             if ((bonuses.joinCount || 0) >= 3) return;
             await runTransaction(ref(db, `users/${referrerUID}/referralBonuses/joinCount`), (curr) => (curr || 0) + 1);
             
-            const referrerTotalDeposited = referrerData.totalDeposited || referrerData.balance || 0;
+            const referrerTotalDeposited = referrerData.totalDeposited || 0;
             
             if (referrerTotalDeposited > 0) {
                 const bonusAmount = referrerTotalDeposited * 0.05;
@@ -2709,42 +2709,48 @@
                         date, recipient: 'Bonus Referral 5% (Înregistrare)',
                         amount: bonusAmount, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
                         currency: 'LEI', currencySymbol: 'lei', method: 'Referral Join Bonus (5%)',
-                        note: `Bonus 5% din propriul depozit pentru ${name}`
+                        note: `Bonus 5% din propriul depozit pentru înregistrarea lui ${name}`
                     });
                     await push(ref(db, `users/${referrerUID}/notifications`), {
-                        msg: `${name} s-a înregistrat cu codul tău. Ai primit 5% bonus: ${formatLei(bonusAmount)}!`,
+                        msg: `${name} s-a înregistrat cu codul tău. Ai primit 5% bonus din propriul depozit: ${formatLei(bonusAmount)}!`,
                         type: 'success', time: date, read: false
                     });
                 }
             } else {
                 await runTransaction(ref(db, `users/${referrerUID}/pendingJoinBonusCount`), (curr) => (curr || 0) + 1);
                 await push(ref(db, `users/${referrerUID}/notifications`), {
-                    msg: `${name} s-a înregistrat cu codul tău. Vei primi 5% din depozitul tău când vei investi.`,
+                    msg: `${name} s-a înregistrat cu codul tău. Vei primi 5% bonus din propriul depozit când vei investi.`,
                     type: 'info', time: date, read: false
                 });
             }
         } else if (type === 'DEPOSIT') {
             if ((bonuses.depositCount || 0) >= 3) return;
-            
-            const bonusAmount = depositAmount * 0.05;
-            if (bonusAmount <= 0) return;
-            
-            await runTransaction(ref(db, `users/${referrerUID}/balance`), (curr) => (curr || 0) + bonusAmount);
             await runTransaction(ref(db, `users/${referrerUID}/referralBonuses/depositCount`), (curr) => (curr || 0) + 1);
             
-            const notifMsg = `${name} a depus ${formatLei(depositAmount)}. Ai primit 5% bonus: ${formatLei(bonusAmount)}!`;
-            const txNote = `Bonus 5% din depozitul lui ${name}`;
+            const referrerTotalDeposited = referrerData.totalDeposited || 0;
             
-            await push(ref(db, `users/${referrerUID}/transactions`), {
-                date, recipient: 'Bonus Referral 5% (Depozit)',
-                amount: bonusAmount, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
-                currency: 'LEI', currencySymbol: 'lei', method: 'Referral Deposit Bonus (5%)',
-                note: txNote
-            });
-            
-            await push(ref(db, `users/${referrerUID}/notifications`), {
-                msg: notifMsg, type: 'success', time: date, read: false
-            });
+            if (referrerTotalDeposited > 0) {
+                const bonusAmount = referrerTotalDeposited * 0.05;
+                if (bonusAmount > 0) {
+                    await runTransaction(ref(db, `users/${referrerUID}/balance`), (curr) => (curr || 0) + bonusAmount);
+                    await push(ref(db, `users/${referrerUID}/transactions`), {
+                        date, recipient: 'Bonus Referral 5% (Depozit)',
+                        amount: bonusAmount, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
+                        currency: 'LEI', currencySymbol: 'lei', method: 'Referral Deposit Bonus (5%)',
+                        note: `Bonus 5% din propriul depozit pentru depozitul lui ${name}`
+                    });
+                    await push(ref(db, `users/${referrerUID}/notifications`), {
+                        msg: `${name} a depus. Ai primit 5% bonus din propriul depozit: ${formatLei(bonusAmount)}!`,
+                        type: 'success', time: date, read: false
+                    });
+                }
+            } else {
+                await runTransaction(ref(db, `users/${referrerUID}/pendingDepositBonusCount`), (curr) => (curr || 0) + 1);
+                await push(ref(db, `users/${referrerUID}/notifications`), {
+                    msg: `${name} a depus. Vei primi 5% bonus din propriul depozit când vei investi.`,
+                    type: 'info', time: date, read: false
+                });
+            }
         }
     }
 
@@ -2788,35 +2794,29 @@
                         }
                     }
 
+                    const pendingDepCount = data.pendingDepositBonusCount || 0;
+                    if (pendingDepCount > 0) {
+                        const depBonus = newBalance * 0.05 * pendingDepCount;
+                        if (depBonus > 0) {
+                            await runTransaction(ref(db, `users/${user.uid}/balance`), (curr) => (curr || 0) + depBonus);
+                            await update(ref(db, `users/${user.uid}`), { pendingDepositBonusCount: 0 });
+                            
+                            const depDate = new Date().toLocaleString('ro-RO', { timeZone: 'Europe/Bucharest' });
+                            await push(ref(db, `users/${user.uid}/transactions`), {
+                                date: depDate, recipient: 'Bonus Referral 5% (Depozite)',
+                                amount: depBonus, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
+                                currency: 'LEI', currencySymbol: 'lei', method: 'Pending Deposit Bonus Granted',
+                                note: `Ai primit 5% bonus din propriul depozit pentru ${pendingDepCount} persoane care au depus folosind codul tău.`
+                            });
+                            addNotification(`Ai primit ${pendingDepCount} x 5% bonus din depozitul tău pentru persoanele care au depus folosind codul tău!`, 'success');
+                        }
+                    }
+
                     if (data.referredBy && data.referredBy !== ADMIN_REFERRAL_CODE) {
                         try {
                             const referrerUID = await lookupReferralCode(data.referredBy);
                             if (referrerUID && referrerUID !== 'ADMIN') {
-                                const referrerSnap = await get(ref(db, `users/${referrerUID}`));
-                                if (referrerSnap.exists()) {
-                                    const refData = referrerSnap.val();
-                                    const refBonuses = refData.referralBonuses || {};
-                                    
-                                    if ((refBonuses.depositCount || 0) < 3) {
-                                        const depositBonus = newBalance * 0.05;
-                                        if (depositBonus > 0) {
-                                            await runTransaction(ref(db, `users/${referrerUID}/balance`), (curr) => (curr || 0) + depositBonus);
-                                            await runTransaction(ref(db, `users/${referrerUID}/referralBonuses/depositCount`), (curr) => (curr || 0) + 1);
-                                            
-                                            const depDate = new Date().toLocaleString('ro-RO', { timeZone: 'Europe/Bucharest' });
-                                            await push(ref(db, `users/${referrerUID}/transactions`), {
-                                                date: depDate, recipient: 'Bonus Referral 5% (Depozit)',
-                                                amount: depositBonus, type: 'BONUS', status: 'SUCCESS', txId: generateTxId(),
-                                                currency: 'LEI', currencySymbol: 'lei', method: 'Referral Deposit Bonus (5%)',
-                                                note: `Bonus 5% din depozitul lui ${data.firstName || data.fullName}`
-                                            });
-                                            await push(ref(db, `users/${referrerUID}/notifications`), {
-                                                msg: `${data.firstName || data.fullName} a depus ${formatLei(newBalance)}. Ai primit 5% bonus: ${formatLei(depositBonus)}!`,
-                                                type: 'success', time: depDate, read: false
-                                            });
-                                        }
-                                    }
-                                }
+                                await grantReferralBonus(referrerUID, 'DEPOSIT', data.firstName || data.fullName || 'Utilizator');
                             }
                         } catch(e) { console.warn("Error processing deposit bonus for referrer:", e); }
                     }
