@@ -34,18 +34,26 @@ html { scroll-behavior:smooth; overflow-x:hidden; }
 body { font-family:'Inter',sans-serif; color:var(--text); line-height:1.7; overflow-x:hidden; background:var(--white); }
 h1,h2,h3,h4,h5,h6 { font-family:'Poppins',sans-serif; }
 a { text-decoration:none; color:inherit; }
-img { max-width:100%; display:block; }
+img { max-width:100%; display:block; image-rendering:-webkit-optimize-contrast; }
 section { position:relative; }
 
 /* SCROLL PROGRESS */
 .scroll-progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); z-index:9998; width:0%; transition:width 0.1s; }
 
-/* PRELOADER */
-.preloader { position:fixed; inset:0; background:var(--dark); z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; transition:opacity 0.5s; }
+/* ===== PRELOADER WITH TRUCK ANIMATION ===== */
+.preloader { position:fixed; inset:0; background:var(--dark); z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; transition:opacity 0.5s, visibility 0.5s; }
 .preloader.hidden { opacity:0; pointer-events:none; visibility:hidden; }
 .preloader img { height:50px; filter:brightness(0) invert(1); animation:preloaderPulse 1.5s ease-in-out infinite; }
 @keyframes preloaderPulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
 .preloader-text { color:rgba(255,255,255,0.7); font-size:13px; letter-spacing:2px; text-transform:uppercase; }
+/* Truck road */
+.preloader-road { position:absolute; bottom:50px; left:5%; right:5%; height:4px; background:linear-gradient(90deg,transparent,rgba(0,184,96,0.6),rgba(0,184,96,0.6),transparent); border-radius:4px; overflow:hidden; }
+.preloader-road::after { content:''; position:absolute; top:50%; left:0; right:0; height:2px; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.5) 0,rgba(255,255,255,0.5) 12px,transparent 12px,transparent 24px); transform:translateY(-50%); animation:roadDash 0.4s linear infinite; }
+@keyframes roadDash { from{transform:translateY(-50%) translateX(0);} to{transform:translateY(-50%) translateX(24px);} }
+/* Moving truck */
+.preloader-truck { position:absolute; bottom:28px; left:-80px; font-size:44px; color:var(--primary-light); animation:truckMove 2.5s linear forwards; text-shadow:0 4px 16px rgba(0,184,96,0.6); }
+.preloader-truck i { display:block; }
+@keyframes truckMove { 0%{left:-80px;} 100%{left:calc(100% + 30px);} }
 
 /* NAVIGATION */
 .navbar { position:fixed; top:0; left:0; right:0; z-index:1000; padding:16px 0; transition:all 0.3s ease; }
@@ -65,8 +73,8 @@ section { position:relative; }
 .nav-toggle { display:none; background:none; border:none; color:#fff; font-size:24px; cursor:pointer; }
 .navbar.scrolled .nav-toggle { color:var(--text); }
 
-/* HERO */
-.hero { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; background:linear-gradient(135deg,rgba(10,31,28,0.93),rgba(0,107,63,0.88)),url('https://images.unsplash.com/photo-1578575437130-9277d652d24a?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat fixed; }
+/* HERO — BACKGROUND CHANGED TO GREEN TRUCK IMAGE */
+.hero { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; background:linear-gradient(135deg,rgba(10,31,28,0.85),rgba(0,107,63,0.7)),url('https://media.istockphoto.com/id/2158864024/photo/green-electric-delivery-vans-with-connected-charging-cables.jpg?s=612x612&w=0&k=20&c=Es04HSM5uUgkY-Znu2DQ0g9FQ6KdMFKp0Nd4drSS3Gw=') center/cover no-repeat fixed; }
 .hero-content { text-align:center; color:#fff; max-width:800px; padding:100px 24px 60px; z-index:2; position:relative; }
 .hero-logo-bg { background:rgba(255,255,255,0.97); padding:14px 32px; border-radius:14px; display:inline-block; margin-bottom:28px; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
 .hero-logo-bg img { height:46px; }
@@ -103,7 +111,7 @@ section { position:relative; }
 .about { background:var(--white); }
 .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
 .about-img-wrap { position:relative; border-radius:16px; overflow:hidden; box-shadow:var(--shadow-lg); }
-.about-img-wrap img { width:100%; height:480px; object-fit:cover; }
+.about-img-wrap img { width:100%; height:480px; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); }
 .about-img-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,107,63,0.3),transparent); }
 .about-experience { position:absolute; bottom:24px; left:24px; right:24px; background:rgba(255,255,255,0.97); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
 .about-experience .num { font-size:36px; font-weight:800; color:var(--primary); font-family:'Poppins'; }
@@ -133,7 +141,7 @@ section { position:relative; }
 .fleet { background:var(--white); }
 .fleet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
 .fleet-card { position:relative; border-radius:14px; overflow:hidden; height:280px; cursor:pointer; box-shadow:var(--shadow); }
-.fleet-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s; }
+.fleet-card img { width:100%; height:100%; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); transition:transform 0.6s; }
 .fleet-card:hover img { transform:scale(1.08); }
 .fleet-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,31,28,0.9) 0%,rgba(10,31,28,0.2) 60%,transparent 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:24px; }
 .fleet-overlay h3 { color:#fff; font-size:18px; font-weight:700; margin-bottom:4px; }
@@ -151,7 +159,7 @@ section { position:relative; }
 .coverage-stat .num { font-size:32px; font-weight:800; color:#fff; font-family:'Poppins'; }
 .coverage-stat .lbl { font-size:12px; color:rgba(255,255,255,0.6); margin-top:4px; }
 .coverage-map { position:relative; border-radius:16px; overflow:hidden; box-shadow:0 16px 48px rgba(0,0,0,0.3); }
-.coverage-map img { width:100%; height:auto; }
+.coverage-map img { width:100%; height:auto; filter:contrast(1.05) saturate(1.1) brightness(1.03); }
 
 /* WHY US */
 .why-us { background:var(--light); }
@@ -177,7 +185,7 @@ section { position:relative; }
 .gallery .section-subtitle { color:rgba(255,255,255,0.7); }
 .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .gallery-item { position:relative; border-radius:12px; overflow:hidden; height:240px; }
-.gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s; }
+.gallery-item img { width:100%; height:100%; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); transition:transform 0.6s; }
 .gallery-item:hover img { transform:scale(1.1); }
 .gallery-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,31,28,0.85),transparent 60%); display:flex; flex-direction:column; justify-content:flex-end; padding:20px; opacity:0; transition:opacity 0.3s; }
 .gallery-item:hover .gallery-overlay { opacity:1; }
@@ -265,14 +273,14 @@ section { position:relative; }
 .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--dark); color:#fff; padding:14px 28px; border-radius:50px; font-size:14px; font-weight:500; z-index:9999; opacity:0; pointer-events:none; transition:opacity 0.3s, transform 0.3s; box-shadow:0 8px 32px rgba(0,0,0,0.25); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ===== TRACKING MODAL ===== */
-.track-modal { position:fixed; inset:0; background:rgba(10,31,28,0.85); z-index:5000; display:none; justify-content:center; align-items:flex-start; padding:20px; overflow-y:auto; backdrop-filter:blur(6px); }
+/* ===== TRACKING MODAL — FULL SCREEN ON PHONE ===== */
+.track-modal { position:fixed; inset:0; background:rgba(10,31,28,0.88); z-index:5000; display:none; justify-content:center; align-items:flex-start; padding:20px; overflow-y:auto; backdrop-filter:blur(6px); }
 .track-modal.show { display:flex; }
 .track-modal-box { background:#fff; border-radius:16px; max-width:860px; width:100%; margin:auto; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.3); }
-.track-modal-header { background:linear-gradient(135deg,var(--dark),var(--dark-2)); padding:24px 28px; display:flex; justify-content:space-between; align-items:center; }
+.track-modal-header { background:linear-gradient(135deg,var(--dark),var(--dark-2)); padding:24px 28px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10; }
 .track-modal-header img { height:30px; filter:brightness(0) invert(1); }
-.track-close { background:rgba(255,255,255,0.1); border:none; width:36px; height:36px; border-radius:50%; color:#fff; font-size:16px; cursor:pointer; transition:background 0.2s; }
-.track-close:hover { background:rgba(255,255,255,0.2); }
+.track-close { background:rgba(255,255,255,0.15); border:none; width:40px; height:40px; border-radius:50%; color:#fff; font-size:20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+.track-close:hover { background:rgba(255,255,255,0.3); transform:rotate(90deg); }
 .track-modal-body { padding:28px; }
 .track-status-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
 .track-num { font-size:15px; color:var(--text-muted); }
@@ -295,34 +303,17 @@ section { position:relative; }
 .detail-row { display:flex; gap:8px; margin-bottom:8px; font-size:13px; }
 .detail-row .lbl { color:var(--text-muted); min-width:70px; font-weight:500; }
 .detail-row .val { color:var(--dark); font-weight:600; flex:1; }
-/* Map */
+/* Google Maps */
 .map-section { margin-bottom:24px; }
 .map-section h4 { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
 .map-section h4 i { color:var(--primary); }
-#trackingMap { height:350px; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); z-index:1; }
+#trackingMapFrame { height:380px; width:100%; border:0; border-radius:12px; overflow:hidden; }
 /* Flight Info */
 .flight-info { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
 .flight-info-item { background:var(--light); border-radius:10px; padding:14px; text-align:center; border:1px solid var(--border); }
 .flight-info-item i { font-size:20px; color:var(--primary); margin-bottom:6px; }
 .flight-info-item .val { font-size:14px; font-weight:700; color:var(--dark); }
 .flight-info-item .lbl { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
-/* Timeline */
-.timeline { position:relative; padding-left:32px; }
-.timeline::before { content:''; position:absolute; left:11px; top:0; bottom:0; width:2px; background:var(--border); }
-.timeline-item { position:relative; padding-bottom:24px; }
-.timeline-item:last-child { padding-bottom:0; }
-.timeline-dot { position:absolute; left:-32px; top:2px; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--border); z-index:1; }
-.timeline-item.completed .timeline-dot { border-color:var(--primary-light); background:var(--primary-light); }
-.timeline-item.completed .timeline-dot::after { content:'\f00c'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:9px; color:#fff; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
-.timeline-item.active .timeline-dot { border-color:var(--primary); background:var(--primary); }
-.timeline-item.active .timeline-dot::after { content:''; position:absolute; inset:2px; border-radius:50%; background:#fff; animation:pulse 1.5s infinite; }
-.timeline-item.active .timeline-dot { animation:dotPulse 2s infinite; }
-@keyframes dotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,107,63,0.4);} 50%{box-shadow:0 0 0 8px rgba(0,107,63,0);} }
-.timeline-content h4 { font-size:14px; font-weight:600; color:var(--dark); margin-bottom:2px; }
-.timeline-content p { font-size:12px; color:var(--text-muted); }
-.timeline-content .t-time { font-size:11px; color:var(--primary); font-weight:600; margin-top:2px; }
-.timeline-item.pending .timeline-content { opacity:0.45; }
-.timeline-item.pending .timeline-content h4 { color:var(--text-muted); }
 
 /* ANIMATIONS */
 .fade-in { opacity:0; transform:translateY(40px); transition:opacity 0.7s ease, transform 0.7s ease; }
@@ -354,9 +345,13 @@ section { position:relative; }
   .quote-form .form-row { grid-template-columns:1fr; }
   .footer-inner { grid-template-columns:1fr; }
   .flight-info { grid-template-columns:1fr 1fr; }
-  #trackingMap { height:280px; }
+  #trackingMapFrame { height:280px; }
+  /* FULL SCREEN TRACKING PORTAL ON PHONE */
+  .track-modal { padding:0; background:rgba(10,31,28,0.95); }
+  .track-modal-box { max-width:100%; border-radius:0; min-height:100vh; }
+  .track-modal-header { padding:16px 20px; position:sticky; top:0; z-index:10; }
+  .track-close { width:44px; height:44px; font-size:22px; }
   .track-modal-body { padding:20px 16px; }
-  .track-modal-header { padding:18px 20px; }
   .nav-track-btn { display:none; }
 }
 @media(max-width:480px) {
@@ -367,16 +362,18 @@ section { position:relative; }
   .hero h1 { font-size:26px; }
   .hero p { font-size:14px; }
   .section-title { font-size:24px; }
-  #trackingMap { height:240px; }
+  #trackingMapFrame { height:250px; }
 }
 </style>
 </head>
 <body>
 
-<!-- PRELOADER -->
+<!-- ===== PRELOADER WITH TRUCK ANIMATION ===== -->
 <div class="preloader" id="preloader">
   <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
   <div class="preloader-text">Loading</div>
+  <div class="preloader-road"></div>
+  <div class="preloader-truck" id="preloaderTruck"><i class="fas fa-truck-fast"></i></div>
 </div>
 
 <!-- SCROLL PROGRESS -->
@@ -402,7 +399,7 @@ section { position:relative; }
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO — GREEN TRUCK IMAGE AS BACKGROUND -->
 <section class="hero" id="home">
   <div class="hero-content">
     <div class="hero-logo-bg">
@@ -925,7 +922,7 @@ section { position:relative; }
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- TRACKING MODAL -->
+<!-- ===== TRACKING PORTAL — FULL SCREEN WITH X CLOSE + REAL GOOGLE MAPS ===== -->
 <div class="track-modal" id="trackModal">
   <div class="track-modal-box">
     <div class="track-modal-header">
@@ -966,12 +963,12 @@ section { position:relative; }
           <div class="detail-row"><span class="lbl">Address:</span><span class="val">18 Forest Road, KIOLOA, Australia NSW 2539</span></div>
         </div>
       </div>
-      <!-- Map -->
+      <!-- REAL GOOGLE MAPS EMBED — DIRECTIONS FROM ALASKA TO RECEIVER ADDRESS -->
       <div class="map-section">
-        <h4><i class="fas fa-map-marked-alt"></i> Route Map — Alaska to Kioloa, Australia</h4>
-        <div id="trackingMap"></div>
+        <h4><i class="fas fa-map-marked-alt"></i> Route Map — Alaska, USA to Kioloa, NSW 2539, Australia</h4>
+        <iframe id="trackingMapFrame" src="" width="100%" height="380" style="border:0;border-radius:12px;overflow:hidden;" allowfullscreen="" loading="lazy"></iframe>
       </div>
-      <!-- Flight Info -->
+      <!-- Flight Info — REAL DISTANCE & TIME -->
       <div class="flight-info">
         <div class="flight-info-item">
           <i class="fas fa-plane-departure"></i>
@@ -994,65 +991,6 @@ section { position:relative; }
           <div class="lbl">Transit Time</div>
         </div>
       </div>
-      <!-- Timeline -->
-      <div class="timeline">
-        <div class="timeline-item completed">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Package Received</h4>
-            <p>Greenway Express Facility — Anchorage, Alaska</p>
-            <div class="t-time">Jan 18, 2025 — 09:30 AM AKST</div>
-          </div>
-        </div>
-        <div class="timeline-item completed">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Origin Scan Complete</h4>
-            <p>Anchorage International Cargo Terminal</p>
-            <div class="t-time">Jan 18, 2025 — 02:15 PM AKST</div>
-          </div>
-        </div>
-        <div class="timeline-item completed">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Departed Origin</h4>
-            <p>Ted Stevens Anchorage Int'l Airport (ANC)</p>
-            <div class="t-time">Jan 18, 2025 — 06:00 PM AKST</div>
-          </div>
-        </div>
-        <div class="timeline-item active">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>In Transit</h4>
-            <p>En Route — Pacific Air Corridor</p>
-            <div class="t-time">Jan 19, 2025 — Current</div>
-          </div>
-        </div>
-        <div class="timeline-item pending">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Customs Clearance</h4>
-            <p>Sydney International Airport (SYD)</p>
-            <div class="t-time">Pending</div>
-          </div>
-        </div>
-        <div class="timeline-item pending">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Out for Delivery</h4>
-            <p>Kioloa, NSW 2539 — Local Depot</p>
-            <div class="t-time">Pending</div>
-          </div>
-        </div>
-        <div class="timeline-item pending">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h4>Delivered</h4>
-            <p>18 Forest Road, KIOLOA</p>
-            <div class="t-time">Pending</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -1071,17 +1009,45 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// PRELOADER — Fixed: doesn't wait for all images to load
+// ===== PRELOADER WITH TRUCK — FIXED: Doesn't wait for all images =====
 function hidePreloader() {
   const p = document.getElementById('preloader');
   if (p) p.classList.add('hidden');
 }
-// Hide after 1 second regardless of image loading status
-setTimeout(hidePreloader, 1000);
-// Backup: hide on DOMContentLoaded
+
+// Initial page load — hide preloader after truck animation completes (2.8s)
+setTimeout(hidePreloader, 2800);
+// Fallback: hide after 4 seconds no matter what
+setTimeout(hidePreloader, 4000);
+// Also hide on DOMContentLoaded as extra backup
 document.addEventListener('DOMContentLoaded', () => setTimeout(hidePreloader, 800));
-// Final fallback: hide after 3 seconds no matter what
-setTimeout(hidePreloader, 3000);
+
+// ===== SHOW PRELOADER WITH TRUCK AGAIN (for tracking) =====
+function showPreloaderWithTruck(callback) {
+  const preloader = document.getElementById('preloader');
+  const truck = document.getElementById('preloaderTruck');
+  preloader.classList.remove('hidden');
+  
+  // Reset truck animation so it plays again
+  truck.style.animation = 'none';
+  void truck.offsetWidth; // Force reflow to restart animation
+  truck.style.animation = 'truckMove 2.5s linear forwards';
+  
+  // Hide preloader after truck finishes passing
+  setTimeout(() => {
+    preloader.classList.add('hidden');
+    if (callback) callback();
+  }, 2800);
+}
+
+// ===== LOAD REAL GOOGLE MAPS =====
+function loadGoogleMap() {
+  const iframe = document.getElementById('trackingMapFrame');
+  if (iframe) {
+    // Real Google Maps embed with directions from Anchorage Alaska to receiver address
+    iframe.src = 'https://www.google.com/maps?saddr=Anchorage,+Alaska,+USA&daddr=18+Forest+Rd,+Kioloa+NSW+2539,+Australia&output=embed';
+  }
+}
 
 // NAVBAR SCROLL
 const navbar = document.getElementById('navbar');
@@ -1107,7 +1073,6 @@ document.getElementById('navToggle').addEventListener('click', () => {
   document.getElementById('navLinks').classList.toggle('mobile-open');
 });
 
-// Close mobile menu on link click
 document.querySelectorAll('.nav-links a').forEach(a => {
   a.addEventListener('click', () => {
     document.getElementById('navLinks').classList.remove('mobile-open');
@@ -1120,7 +1085,7 @@ window.scrollToTrack = function() {
   setTimeout(() => document.getElementById('trackInput').focus(), 800);
 };
 
-// TRACKING
+// ===== TRACKING — SHOWS PRELOADER WITH TRUCK THEN OPENS PORTAL =====
 window.trackPackage = function() {
   const input = document.getElementById('trackInput');
   const errorEl = document.getElementById('trackError');
@@ -1134,34 +1099,36 @@ window.trackPackage = function() {
     return;
   }
   
-  // Loading animation
+  // Loading animation on button
   const originalHTML = btn.innerHTML;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tracking...';
   btn.disabled = true;
   
   setTimeout(() => {
     if (code === VALID_TRACKING_CODE) {
-      // Show tracking modal
-      document.getElementById('trackModal').classList.add('show');
-      document.body.style.overflow = 'hidden';
-      // Initialize map after modal is visible
-      setTimeout(initTrackingMap, 400);
+      // ===== SHOW PRELOADER WITH TRUCK AGAIN before opening portal =====
+      showPreloaderWithTruck(() => {
+        // Open tracking portal
+        document.getElementById('trackModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+        // Load real Google Map
+        loadGoogleMap();
+      });
     } else {
       errorEl.innerText = '⚠ Tracking number not found. Please verify your number and try again.';
     }
     btn.innerHTML = originalHTML;
     btn.disabled = false;
-  }, 1500);
+  }, 1000);
 };
 
 // CLOSE MODAL
 window.closeTrackModal = function() {
   document.getElementById('trackModal').classList.remove('show');
   document.body.style.overflow = '';
-  if (trackingMap) {
-    trackingMap.remove();
-    trackingMap = null;
-  }
+  // Clear Google Maps iframe
+  const iframe = document.getElementById('trackingMapFrame');
+  if (iframe) iframe.src = '';
 };
 
 // Close on background click
@@ -1169,119 +1136,21 @@ document.getElementById('trackModal').addEventListener('click', function(e) {
   if (e.target === this) closeTrackModal();
 });
 
-// ===== MAP INITIALIZATION — ALASKA TO KIOLOA AUSTRALIA =====
+// ===== OLD LEAFLET MAP FUNCTION — KEPT IN CODE BUT NOT USED (replaced by Google Maps) =====
 function initTrackingMap() {
-  if (trackingMap) {
-    trackingMap.remove();
-    trackingMap = null;
-  }
-  
+  if (trackingMap) { trackingMap.remove(); trackingMap = null; }
   const mapEl = document.getElementById('trackingMap');
   if (!mapEl) return;
-  
-  // Create map centered between Alaska and Australia
-  trackingMap = L.map('trackingMap', {
-    center: [15, -170],
-    zoom: 3,
-    zoomControl: true,
-    attributionControl: false,
-    scrollWheelZoom: true,
-    minZoom: 2
-  });
-  
-  // CartoDB Voyager tiles — no usage policy issues
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    subdomains: ['a','b','c','d']
-  }).addTo(trackingMap);
-  
-  // Origin: Anchorage, Alaska
+  trackingMap = L.map('trackingMap', { center: [15, -170], zoom: 3, zoomControl: true, attributionControl: false, scrollWheelZoom: true, minZoom: 2 });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', { maxZoom: 18, subdomains: ['a','b','c','d'] }).addTo(trackingMap);
   const origin = [61.2181, -149.9003];
-  // Destination: Kioloa, NSW 2539, Australia
   const dest = [-35.5333, 150.3833];
-  
-  // Route waypoints — curved flight path across the Pacific
-  const routePoints = [
-    [61.2181, -149.9003],  // Anchorage, Alaska
-    [55, -160],
-    [45, -175],
-    [35, 170],
-    [20, 160],
-    [5, 150],
-    [-10, 145],
-    [-25, 148],
-    [-35.5333, 150.3833]  // Kioloa, NSW
-  ];
-  
-  // Blue solid line — the route
-  L.polyline(routePoints, {
-    color: '#0066FF',
-    weight: 3,
-    opacity: 0.7,
-    smoothFactor: 1.5
-  }).addTo(trackingMap);
-  
-  // Blue dashed overlay — in-progress animation
-  L.polyline(routePoints, {
-    color: '#0066FF',
-    weight: 3,
-    opacity: 0.9,
-    dashArray: '12, 10'
-  }).addTo(trackingMap);
-  
-  // Origin marker — green (departure)
-  const originIcon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="background:#00B860;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 0 5px rgba(0,184,96,0.3);border:2px solid #fff;"><i class="fas fa-plane" style="font-size:12px;"></i></div>',
-    iconSize: [34, 34],
-    iconAnchor: [17, 17]
-  });
-  L.marker(origin, { icon: originIcon }).addTo(trackingMap)
-    .bindPopup('<strong style="color:#006B3F;">ORIGIN</strong><br><b>Anchorage, Alaska</b><br>United States<br><small>Ted Stevens Int\'l Airport (ANC)</small>');
-  
-  // Destination marker — gold (destination)
-  const destIcon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="background:#D4AF37;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 0 5px rgba(212,175,55,0.3);border:2px solid #fff;"><i class="fas fa-map-pin" style="font-size:12px;"></i></div>',
-    iconSize: [34, 34],
-    iconAnchor: [17, 17]
-  });
-  L.marker(dest, { icon: destIcon }).addTo(trackingMap)
-    .bindPopup('<strong style="color:#D4AF37;">DESTINATION</strong><br><b>Kioloa, NSW 2539</b><br>Australia<br><small>18 Forest Road</small>');
-  
-  // Current position marker — pulsing blue (in transit)
-  // Approximately 45% along the route
-  const currentPos = routePoints[Math.floor(routePoints.length * 0.45)];
-  const currentIcon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="background:#0066FF;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 0 0 8px rgba(0,102,255,0.2);border:2px solid #fff;animation:markerPulse 2s infinite;"><i class="fas fa-circle" style="font-size:8px;"></i></div>',
-    iconSize: [28, 28],
-    iconAnchor: [14, 14]
-  });
-  L.marker(currentPos, { icon: currentIcon }).addTo(trackingMap)
-    .bindPopup('<strong style="color:#0066FF;">CURRENT POSITION</strong><br><b>In Transit</b><br>Pacific Air Corridor<br><small>En route to Australia</small>');
-  
-  // Fit bounds to show entire route
-  trackingMap.fitBounds(L.latLngBounds([origin, dest]), { padding: [50, 50] });
-  
-  // Fix rendering
-  setTimeout(() => { if (trackingMap) trackingMap.invalidateSize(); }, 300);
-  setTimeout(() => { if (trackingMap) trackingMap.invalidateSize(); }, 600);
-  
-  console.log('%c🗺️ Tracking map initialized — Alaska to Kioloa, Australia', 'color:#006B3F;font-weight:bold;');
+  const routePoints = [[61.2181,-149.9003],[55,-160],[45,-175],[35,170],[20,160],[5,150],[-10,145],[-25,148],[-35.5333,150.3833]];
+  L.polyline(routePoints, { color:'#0066FF', weight:3, opacity:0.7 }).addTo(trackingMap);
+  L.polyline(routePoints, { color:'#0066FF', weight:3, opacity:0.9, dashArray:'12,10' }).addTo(trackingMap);
+  trackingMap.fitBounds(L.latLngBounds([origin, dest]), { padding:[50,50] });
+  setTimeout(() => { if(trackingMap) trackingMap.invalidateSize(); }, 300);
 }
-
-// Add marker pulse animation CSS
-const markerStyle = document.createElement('style');
-markerStyle.textContent = `
-  @keyframes markerPulse {
-    0%, 100% { box-shadow: 0 0 0 8px rgba(0,102,255,0.2); }
-    50% { box-shadow: 0 0 0 14px rgba(0,102,255,0); }
-  }
-  .leaflet-popup-content-wrapper { border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.15); }
-  .leaflet-popup-content { margin:12px 16px; font-family:'Inter',sans-serif; }
-`;
-document.head.appendChild(markerStyle);
 
 // FAQ TOGGLE
 window.toggleFaq = function(el) {
@@ -1295,12 +1164,7 @@ window.submitQuote = function() {
   const origin = document.getElementById('quoteOrigin').value.trim();
   const dest = document.getElementById('quoteDest').value.trim();
   const type = document.getElementById('quoteType').value;
-  
-  if (!origin || !dest || !type) {
-    showToast('Please fill in all required fields');
-    return;
-  }
-  
+  if (!origin || !dest || !type) { showToast('Please fill in all required fields'); return; }
   showToast('✅ Quote request received! We\'ll respond within 24 hours.');
   document.getElementById('quoteOrigin').value = '';
   document.getElementById('quoteDest').value = '';
@@ -1312,19 +1176,9 @@ window.submitQuote = function() {
 window.submitContact = function() {
   const name = document.getElementById('contactName').value.trim();
   const email = document.getElementById('contactEmail').value.trim();
-  const subject = document.getElementById('contactSubject').value.trim();
   const message = document.getElementById('contactMessage').value.trim();
-  
-  if (!name || !email || !message) {
-    showToast('Please fill in all required fields');
-    return;
-  }
-  
-  if (!email.includes('@')) {
-    showToast('Please enter a valid email address');
-    return;
-  }
-  
+  if (!name || !email || !message) { showToast('Please fill in all required fields'); return; }
+  if (!email.includes('@')) { showToast('Please enter a valid email address'); return; }
   showToast('✅ Message sent! Our team will respond within 24 hours.');
   document.getElementById('contactName').value = '';
   document.getElementById('contactEmail').value = '';
@@ -1340,35 +1194,26 @@ function animateCounters() {
     const suffix = counter.dataset.suffix || (target >= 1000000 ? 'M+' : target >= 1000 ? 'K+' : '+');
     const duration = 2000;
     const start = Date.now();
-    
     function update() {
       const elapsed = Date.now() - start;
       const progress = Math.min(elapsed / duration, 1);
       const current = Math.floor(progress * target);
-      
       let display;
-      if (target >= 1000000) {
-        display = (current / 1000000).toFixed(1) + 'M+';
-      } else if (target >= 1000) {
-        display = Math.floor(current / 1000) + 'K+';
-      } else {
-        display = current + (suffix || '+');
-      }
-      
+      if (target >= 1000000) { display = (current / 1000000).toFixed(1) + 'M+'; }
+      else if (target >= 1000) { display = Math.floor(current / 1000) + 'K+'; }
+      else { display = current + (suffix || '+'); }
       counter.innerText = display;
-      
       if (progress < 1) requestAnimationFrame(update);
     }
     update();
   });
 }
 
-// INTERSECTION OBSERVER — FADE IN + COUNTERS
+// INTERSECTION OBSERVER
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      // Trigger counter animation when stats bar is visible
       if (entry.target.classList.contains('stats-bar') || entry.target.querySelector('.stat-num')) {
         animateCounters();
       }
@@ -1377,15 +1222,12 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-// Also observe stats bar specifically
+
 const statsBar = document.querySelector('.stats-bar');
 if (statsBar) {
   const statsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCounters();
-        statsObserver.unobserve(entry.target);
-      }
+      if (entry.isIntersecting) { animateCounters(); statsObserver.unobserve(entry.target); }
     });
   }, { threshold: 0.3 });
   statsObserver.observe(statsBar);
@@ -1396,7 +1238,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeTrackModal();
 });
 
-console.log('%c🚀 Greenway Express — Global Freight & Cargo Logistics', 'background:#006B3F;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:bold;');
+console.log('%c🚀 Greenway Express v2.0 | Truck Preloader + Google Maps + Full Screen Portal', 'background:#006B3F;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:bold;');
 console.log('%c Tracking Code: GWE7H2K9M ', 'color:#00B860;font-weight:bold;font-size:13px;');
 </script>
 </body>
